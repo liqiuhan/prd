@@ -1,0 +1,404 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识库管理</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ccc;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-bottom: none;
+      background-color: #f9f9f9;
+    }
+    .tab.active {
+      background-color: white;
+      font-weight: bold;
+      border-top: 2px solid #007bff;
+      border-left: 2px solid #007bff;
+      border-right: 2px solid #007bff;
+      border-bottom: none;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .controls select, .controls input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .add-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .toggle-btn.enabled {
+      background-color: #28a745;
+      color: white;
+    }
+    .toggle-btn.disabled {
+      background-color: #dc3545;
+      color: white;
+    }
+    .edit-btn {
+      background-color: #ffc107;
+      color: white;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      display: none;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 400px;
+    }
+    .modal textarea, .modal select, .modal input {
+      width: 100%;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .modal .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .modal .cancel-btn {
+      background-color: #6c757d;
+      color: white;
+      margin-right: 10px;
+    }
+    .modal .save-btn {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>知识库管理</h1>
+  <div class="tabs">
+    <div class="tab active" id="tab-analysis" onclick="switchTab('analysis')">业务分析思路知识库</div>
+    <div class="tab" id="tab-strategy" onclick="switchTab('strategy')">业务策略知识库</div>
+  </div>
+
+  <div class="controls">
+    <button class="add-btn" onclick="openModal()">新增知识</button>
+    <select id="filterType" onchange="filterKnowledge()">
+      <option value="all">全部类型</option>
+      <option value="文档知识">文档知识</option>
+      <option value="QA问题对">QA问题对</option>
+    </select>
+    <input id="filterName" type="text" placeholder="按名称筛选" oninput="filterKnowledge()">
+    <select id="filterEnabled" onchange="filterKnowledge()">
+      <option value="all">全部状态</option>
+      <option value="true">启用</option>
+      <option value="false">禁用</option>
+    </select>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>名称</th>
+        <th>类型</th>
+        <th>知识库内容</th>
+        <th>业务标签</th>
+        <th>角色标签</th>
+        <th>文件名</th>
+        <th>状态</th>
+        <th>创建时间</th>
+        <th>最后修改时间</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody id="knowledgeTable">
+      <!-- 动态生成的知识条目将插入到这里 -->
+    </tbody>
+  </table>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2 id="modalTitle">新增知识</h2>
+      <select id="knowledgeType" onchange="handleTypeChange()">
+        <option value="文档知识">文档知识</option>
+        <option value="QA问题对">QA问题对</option>
+      </select>
+      <input id="knowledgeName" type="text" placeholder="输入知识名称">
+      <textarea id="knowledgeContent" placeholder="输入知识库内容..."></textarea>
+      <div id="qaFields" style="display: none;">
+        <textarea id="knowledgeQ" placeholder="输入问题 (Q)..."></textarea>
+        <textarea id="knowledgeA" placeholder="输入答案 (A)..."></textarea>
+      </div>
+      <input id="knowledgeFile" type="file">
+      <input id="businessTag" type="text" placeholder="输入业务标签 (可选)">
+      <input id="roleTag" type="text" placeholder="输入角色标签 (可选)">
+      <p id="uploadedFileName"></p>
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closeModal()">取消</button>
+        <button class="save-btn" onclick="saveKnowledge()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let activeTab = 'analysis'; // 当前活动的 Tab，默认为业务分析思路知识库
+    const knowledgeData = {
+      analysis: [
+        {
+          id: 1,
+          name: '分析模型示例',
+          type: '文档知识',
+          content: '这是一个业务分析模型的示例内容。',
+          businessTag: '数据分析',
+          roleTag: '分析师',
+          fileName: 'analysis_model.pdf',
+          enabled: true,
+          createdAt: new Date().toLocaleString(),
+          updatedAt: new Date().toLocaleString(),
+        },
+        {
+          id: 2,
+          name: '常见问题示例',
+          type: 'QA问题对',
+          content: { Q: '如何开展业务分析？', A: '通过数据分析和市场调研获取洞察。' },
+          businessTag: '市场调研',
+          roleTag: '市场经理',
+          fileName: null,
+          enabled: false,
+          createdAt: new Date().toLocaleString(),
+          updatedAt: new Date().toLocaleString(),
+        }
+      ],
+      strategy: [
+        {
+          id: 1,
+          name: '策略模型示例',
+          type: '文档知识',
+          content: '这是一个业务策略模型的示例内容。',
+          businessTag: '战略规划',
+          roleTag: '战略顾问',
+          fileName: 'strategy_model.docx',
+          enabled: true,
+          createdAt: new Date().toLocaleString(),
+          updatedAt: new Date().toLocaleString(),
+        },
+        {
+          id: 2,
+          name: '策略问题示例',
+          type: 'QA问题对',
+          content: { Q: '如何制定业务策略？', A: '通过竞争分析和资源分配规划业务目标。' },
+          businessTag: '竞争分析',
+          roleTag: '项目经理',
+          fileName: null,
+          enabled: true,
+          createdAt: new Date().toLocaleString(),
+          updatedAt: new Date().toLocaleString(),
+        }
+      ]
+    };
+
+    let editingKnowledgeId = null;
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      renderKnowledgeTable();
+    }
+
+    function openModal(isEdit = false, knowledge = null) {
+      const modal = document.getElementById('modal');
+      const modalTitle = document.getElementById('modalTitle');
+      const knowledgeName = document.getElementById('knowledgeName');
+      const knowledgeType = document.getElementById('knowledgeType');
+      const knowledgeContent = document.getElementById('knowledgeContent');
+      const knowledgeQ = document.getElementById('knowledgeQ');
+      const knowledgeA = document.getElementById('knowledgeA');
+      const qaFields = document.getElementById('qaFields');
+      const businessTag = document.getElementById('businessTag');
+      const roleTag = document.getElementById('roleTag');
+      const uploadedFileName = document.getElementById('uploadedFileName');
+
+      if (isEdit) {
+        modalTitle.textContent = '编辑知识';
+        editingKnowledgeId = knowledge.id;
+        knowledgeName.value = knowledge.name;
+        knowledgeType.value = knowledge.type;
+        knowledgeContent.value = knowledge.type === '文档知识' ? knowledge.content : '';
+        if (knowledge.type === 'QA问题对') {
+          qaFields.style.display = 'block';
+          knowledgeQ.value = knowledge.content.Q;
+          knowledgeA.value = knowledge.content.A;
+        } else {
+          qaFields.style.display = 'none';
+        }
+        businessTag.value = knowledge.businessTag || '';
+        roleTag.value = knowledge.roleTag || '';
+        uploadedFileName.textContent = knowledge.fileName || '无文件';
+      } else {
+        modalTitle.textContent = '新增知识';
+        editingKnowledgeId = null;
+        knowledgeName.value = '';
+        knowledgeType.value = '文档知识';
+        knowledgeContent.value = '';
+        qaFields.style.display = 'none';
+        knowledgeQ.value = '';
+        knowledgeA.value = '';
+        businessTag.value = '';
+        roleTag.value = '';
+        uploadedFileName.textContent = '';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function saveKnowledge() {
+      const knowledgeName = document.getElementById('knowledgeName').value.trim();
+      const knowledgeType = document.getElementById('knowledgeType').value;
+      const knowledgeContent = document.getElementById('knowledgeContent').value.trim();
+      const knowledgeQ = document.getElementById('knowledgeQ').value.trim();
+      const knowledgeA = document.getElementById('knowledgeA').value.trim();
+      const businessTag = document.getElementById('businessTag').value.trim();
+      const roleTag = document.getElementById('roleTag').value.trim();
+      const knowledgeFile = document.getElementById('knowledgeFile');
+      const fileName = knowledgeFile.files[0]?.name || null;
+
+      if (!knowledgeName || (knowledgeType === 'QA问题对' && (!knowledgeQ || !knowledgeA))) {
+        alert('请填写必要信息');
+        return;
+      }
+
+      const newKnowledge = {
+        id: editingKnowledgeId || Date.now(),
+        name: knowledgeName,
+        type: knowledgeType,
+        content: knowledgeType === 'QA问题对' ? { Q: knowledgeQ, A: knowledgeA } : knowledgeContent,
+        businessTag: businessTag || null,
+        roleTag: roleTag || null,
+        fileName: fileName,
+        enabled: true,
+        createdAt: editingKnowledgeId ? knowledgeData[activeTab].find(k => k.id === editingKnowledgeId).createdAt : new Date().toLocaleString(),
+        updatedAt: new Date().toLocaleString()
+      };
+
+      if (editingKnowledgeId) {
+        const index = knowledgeData[activeTab].findIndex(k => k.id === editingKnowledgeId);
+        knowledgeData[activeTab][index] = newKnowledge;
+      } else {
+        knowledgeData[activeTab].push(newKnowledge);
+      }
+
+      closeModal();
+      renderKnowledgeTable();
+    }
+
+    function renderKnowledgeTable() {
+      const table = document.getElementById('knowledgeTable');
+      table.innerHTML = '';
+
+      const knowledgeList = knowledgeData[activeTab];
+      knowledgeList.forEach((knowledge) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${knowledge.id}</td>
+          <td>${knowledge.name}</td>
+          <td>${knowledge.type}</td>
+          <td>${knowledge.type === 'QA问题对' ? `Q: ${knowledge.content.Q}<br>A: ${knowledge.content.A}` : knowledge.content}</td>
+          <td>${knowledge.businessTag || '无'}</td>
+          <td>${knowledge.roleTag || '无'}</td>
+          <td>${knowledge.fileName || '无文件'}</td>
+          <td>
+            <button class="toggle-btn ${knowledge.enabled ? 'enabled' : 'disabled'}" onclick="toggleEnabled(${knowledge.id})">
+              ${knowledge.enabled ? '启用' : '禁用'}
+            </button>
+          </td>
+          <td>${knowledge.createdAt}</td>
+          <td>${knowledge.updatedAt}</td>
+          <td>
+            <button class="edit-btn" onclick="openModal(true, ${JSON.stringify(knowledge).replace(/"/g, '&quot;')})">编辑</button>
+            <button class="delete-btn" onclick="deleteKnowledge(${knowledge.id})">删除</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function toggleEnabled(id) {
+      const knowledge = knowledgeData[activeTab].find(k => k.id === id);
+      knowledge.enabled = !knowledge.enabled;
+      renderKnowledgeTable();
+    }
+
+    function deleteKnowledge(id) {
+      knowledgeData[activeTab] = knowledgeData[activeTab].filter(k => k.id !== id);
+      renderKnowledgeTable();
+    }
+
+    // 初始渲染
+    renderKnowledgeTable();
+  </script>
+
+
+
+</body></html>
