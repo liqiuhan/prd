@@ -3,150 +3,1855 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>美化后的需求目录</title>
+    <title>角色管理与授权目录</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-wrap: wrap;
-            background-color: #f0f4f8;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
             color: #333;
-            height: 100vh;
+            background-color: #f5f5f5;
         }
-
-        /* 目录区域样式 */
-        .sidebar {
-            width: 200px; /* 固定宽度 */
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
         }
-
-        .sidebar:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        .control-panel {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: center;
         }
-
-        .sidebar h2 {
-            font-size: 1.4rem;
+        .btn {
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .btn-import {
+            background-color: #28a745;
+        }
+        .search-box {
+            margin-left: 20px;
+            flex-grow: 1;
+        }
+        input[type="text"] {
+            width: 400px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 15px;
-            color: #4e6ef2;
-            text-align: center;
-            border-bottom: 2px solid #4e6ef2;
-            padding-bottom: 8px;
         }
-
-        .tree {
+        th {
+            background-color: #f9f9f9;
+            text-align: left;
+            padding: 10px;
+            font-weight: normal;
+            border-bottom: 1px solid #eee;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .action-link {
+            color: #1e90ff;
+            text-decoration: none;
+            margin-right: 10px;
+            font-size: 13px;
+        }
+        .delete-link {
+            color: #ff6b6b;
+        }
+        .date-cell {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        /* 分页样式 */
+        .pagination-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            align-items: center;
+        }
+        .pagination {
+            display: flex;
             list-style: none;
             padding: 0;
+            margin: 0;
         }
-
-        .tree li {
-            margin: 10px 0;
+        .pagination li {
+            margin: 0 3px;
         }
-
-        .tree li a {
+        .pagination a {
+            display: block;
+            padding: 6px 12px;
             text-decoration: none;
             color: #333;
-            font-size: 1rem;
-            padding: 10px;
-            border-radius: 6px;
-            display: block;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            background-color: #fff;
+        }
+        .pagination a:hover {
+            background-color: #f5f5f5;
+        }
+        .pagination .active a {
+            background-color: #1e90ff;
+            color: white;
+            border-color: #1e90ff;
+        }
+        .pagination .disabled a {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        .page-info {
+            margin-left: 15px;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow: auto;
+        }
+        .modal-content {
+            width: 90%;
+            height: 90%;
+            margin: 2% auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+        .modal-header {
+            background-color: #f0f0f0;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .modal-close {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+        }
+        .modal-close:hover {
+            color: #000;
+        }
+        .modal-body {
+            padding: 0;
+            height: calc(100% - 50px);
+            overflow: hidden;
+        }
+        .modal-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>角色管理与授权目录</h1>
+    
+    <div class="control-panel">
+        <button class="btn">新建角色</button>
+        <button class="btn btn-import">导入角色</button>
+        <div class="search-box">
+            <label for="role-search">角色名称:</label>
+            <input type="text" id="role-search" placeholder="搜索角色名称" value="COO">
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>角色名称</th>
+                <th>角色描述</th>
+                <th>角色覆盖范围</th>
+                <th>创建时间</th>
+                <th>操作</th>
+                <th>指标目录</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>COO-虎蕨(24380)</td>
+                <td>该角色为用户在表了项目【COO数据中心】...</td>
+                <td>张宗(26622041)</td>
+                <td class="date-cell">2022-02-10 16:22:00</td>
+                <td>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">成员管理</a>
+                    <a href="#" class="action-link">权限管理</a>
+                    <a href="#" class="action-link delete-link">删除</a>
+                </td>
+                <td><a href="#" class="action-link indicator-directory-link">设置指标目录</a></td>
+            </tr>
+            <tr>
+                <td>COO数据中心(23758)</td>
+                <td>该角色即用了项目【COO数据中心】...用...</td>
+                <td>庞子俊(20284571)</td>
+                <td class="date-cell">2022-01-05 17:52:06</td>
+                <td>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">成员管理</a>
+                    <a href="#" class="action-link">权限管理</a>
+                    <a href="#" class="action-link delete-link">删除</a>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>COO数据中心(22323)</td>
+                <td>该角色即用了项目【COO数据中心】...用...</td>
+                <td>崇欢欢(26724643)</td>
+                <td class="date-cell">2021-11-10 20:11:22</td>
+                <td>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">成员管理</a>
+                    <a href="#" class="action-link">权限管理</a>
+                    <a href="#" class="action-link delete-link">删除</a>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>COO-考察股价角色(21787)</td>
+                <td>该角色为用户在表了项目【COO数据中心】...</td>
+                <td>张宗(26622041)</td>
+                <td class="date-cell">2021-10-14 23:21:13</td>
+                <td>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">成员管理</a>
+                    <a href="#" class="action-link">权限管理</a>
+                    <a href="#" class="action-link delete-link">删除</a>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>COO-美国(19463)</td>
+                <td>该角色为用户在表了项目【COO数据中心】...</td>
+                <td>李宗(28806519)</td>
+                <td class="date-cell">2021-07-29 19:40:15</td>
+                <td>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">成员管理</a>
+                    <a href="#" class="action-link">权限管理</a>
+                    <a href="#" class="action-link delete-link">删除</a>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>COO-直播线圈(19142)</td>
+                <td>该角色为用户在表了项目【COO数据中心】...</td>
+                <td>李珂(26670245)</td>
+                <td class="date-cell">2021-07-16 10:32:23</td>
+                <td>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">成员管理</a>
+                    <a href="#" class="action-link">权限管理</a>
+                    <a href="#" class="action-link delete-link">删除</a>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>COO新房-板块(18519)</td>
+                <td>该角色为用户在表了项目【COO数据中心】...</td>
+                <td>李珂(26670245)</td>
+                <td class="date-cell">2021-06-24 10:43:17</td>
+                <td>
+                    <a href="#" class="action-link">编辑</a>
+                    <a href="#" class="action-link">成员管理</a>
+                    <a href="#" class="action-link">权限管理</a>
+                    <a href="#" class="action-link delete-link">删除</a>
+                </td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- 分页控件 -->
+    <div class="pagination-container">
+        <ul class="pagination">
+            <li class="disabled"><a href="#">&laquo;</a></li>
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">&raquo;</a></li>
+        </ul>
+        <div class="page-info">共 25 条记录，每页 7 条，共 4 页</div>
+    </div>
+    
+    <!-- 指标目录模态窗口 -->
+    <div id="indicatorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">指标目录设置</div>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <iframe id="indicatorIframe" class="modal-iframe"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 使用DOMContentLoaded事件确保DOM完全加载
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化模态窗口
+            const modal = document.getElementById('indicatorModal');
+            const closeBtn = document.querySelector('.modal-close');
+            const iframe = document.getElementById('indicatorIframe');
+            
+            // 点击关闭按钮关闭模态窗口
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // 点击模态窗口外部区域关闭模态窗口
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // 为"设置指标目录"链接添加点击事件
+            const directoryLinks = document.querySelectorAll('.indicator-directory-link');
+            directoryLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 显示模态窗口
+                    modal.style.display = 'block';
+                    
+                    // 创建一个blob URL而不是使用srcdoc
+                    const indicatorHTML = createIndicatorHTML();
+                    const blob = new Blob([indicatorHTML], {type: 'text/html'});
+                    const url = URL.createObjectURL(blob);
+                    
+                    // 设置iframe的src而不是srcdoc
+                    iframe.src = url;
+                    
+                    // 在iframe加载完成后释放blob URL
+                    iframe.onload = function() {
+                        URL.revokeObjectURL(url);
+                    };
+                });
+            });
+            
+            // 为分页添加点击事件
+            const paginationLinks = document.querySelectorAll('.pagination a');
+            paginationLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!this.parentElement.classList.contains('disabled')) {
+                        document.querySelectorAll('.pagination li').forEach(li => {
+                            li.classList.remove('active');
+                        });
+                        if (!this.innerHTML.includes('&laquo;') && !this.innerHTML.includes('&raquo;')) {
+                            this.parentElement.classList.add('active');
+                        }
+                    }
+                });
+            });
+        });
+
+        // 创建指标目录HTML
+        function createIndicatorHTML() {
+            return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多级指标选择器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .selector-container {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: flex-start;
+        }
+        
+        .level-selector {
+            min-width: 220px;
+            position: relative;
+        }
+        
+        .level-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: #f0f0f0;
+            padding: 8px 10px;
+            border-radius: 4px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .select-all-btn {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        
+        .select-all-btn:hover {
+            background-color: #40a9ff;
+        }
+        
+        .select-all-btn.deselect {
+            background-color: #ff4d4f;
+        }
+        
+        .select-all-btn.deselect:hover {
+            background-color: #ff7875;
+        }
+        
+        .select-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 100%;
+        }
+        
+        .option {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .option input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .option.selected {
+            background-color: #e6f7ff;
+        }
+        
+        .selected-indicators {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        
+        .selected-indicators h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .indicator-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .indicator-tag {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: #1890ff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .indicator-tag .remove {
+            margin-left: 8px;
+            cursor: pointer;
+            color: #ff4d4f;
+            font-weight: bold;
+        }
+        
+        .indicator-tag .remove:hover {
+            color: #ff1f1f;
+        }
+        
+        .indicator-id {
+            color: #666;
+            font-size: 0.85em;
+            margin-left: 5px;
+        }
+        
+        /* 思维导图样式 */
+        .mindmap-container {
+            margin-top: 40px;
+            padding: 20px;
             background-color: #f9f9f9;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            height: 600px; /* 固定高度 */
+            overflow-y: scroll !important; /* 强制显示垂直滚动条 */
+            overflow-x: auto; /* 水平滚动条 */
+            position: relative;
         }
-
-        .tree li a:hover {
-            background-color: #4e6ef2;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        
+        .mindmap-wrapper {
+            position: relative;
+            padding: 50px; /* 四周留白 */
+            min-height: 500px;
         }
-
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-            }
-
-            body {
+        
+        .mindmap {
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        .mindmap-node {
+            position: absolute;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+            font-size: 14px;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            z-index: 1;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .mindmap-node:hover {
+            z-index: 2;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .mindmap-node.level-1 {
+            background-color: #e6f7ff;
+            border-color: #91d5ff;
+            font-weight: bold;
+        }
+        
+        .mindmap-node.level-2 {
+            background-color: #f0f9eb;
+            border-color: #c2e7b0;
+        }
+        
+        .mindmap-node.level-3 {
+            background-color: #fff7e6;
+            border-color: #ffd591;
+        }
+        
+        .mindmap-node.level-4 {
+            background-color: #f6f6f6;
+            border-color: #d9d9d9;
+        }
+        
+        .mindmap-node.level-5 {
+            background-color: #fef0f0;
+            border-color: #fbc4c4;
+        }
+        
+        .mindmap-node.indicator {
+            background-color: #fff1f0;
+            border-color: #ffccc7;
+        }
+        
+        .mindmap-node .indicator-id {
+            font-size: 0.8em;
+            color: #888;
+            margin-left: 4px;
+        }
+        
+        .mindmap-node .node-content {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .mindmap-node .node-remove {
+            margin-left: 8px;
+            cursor: pointer;
+            color: #ff4d4f;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            font-size: 16px;
+        }
+        
+        .mindmap-node:hover .node-remove {
+            opacity: 1;
+        }
+        
+        .mindmap-line {
+            position: absolute;
+            background-color: #ccc;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* 滚动条样式优化 */
+        .mindmap-container::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        
+        .mindmap-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .mindmap-container::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+        
+        .mindmap-container::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .selector-container {
                 flex-direction: column;
-                align-items: center;
+                align-items: stretch;
+            }
+            
+            .level-selector {
+                width: 100%;
+                min-width: unset;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 多个横向排列的目录区域 -->
-    <div class="sidebar">
-        <h2>目录 1</h2>
-        <ul class="tree">
-            <li><a href="#">需求 1.1</a></li>
-            <li><a href="#">需求 1.2</a></li>
-            <li><a href="#">需求 1.3</a></li>
-            <li><a href="#">需求 1.4</a></li>
-            <li><a href="#">需求 1.5</a></li>
-            <li><a href="#">需求 1.6</a></li>
-            <li><a href="#">需求 1.7</a></li>
-            <li><a href="#">需求 1.8</a></li>
-            <li><a href="#">需求 1.9</a></li>
-            <li><a href="#">需求 1.10</a></li>
-        </ul>
+    <div class="container">
+        <h1>多级指标选择器</h1>
+        
+        <div class="selector-container" id="selector-container">
+            <!-- 5个层级选择器会在这里动态生成 -->
+        </div>
+        
+        <div class="selected-indicators">
+            <h2>已选择的指标</h2>
+            <div class="indicator-list" id="selected-indicators-list">
+                <!-- 已选指标会显示在这里 -->
+            </div>
+        </div>
+        
+        <h2>指标思维导图</h2>
+        <div class="mindmap-container">
+            <div class="mindmap-wrapper">
+                <div class="mindmap" id="mindmap">
+                    <!-- 思维导图将在这里生成 -->
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="sidebar">
-        <h2>目录 2</h2>
-        <ul class="tree">
-            <li><a href="#">需求 2.1</a></li>
-            <li><a href="#">需求 2.2</a></li>
-            <li><a href="#">需求 2.3</a></li>
-            <li><a href="#">需求 2.4</a></li>
-            <li><a href="#">需求 2.5</a></li>
-            <li><a href="#">需求 2.6</a></li>
-            <li><a href="#">需求 2.7</a></li>
-            <li><a href="#">需求 2.8</a></li>
-            <li><a href="#">需求 2.9</a></li>
-            <li><a href="#">需求 2.10</a></li>
-        </ul>
-    </div>
-    <div class="sidebar">
-        <h2>目录 3</h2>
-        <ul class="tree">
-            <li><a href="#">需求 3.1</a></li>
-            <li><a href="#">需求 3.2</a></li>
-            <li><a href="#">需求 3.3</a></li>
-            <li><a href="#">需求 3.4</a></li>
-            <li><a href="#">需求 3.5</a></li>
-            <li><a href="#">需求 3.6</a></li>
-            <li><a href="#">需求 3.7</a></li>
-            <li><a href="#">需求 3.8</a></li>
-            <li><a href="#">需求 3.9</a></li>
-            <li><a href="#">需求 3.10</a></li>
-        </ul>
-    </div>
-    <div class="sidebar">
-        <h2>目录 4</h2>
-        <ul class="tree">
-            <li><a href="#">需求 4.1</a></li>
-            <li><a href="#">需求 4.2</a></li>
-            <li><a href="#">需求 4.3</a></li>
-            <li><a href="#">需求 4.4</a></li>
-            <li><a href="#">需求 4.5</a></li>
-            <li><a href="#">需求 4.6</a></li>
-            <li><a href="#">需求 4.7</a></li>
-            <li><a href="#">需求 4.8</a></li>
-            <li><a href="#">需求 4.9</a></li>
-            <li><a href="#">需求 4.10</a></li>
-        </ul>
-    </div>
+
+    <script>
+        // 示例数据结构
+        const indicatorData = {
+            "经济指标": {
+                "国民经济": {
+                    "GDP": {
+                        "GDP增长率": [
+                            {"name": "年度GDP增长率", "id": "ECO-GDP-001"},
+                            {"name": "季度GDP增长率", "id": "ECO-GDP-002"},
+                            {"name": "月度GDP估算", "id": "ECO-GDP-003"}
+                        ],
+                        "人均GDP": [
+                            {"name": "城市人均GDP", "id": "ECO-GDP-004"},
+                            {"name": "农村人均GDP", "id": "ECO-GDP-005"},
+                            {"name": "地区差异", "id": "ECO-GDP-006"}
+                        ]
+                    },
+                    "产业结构": {
+                        "三次产业占比": [
+                            {"name": "第一产业占比", "id": "ECO-IND-001"},
+                            {"name": "第二产业占比", "id": "ECO-IND-002"},
+                            {"name": "第三产业占比", "id": "ECO-IND-003"}
+                        ],
+                        "产业转型指数": [
+                            {"name": "传统产业转型率", "id": "ECO-IND-004"},
+                            {"name": "新兴产业增长率", "id": "ECO-IND-005"}
+                        ]
+                    }
+                },
+                "财政金融": {
+                    "财政收入": {
+                        "税收收入": [
+                            {"name": "增值税", "id": "ECO-FIN-001"},
+                            {"name": "企业所得税", "id": "ECO-FIN-002"},
+                            {"name": "个人所得税", "id": "ECO-FIN-003"}
+                        ],
+                        "非税收入": [
+                            {"name": "行政事业性收费", "id": "ECO-FIN-004"},
+                            {"name": "罚没收入", "id": "ECO-FIN-005"}
+                        ]
+                    },
+                    "货币政策": {
+                        "利率": [
+                            {"name": "存款基准利率", "id": "ECO-MON-001"},
+                            {"name": "贷款基准利率", "id": "ECO-MON-002"}
+                        ],
+                        "准备金率": [
+                            {"name": "大型银行准备金率", "id": "ECO-MON-003"},
+                            {"name": "中小银行准备金率", "id": "ECO-MON-004"}
+                        ]
+                    }
+                }
+            },
+            "社会指标": {
+                "人口统计": {
+                    "人口结构": {
+                        "年龄结构": [
+                            {"name": "0-14岁人口比例", "id": "SOC-POP-001"},
+                            {"name": "15-64岁人口比例", "id": "SOC-POP-002"},
+                            {"name": "65岁以上人口比例", "id": "SOC-POP-003"}
+                        ],
+                        "性别比例": [
+                            {"name": "总体性别比", "id": "SOC-POP-004"},
+                            {"name": "出生性别比", "id": "SOC-POP-005"}
+                        ]
+                    },
+                    "人口变化": {
+                        "自然增长率": [
+                            {"name": "出生率", "id": "SOC-POP-006"},
+                            {"name": "死亡率", "id": "SOC-POP-007"},
+                            {"name": "自然增长率", "id": "SOC-POP-008"}
+                        ],
+                        "迁移率": [
+                            {"name": "省内迁移率", "id": "SOC-POP-009"},
+                            {"name": "跨省迁移率", "id": "SOC-POP-010"},
+                            {"name": "国际迁移率", "id": "SOC-POP-011"}
+                        ]
+                    }
+                },
+                "教育": {
+                    "教育普及": {
+                        "入学率": [
+                            {"name": "小学入学率", "id": "SOC-EDU-001"},
+                            {"name": "初中入学率", "id": "SOC-EDU-002"},
+                            {"name": "高中入学率", "id": "SOC-EDU-003"},
+                            {"name": "大学入学率", "id": "SOC-EDU-004"}
+                        ],
+                        "文盲率": [
+                            {"name": "总体文盲率", "id": "SOC-EDU-005"},
+                            {"name": "青年文盲率", "id": "SOC-EDU-006"}
+                        ]
+                    },
+                    "教育质量": {
+                        "师生比": [
+                            {"name": "小学师生比", "id": "SOC-EDU-007"},
+                            {"name": "中学师生比", "id": "SOC-EDU-008"},
+                            {"name": "大学师生比", "id": "SOC-EDU-009"}
+                        ],
+                        "毕业率": [
+                            {"name": "高中毕业率", "id": "SOC-EDU-010"},
+                            {"name": "大学毕业率", "id": "SOC-EDU-011"}
+                        ]
+                    }
+                }
+            },
+            "环境指标": {
+                "污染控制": {
+                    "空气质量": {
+                        "AQI指数": [
+                            {"name": "优良天数比例", "id": "ENV-AIR-001"},
+                            {"name": "PM2.5年均浓度", "id": "ENV-AIR-002"},
+                            {"name": "PM10年均浓度", "id": "ENV-AIR-003"}
+                        ],
+                        "排放量": [
+                            {"name": "二氧化硫排放量", "id": "ENV-AIR-004"},
+                            {"name": "氮氧化物排放量", "id": "ENV-AIR-005"}
+                        ]
+                    },
+                    "水环境": {
+                        "水质": [
+                            {"name": "地表水优良比例", "id": "ENV-WAT-001"},
+                            {"name": "饮用水源达标率", "id": "ENV-WAT-002"}
+                        ],
+                        "污染物": [
+                            {"name": "工业废水排放量", "id": "ENV-WAT-003"},
+                            {"name": "生活污水处理率", "id": "ENV-WAT-004"}
+                        ]
+                    }
+                },
+                "生态保护": {
+                    "森林资源": {
+                        "森林覆盖率": [
+                            {"name": "国土森林覆盖率", "id": "ENV-ECO-001"},
+                            {"name": "城市绿化率", "id": "ENV-ECO-002"}
+                        ],
+                        "保护区": [
+                            {"name": "自然保护区面积", "id": "ENV-ECO-003"},
+                            {"name": "森林公园数量", "id": "ENV-ECO-004"}
+                        ]
+                    },
+                    "生物多样性": {
+                        "物种数量": [
+                            {"name": "脊椎动物种类", "id": "ENV-ECO-005"},
+                            {"name": "植物种类", "id": "ENV-ECO-006"},
+                            {"name": "珍稀濒危物种", "id": "ENV-ECO-007"}
+                        ],
+                        "栖息地": [
+                            {"name": "湿地面积", "id": "ENV-ECO-008"},
+                            {"name": "天然草地面积", "id": "ENV-ECO-009"}
+                        ]
+                    }
+                }
+            }
+        };
+
+        // 存储每个层级已选中的选项
+        const selectedOptions = {
+            1: [],
+            2: [],
+            3: [],
+            4: [],
+            5: []
+        };
+
+        // 存储所有选中的指标
+        let selectedIndicators = [];
+        
+        // 存储思维导图节点与路径映射关系
+        let nodePathMap = {};
+        
+        // 存储各级别节点名称到指标的映射，用于快速查找
+        let nodeNameToPathMap = {};
+
+        // 初始化所有层级选择器
+        function initAllSelectors() {
+            const container = document.getElementById('selector-container');
+            container.innerHTML = ''; // 清空容器
+            
+            // 创建所有5个层级的选择器
+            const levelTitles = ["类别", "大类", "中类", "小类", "指标"];
+            
+            for (let i = 1; i <= 5; i++) {
+                const levelSelector = document.createElement('div');
+                levelSelector.className = 'level-selector';
+                levelSelector.setAttribute('data-level', i);
+                
+                const title = document.createElement('div');
+                title.className = 'level-title';
+                
+                // 添加标题文本和全选按钮
+                const titleText = document.createElement('span');
+                titleText.textContent = levelTitles[i-1] || \`第\${i}级\`;
+                
+                const selectAllBtn = document.createElement('button');
+                selectAllBtn.className = 'select-all-btn';
+                selectAllBtn.textContent = '全选';
+                selectAllBtn.setAttribute('data-level', i);
+                selectAllBtn.setAttribute('data-state', 'select'); // 初始状态为全选
+                
+                // 添加全选/取消全选按钮的点击事件
+                selectAllBtn.addEventListener('click', function() {
+                    const level = parseInt(this.getAttribute('data-level'));
+                    const state = this.getAttribute('data-state');
+                    const newState = state === 'select' ? 'deselect' : 'select';
+                    
+                    // 更新按钮状态
+                    this.setAttribute('data-state', newState);
+                    this.textContent = newState === 'select' ? '全选' : '取消全选';
+                    this.classList.toggle('deselect', newState === 'deselect');
+                    
+                    // 执行全选或取消全选操作
+                    toggleAllOptions(level, newState === 'deselect');
+                });
+                
+                title.appendChild(titleText);
+                title.appendChild(selectAllBtn);
+                levelSelector.appendChild(title);
+                
+                const selectBox = document.createElement('div');
+                selectBox.className = 'select-box';
+                levelSelector.appendChild(selectBox);
+                
+                container.appendChild(levelSelector);
+            }
+            
+            // 填充第一级选择器的选项
+            updateLevelOptions(1, Object.keys(indicatorData));
+        }
+        
+        // 全选或取消全选指定层级的选项
+        function toggleAllOptions(level, isSelect) {
+            const levelSelector = document.querySelector(\`.level-selector[data-level="\${level}"]\`);
+            if (!levelSelector) return;
+            
+            const options = levelSelector.querySelectorAll('.option');
+            if (options.length === 0) return;
+            
+            // 记录当前选项的状态变化
+            const changedOptions = [];
+            
+            // 遍历所有选项
+            options.forEach(option => {
+                const checkbox = option.querySelector('input[type="checkbox"]');
+                if (!checkbox) return;
+                
+                // 只处理状态与目标状态不一致的选项
+                if (checkbox.checked !== isSelect) {
+                    checkbox.checked = isSelect;
+                    
+                    if (isSelect) {
+                        option.classList.add('selected');
+                    } else {
+                        option.classList.remove('selected');
+                    }
+                    
+                    // 记录变化的选项
+                    changedOptions.push({
+                        checkbox: checkbox,
+                        value: checkbox.value,
+                        level: level
+                    });
+                }
+            });
+            
+            // 批量处理变化的选项
+            if (changedOptions.length > 0) {
+                if (level === 5) {
+                    // 指标级别的处理
+                    changedOptions.forEach(item => {
+                        try {
+                            const indicatorObj = JSON.parse(item.value);
+                            handleIndicatorSelection(indicatorObj, isSelect);
+                        } catch (e) {
+                            console.error("解析指标对象失败", e);
+                        }
+                    });
+                } else {
+                    // 非指标级别的处理
+                    if (isSelect) {
+                        // 添加选项
+                        changedOptions.forEach(item => {
+                            if (!selectedOptions[level].includes(item.value)) {
+                                selectedOptions[level].push(item.value);
+                            }
+                        });
+                    } else {
+                        // 移除选项
+                        changedOptions.forEach(item => {
+                            selectedOptions[level] = selectedOptions[level].filter(option => option !== item.value);
+                            // 移除关联的指标
+                            removeRelatedIndicators(level, item.value);
+                        });
+                    }
+                    
+                    // 更新下一级选项
+                    updateNextLevelOptions(level);
+                    
+                    // 更新思维导图
+                    updateMindMap();
+                }
+            }
+            
+            // 更新全选按钮的状态
+            updateSelectAllButtonState(level);
+        }
+        
+        // 更新全选按钮的状态
+        function updateSelectAllButtonState(level) {
+            const levelSelector = document.querySelector(\`.level-selector[data-level="\${level}"]\`);
+            if (!levelSelector) return;
+            
+            const selectAllBtn = levelSelector.querySelector('.select-all-btn');
+            if (!selectAllBtn) return;
+            
+            const options = levelSelector.querySelectorAll('.option input[type="checkbox"]');
+            if (options.length === 0) {
+                // 没有选项，禁用按钮
+                selectAllBtn.disabled = true;
+                return;
+            } else {
+                selectAllBtn.disabled = false;
+            }
+            
+            // 检查所有选项的选中状态
+            let allSelected = true;
+            let allDeselected = true;
+            
+            options.forEach(checkbox => {
+                if (checkbox.checked) {
+                    allDeselected = false;
+                } else {
+                    allSelected = false;
+                }
+            });
+            
+            // 根据实际状态设置按钮
+            if (allSelected) {
+                selectAllBtn.setAttribute('data-state', 'deselect');
+                selectAllBtn.textContent = '取消全选';
+                selectAllBtn.classList.add('deselect');
+            } else {
+                selectAllBtn.setAttribute('data-state', 'select');
+                selectAllBtn.textContent = '全选';
+                selectAllBtn.classList.remove('deselect');
+            }
+        }
+
+        // 更新指定层级的选项
+        function updateLevelOptions(level, options) {
+            const levelSelector = document.querySelector(\`.level-selector[data-level="\${level}"]\`);
+            if (!levelSelector) return;
+            
+            const selectBox = levelSelector.querySelector('.select-box');
+            selectBox.innerHTML = ''; // 清空当前选项
+            
+            if (!options || options.length === 0) {
+                selectBox.innerHTML = '<div class="option" style="color:#999;cursor:default;">无选项</div>';
+                // 禁用全选按钮
+                const selectAllBtn = levelSelector.querySelector('.select-all-btn');
+                if (selectAllBtn) {
+                    selectAllBtn.disabled = true;
+                }
+                return;
+            }
+            
+            // 启用全选按钮
+            const selectAllBtn = levelSelector.querySelector('.select-all-btn');
+            if (selectAllBtn) {
+                selectAllBtn.disabled = false;
+            }
+            
+            options.forEach(option => {
+                const optionElem = document.createElement('div');
+                optionElem.className = 'option';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = option;
+                
+                // 如果是第5级，则使用指标对象
+                if (level === 5 && typeof option === 'object') {
+                    checkbox.value = JSON.stringify(option);
+                    
+                    // 检查是否已经选择
+                    if (selectedIndicators.some(item => item.id === option.id)) {
+                        checkbox.checked = true;
+                        optionElem.classList.add('selected');
+                    }
+                } else {
+                    // 检查非最后级是否已经选中
+                    if (selectedOptions[level].includes(option)) {
+                        checkbox.checked = true;
+                        optionElem.classList.add('selected');
+                    }
+                }
+                
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        optionElem.classList.add('selected');
+                        if (level === 5) {
+                            const indicatorObj = JSON.parse(this.value);
+                            handleIndicatorSelection(indicatorObj, true);
+                        } else {
+                            // 处理1-4级的选择
+                            if (!selectedOptions[level].includes(option)) {
+                                selectedOptions[level].push(option);
+                            }
+                            updateNextLevelOptions(level);
+                            
+                            // 当非指标级别更改时，也要更新思维导图
+                            updateMindMap();
+                        }
+                    } else {
+                        optionElem.classList.remove('selected');
+                        if (level === 5) {
+                            const indicatorObj = JSON.parse(this.value);
+                            handleIndicatorSelection(indicatorObj, false);
+                        } else {
+                            // 处理1-4级的取消选择
+                            selectedOptions[level] = selectedOptions[level].filter(item => item !== option);
+                            
+                            // 当取消选择某个非叶子节点时，需要移除相关的指标
+                            removeRelatedIndicators(level, option);
+                            
+                            updateNextLevelOptions(level);
+                            
+                            // 当非指标级别更改时，也要更新思维导图
+                            updateMindMap();
+                        }
+                    }
+                    
+                    // 更新全选按钮状态
+                    updateSelectAllButtonState(level);
+                });
+                
+                optionElem.appendChild(checkbox);
+                
+                // 对于第5级，显示指标名称+ID
+                if (level === 5 && typeof option === 'object') {
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = option.name;
+                    
+                    const idSpan = document.createElement('span');
+                    idSpan.className = 'indicator-id';
+                    idSpan.textContent = \`(\${option.id})\`;
+                    
+                    optionElem.appendChild(nameSpan);
+                    optionElem.appendChild(idSpan);
+                } else {
+                    optionElem.appendChild(document.createTextNode(option));
+                }
+                
+                // 点击整行也可以触发复选框
+                optionElem.addEventListener('click', function(e) {
+                    if (e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
+                
+                selectBox.appendChild(optionElem);
+            });
+            
+            // 更新全选按钮状态
+            updateSelectAllButtonState(level);
+        }
+        
+        // 移除与特定级别选项相关的所有指标
+        function removeRelatedIndicators(level, option) {
+            // 构建应该移除的路径前缀
+            let pathPrefix = [];
+            
+            // 获取当前层级之前的所有选项（构建路径前缀）
+            for (let i = 1; i < level; i++) {
+                if (selectedOptions[i].length > 0) {
+                    // 为了构建正确的路径，只考虑选中项
+                    pathPrefix = pathPrefix.concat(selectedOptions[i]);
+                }
+            }
+            
+            // 添加当前被取消选择的选项
+            pathPrefix.push(option);
+            
+            // 将路径前缀转换为字符串
+            const prefixStr = pathPrefix.join('|');
+            
+            // 找出所有以该前缀开头的指标
+            const indicatorsToRemove = selectedIndicators.filter(indicator => {
+                const indicatorPathStr = indicator.path.join('|');
+                return indicatorPathStr.startsWith(prefixStr);
+            }).map(indicator => indicator.id);
+            
+            // 移除这些指标
+            indicatorsToRemove.forEach(id => {
+                removeSelectedIndicator(id, false); // 传递false表示不要更新思维导图（稍后一次性更新）
+            });
+            
+            // 如果有移除的指标，更新显示
+            if (indicatorsToRemove.length > 0) {
+                updateSelectedIndicators();
+            }
+        }
+        
+        // 构建各级别节点名称到路径的映射
+        function buildNodeNameToPathMap() {
+            nodeNameToPathMap = {};
+            
+            // 递归构建映射
+            function traverse(data, path = []) {
+                if (!data) return;
+                
+                if (Array.isArray(data)) {
+                    // 到达最后一级（指标）
+                    data.forEach(item => {
+                        const fullPath = [...path, item.name];
+                        const pathKey = fullPath.join('|');
+                        nodeNameToPathMap[item.id] = {
+                            path: fullPath,
+                            pathKey: pathKey
+                        };
+                    });
+                    return;
+                }
+                
+                // 继续遍历对象
+                for (const key in data) {
+                    const newPath = [...path, key];
+                    const pathKey = newPath.join('|');
+                    
+                    // 存储当前节点的路径
+                    nodeNameToPathMap[key] = {
+                        path: newPath,
+                        pathKey: pathKey
+                    };
+                    
+                    traverse(data[key], newPath);
+                }
+            }
+            
+            traverse(indicatorData);
+        }
+
+        // 处理指标的选择和取消
+        function handleIndicatorSelection(indicator, isSelected) {
+            if (isSelected) {
+                // 添加到已选指标
+                if (!selectedIndicators.some(item => item.id === indicator.id)) {
+                    // 查找指标在数据结构中的完整路径
+                    let completePath = findIndicatorPath(indicator.id);
+                    
+                    selectedIndicators.push({
+                        name: indicator.name,
+                        id: indicator.id,
+                        path: completePath // 完整路径数组
+                    });
+                }
+            } else {
+                // 从已选指标中移除
+                selectedIndicators = selectedIndicators.filter(item => item.id !== indicator.id);
+            }
+            
+            // 更新已选指标显示
+            updateSelectedIndicators();
+            
+            // 更新思维导图
+            updateMindMap();
+        }
+        
+        // 查找指标的完整路径
+        function findIndicatorPath(indicatorId) {
+            // 先从缓存中查找
+            if (nodeNameToPathMap[indicatorId]) {
+                return nodeNameToPathMap[indicatorId].path;
+            }
+            
+            // 如果缓存中没有，则递归查找
+            const findPath = (data, indicatorId, path = []) => {
+                if (!data) return null;
+                
+                // 检查当前级别是否是指标数组
+                if (Array.isArray(data)) {
+                    for (const item of data) {
+                        if (item.id === indicatorId) {
+                            return [...path, item.name];
+                        }
+                    }
+                    return null;
+                }
+                
+                // 继续递归查找
+                for (const key in data) {
+                    const newPath = [...path, key];
+                    const result = findPath(data[key], indicatorId, newPath);
+                    if (result) return result;
+                }
+                
+                return null;
+            };
+            
+            return findPath(indicatorData, indicatorId);
+        }
+
+        // 更新下一级选项
+        function updateNextLevelOptions(currentLevel) {
+            if (currentLevel < 5) {
+                const nextLevel = currentLevel + 1;
+                let nextOptions = getNextLevelOptions(currentLevel);
+                updateLevelOptions(nextLevel, nextOptions);
+                
+                // 递归更新后面的所有级别
+                if (selectedOptions[nextLevel].length > 0) {
+                    updateNextLevelOptions(nextLevel);
+                }
+            }
+        }
+
+        // 获取下一级的选项
+        function getNextLevelOptions(currentLevel) {
+            if (selectedOptions[currentLevel].length === 0) {
+                return [];
+            }
+            
+            let options = new Set();
+            
+            // 根据当前所有已选项，获取下一级的选项
+            if (currentLevel === 1) {
+                // 从第一级到第二级
+                selectedOptions[1].forEach(category => {
+                    if (indicatorData[category]) {
+                        Object.keys(indicatorData[category]).forEach(option => {
+                            options.add(option);
+                        });
+                    }
+                });
+            } else if (currentLevel === 2) {
+                // 从第二级到第三级
+                selectedOptions[1].forEach(category => {
+                    selectedOptions[2].forEach(subcategory => {
+                        if (indicatorData[category] && indicatorData[category][subcategory]) {
+                            Object.keys(indicatorData[category][subcategory]).forEach(option => {
+                                options.add(option);
+                            });
+                        }
+                    });
+                });
+            } else if (currentLevel === 3) {
+                // 从第三级到第四级
+                selectedOptions[1].forEach(category => {
+                    selectedOptions[2].forEach(subcategory => {
+                        selectedOptions[3].forEach(thirdLevel => {
+                            if (indicatorData[category] && 
+                                indicatorData[category][subcategory] && 
+                                indicatorData[category][subcategory][thirdLevel]) {
+                                Object.keys(indicatorData[category][subcategory][thirdLevel]).forEach(option => {
+                                    options.add(option);
+                                });
+                            }
+                        });
+                    });
+                });
+            } else if (currentLevel === 4) {
+                // 从第四级到第五级（指标）
+                let indicators = [];
+                selectedOptions[1].forEach(category => {
+                    selectedOptions[2].forEach(subcategory => {
+                        selectedOptions[3].forEach(thirdLevel => {
+                            selectedOptions[4].forEach(fourthLevel => {
+                                if (indicatorData[category] && 
+                                    indicatorData[category][subcategory] && 
+                                    indicatorData[category][subcategory][thirdLevel] && 
+                                    indicatorData[category][subcategory][thirdLevel][fourthLevel]) {
+                                    indicators = indicators.concat(
+                                        indicatorData[category][subcategory][thirdLevel][fourthLevel]
+                                    );
+                                }
+                            });
+                        });
+                    });
+                });
+                return indicators;
+            }
+            
+            return Array.from(options);
+        }
+
+        // 更新已选指标显示
+        function updateSelectedIndicators() {
+            const container = document.getElementById('selected-indicators-list');
+            container.innerHTML = ''; // 清空容器
+            
+            if (selectedIndicators.length === 0) {
+                container.innerHTML = '<div>暂无选中的指标</div>';
+                return;
+            }
+            
+            selectedIndicators.forEach(indicator => {
+                const tag = document.createElement('div');
+                tag.className = 'indicator-tag';
+                
+                tag.innerHTML = \`
+                    <span class="name" title="\${indicator.path.join(' > ')}">\${indicator.name}</span>
+                    <span class="indicator-id">(\${indicator.id})</span>
+                    <span class="remove" data-id="\${indicator.id}">×</span>
+                \`;
+                
+                tag.querySelector('.remove').addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    removeSelectedIndicator(id);
+                });
+                
+                container.appendChild(tag);
+            });
+        }
+
+        // 移除已选指标
+        function removeSelectedIndicator(id, updateMap = true) {
+            selectedIndicators = selectedIndicators.filter(item => item.id !== id);
+            
+            // 更新已选指标显示
+            updateSelectedIndicators();
+            
+            // 更新思维导图（可选）
+            if (updateMap) {
+                updateMindMap();
+            }
+            
+            // 同步更新选择器中的复选框状态
+            const checkboxes = document.querySelectorAll('.level-selector[data-level="5"] input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                try {
+                    const indicatorObj = JSON.parse(checkbox.value);
+                    if (indicatorObj.id === id) {
+                        checkbox.checked = false;
+                        checkbox.parentElement.classList.remove('selected');
+                        
+                        // 同时更新对应第5级的全选按钮状态
+                        updateSelectAllButtonState(5);
+                    }
+                } catch (e) {
+                    console.error("解析指标对象失败", e);
+                }
+            });
+        }
+        
+        // 根据路径获取所有子节点的指标ID
+        function getAllChildIndicatorIds(pathStr) {
+            // 将路径字符串拆分成数组
+            const pathArray = pathStr.split('|').filter(p => p);
+            
+            // 寻找指标IDs
+            const affectedIds = selectedIndicators
+                .filter(indicator => {
+                    // 检查指标路径是否以给定路径开头
+                    const indicatorPathStr = indicator.path.join('|');
+                    return indicatorPathStr.startsWith(pathArray.join('|'));
+                })
+                .map(indicator => indicator.id);
+                
+            return affectedIds;
+        }
+        
+        // 移除节点及其子节点相关的所有指标
+        function removeNodeAndChildren(pathStr) {
+            // 获取受影响的所有指标ID
+            const affectedIds = getAllChildIndicatorIds(pathStr);
+            
+            // 得到路径数组和节点级别
+            const pathArray = pathStr.split('|');
+            const nodeName = pathArray[pathArray.length - 1];
+            const nodeLevel = pathArray.length;
+            
+            // 如果不是最后一级（指标），从相应级别的选择器中移除该节点
+            if (nodeLevel < 5 && nodeLevel > 0) {
+                // 仅从当前层级中移除节点，不影响其他选择
+                updateSelectorCheckboxes(nodeLevel, nodeName, false);
+                selectedOptions[nodeLevel] = selectedOptions[nodeLevel].filter(item => item !== nodeName);
+                
+                // 修正后续层级的选项，而不是完全清空后续层级
+                updateSelectedOptionsAfterRemoval(nodeLevel, pathArray);
+                
+                // 为下一级更新选项列表
+                updateNextLevelOptions(nodeLevel - 1);
+                
+                // 更新全选按钮状态
+                updateSelectAllButtonState(nodeLevel);
+            }
+            
+            // 移除受影响的指标
+            affectedIds.forEach(id => {
+                removeSelectedIndicator(id, false); // 传递false防止重复更新思维导图
+            });
+            
+            // 一次性更新思维导图
+            updateMindMap();
+        }
+        
+        // 在移除节点后，正确更新各级selectedOptions
+        function updateSelectedOptionsAfterRemoval(nodeLevel, pathArray) {
+            // 递归查找数据结构中哪些选项还有效
+            const validateRemainingOptions = () => {
+                // 验证第2级到第5级的选项
+                for (let i = 2; i <= 5; i++) {
+                    if (i <= nodeLevel) continue; // 跳过被移除节点以及之前的级别
+                    
+                    const validOptions = [];
+                    selectedOptions[i].forEach(option => {
+                        // 检查此选项是否还有父级存在
+                        let isValid = false;
+                        
+                        // 对于第2级，检查其父级（第1级）是否存在
+                        if (i === 2) {
+                            for (const level1 of selectedOptions[1]) {
+                                if (indicatorData[level1] && indicatorData[level1][option]) {
+                                    isValid = true;
+                                    break;
+                                }
+                            }
+                        }
+                        // 对于第3级，检查其父级（第1、2级）是否存在
+                        else if (i === 3) {
+                            for (const level1 of selectedOptions[1]) {
+                                for (const level2 of selectedOptions[2]) {
+                                    if (indicatorData[level1] && 
+                                        indicatorData[level1][level2] && 
+                                        indicatorData[level1][level2][option]) {
+                                        isValid = true;
+                                        break;
+                                    }
+                                }
+                                if (isValid) break;
+                            }
+                        }
+                        // 对于第4级，检查其父级（第1、2、3级）是否存在
+                        else if (i === 4) {
+                            for (const level1 of selectedOptions[1]) {
+                                for (const level2 of selectedOptions[2]) {
+                                    for (const level3 of selectedOptions[3]) {
+                                        if (indicatorData[level1] && 
+                                            indicatorData[level1][level2] && 
+                                            indicatorData[level1][level2][level3] && 
+                                            indicatorData[level1][level2][level3][option]) {
+                                            isValid = true;
+                                            break;
+                                        }
+                                    }
+                                    if (isValid) break;
+                                }
+                                if (isValid) break;
+                            }
+                        }
+                        
+                        if (isValid) {
+                            validOptions.push(option);
+                        }
+                    });
+                    
+                    // 更新该级别的有效选项
+                    selectedOptions[i] = validOptions;
+                    
+                    // 更新全选按钮状态
+                    updateSelectAllButtonState(i);
+                }
+            };
+            
+            validateRemainingOptions();
+        }
+        
+        // 更新选择器中复选框的状态
+        function updateSelectorCheckboxes(level, nodeName, isChecked) {
+            const levelSelector = document.querySelector(\`.level-selector[data-level="\${level}"]\`);
+            if (!levelSelector) return;
+            
+            const options = levelSelector.querySelectorAll('.option');
+            options.forEach(option => {
+                const checkbox = option.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.value === nodeName) {
+                    checkbox.checked = isChecked;
+                    if (isChecked) {
+                        option.classList.add('selected');
+                    } else {
+                        option.classList.remove('selected');
+                    }
+                }
+            });
+            
+            // 更新全选按钮状态
+            updateSelectAllButtonState(level);
+        }
+        
+        // 生成思维导图的数据结构
+        function generateMindMapData() {
+            if (selectedIndicators.length === 0) {
+                return null;
+            }
+            
+            // 创建根节点
+            const rootNode = {
+                id: 'root',
+                name: '指标目录',
+                children: {},
+                level: 0,
+                path: ''
+            };
+            
+            // 为每个选中的指标创建路径
+            selectedIndicators.forEach(indicator => {
+                let currentNode = rootNode;
+                let currentPath = '';
+                
+                // 对于路径上的每一级，如果不存在则创建
+                for (let i = 0; i < indicator.path.length - 1; i++) {
+                    const nodeName = indicator.path[i];
+                    currentPath = currentPath ? \`\${currentPath}|\${nodeName}\` : nodeName;
+                    
+                    if (!currentNode.children[nodeName]) {
+                        currentNode.children[nodeName] = {
+                            id: \`node-\${Math.random().toString(36).substr(2, 9)}\`,
+                            name: nodeName,
+                            children: {},
+                            level: i + 1,
+                            path: currentPath
+                        };
+                    }
+                    currentNode = currentNode.children[nodeName];
+                }
+                
+                // 添加指标叶子节点
+                const indicatorName = indicator.path[indicator.path.length - 1];
+                const leafPath = currentPath ? \`\${currentPath}|\${indicatorName}\` : indicatorName;
+                
+                currentNode.children[indicatorName] = {
+                    id: indicator.id,
+                    name: indicatorName,
+                    level: indicator.path.length,
+                    isIndicator: true,
+                    path: leafPath
+                };
+            });
+            
+            return rootNode;
+        }
+        
+        // 将对象结构转换为平面数组，用于绘制
+        function flattenMindMapData(node, x = 0, y = 0, parent = null) {
+            if (!node) return [];
+            
+            const nodes = [{
+                id: node.id,
+                name: node.name,
+                level: node.level,
+                isIndicator: node.isIndicator || false,
+                path: node.path,
+                x: x,
+                y: y,
+                parent: parent
+            }];
+            
+            // 处理子节点
+            const childKeys = Object.keys(node.children || {});
+            if (childKeys.length === 0) return nodes;
+            
+            // 计算子节点的布局
+            const childSpacing = 80; // 同级节点之间的垂直间隔
+            const levelSpacing = 200; // 不同级别之间的水平间隔
+            
+            let totalHeight = (childKeys.length - 1) * childSpacing;
+            let startY = y - totalHeight / 2;
+            
+            childKeys.forEach((key, index) => {
+                const childNode = node.children[key];
+                const childY = startY + index * childSpacing;
+                const childX = x + levelSpacing;
+                
+                const flattenedChild = flattenMindMapData(childNode, childX, childY, nodes[0]);
+                nodes.push(...flattenedChild);
+            });
+            
+            return nodes;
+        }
+        
+        // 计算连接线的位置
+        function calculateLines(nodes) {
+            const lines = [];
+            
+            nodes.forEach(node => {
+                if (node.parent) {
+                    lines.push({
+                        x1: node.parent.x + 100, // 节点宽度的一半
+                        y1: node.parent.y + 18, // 节点高度的一半
+                        x2: node.x,
+                        y2: node.y + 18 // 节点高度的一半
+                    });
+                }
+            });
+            
+            return lines;
+        }
+        
+        // 更新思维导图
+        function updateMindMap() {
+            const mindmapContainer = document.getElementById('mindmap');
+            mindmapContainer.innerHTML = ''; // 清空容器
+            
+            // 重置节点路径映射
+            nodePathMap = {};
+            
+            if (selectedIndicators.length === 0) {
+                mindmapContainer.innerHTML = '<div style="text-align:center;padding:50px;color:#999;">暂无选中的指标，无法生成思维导图</div>';
+                return;
+            }
+            
+            // 生成思维导图数据
+            const mindmapData = generateMindMapData();
+            if (!mindmapData) return;
+            
+            // 扁平化数据结构，计算节点位置
+            const flattenedNodes = flattenMindMapData(mindmapData);
+            
+            // 计算连接线
+            const lines = calculateLines(flattenedNodes);
+            
+            // 计算思维导图的尺寸和边界
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            flattenedNodes.forEach(node => {
+                minX = Math.min(minX, node.x);
+                maxX = Math.max(maxX, node.x + 200); // 节点宽度
+                minY = Math.min(minY, node.y);
+                maxY = Math.max(maxY, node.y + 40); // 节点高度
+            });
+            
+            // 确保最小值有效
+            minX = minX === Infinity ? 0 : minX;
+            minY = minY === Infinity ? 0 : minY;
+            
+            // 计算需要的平移量，使思维导图居中
+            const offsetX = minX < 0 ? -minX + 50 : 50; // 50px的左侧留白
+            const offsetY = minY < 0 ? -minY + 50 : 50; // 50px的顶部留白
+            
+            // 计算思维导图容器的宽度和高度
+            const width = maxX - minX + 100; // 两侧各留50px
+            const height = maxY - minY + 100; // 上下各留50px
+            
+            // 设置思维导图容器的尺寸
+            mindmapContainer.style.width = \`\${width}px\`;
+            mindmapContainer.style.height = \`\${height}px\`;
+            
+            // 绘制连接线
+            lines.forEach(line => {
+                const lineElem = document.createElement('div');
+                lineElem.className = 'mindmap-line';
+                
+                // 计算线的长度、角度和位置，并应用偏移量
+                const x1 = line.x1 + offsetX;
+                const y1 = line.y1 + offsetY;
+                const x2 = line.x2 + offsetX;
+                const y2 = line.y2 + offsetY;
+                
+                const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                
+                // 设置线的样式
+                lineElem.style.width = \`\${length}px\`;
+                lineElem.style.height = '1px';
+                lineElem.style.left = \`\${x1}px\`;
+                lineElem.style.top = \`\${y1}px\`;
+                lineElem.style.transform = \`rotate(\${angle}deg)\`;
+                lineElem.style.transformOrigin = '0 0';
+                
+                mindmapContainer.appendChild(lineElem);
+            });
+            
+            // 绘制节点
+            flattenedNodes.forEach(node => {
+                const nodeElem = document.createElement('div');
+                nodeElem.className = \`mindmap-node level-\${node.level}\`;
+                if (node.isIndicator) nodeElem.classList.add('indicator');
+                
+                // 应用偏移量以居中显示
+                nodeElem.style.left = \`\${node.x + offsetX}px\`;
+                nodeElem.style.top = \`\${node.y + offsetY}px\`;
+                
+                // 记录节点路径映射，用于删除操作
+                if (node.path) {
+                    nodePathMap[node.id] = node.path;
+                }
+                
+                // 创建节点内容
+                const contentSpan = document.createElement('span');
+                contentSpan.className = 'node-content';
+                
+                // 如果是指标，添加ID
+                if (node.isIndicator) {
+                    contentSpan.innerHTML = \`
+                        \${node.name}
+                        <span class="indicator-id">(\${node.id})</span>
+                    \`;
+                } else {
+                    contentSpan.textContent = node.name;
+                }
+                
+                nodeElem.appendChild(contentSpan);
+                
+                // 添加删除按钮，根节点除外
+                if (node.id !== 'root') {
+                    const removeBtn = document.createElement('span');
+                    removeBtn.className = 'node-remove';
+                    removeBtn.textContent = '×';
+                    removeBtn.setAttribute('data-node-id', node.id);
+                    
+                    removeBtn.addEventListener('click', function() {
+                        const nodeId = this.getAttribute('data-node-id');
+                        const nodePath = nodePathMap[nodeId];
+                        if (nodePath) {
+                            removeNodeAndChildren(nodePath);
+                        }
+                    });
+                    
+                    nodeElem.appendChild(removeBtn);
+                }
+                
+                mindmapContainer.appendChild(nodeElem);
+            });
+            
+            // 确保思维导图滚动到合适的位置
+            const container = document.querySelector('.mindmap-container');
+            container.scrollTop = 0;
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            // 构建节点名称到路径的映射
+            buildNodeNameToPathMap();
+            
+            // 初始化选择器和思维导图
+            initAllSelectors();
+            updateMindMap();
+            
+            // 强制使容器显示垂直滚动条
+            document.querySelector('.mindmap-container').style.overflowY = 'scroll';
+        });
+    </script>
+</body>
+</html>`;
+        }
+    </script>
 </body>
 </html>
