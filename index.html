@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>需求目录</title>
+    <title>美化后的需求目录</title>
     <style>
         * {
             margin: 0;
@@ -15,7 +15,7 @@
             font-family: 'Arial', sans-serif;
             display: flex;
             flex-wrap: wrap;
-            background-color: #f4f5f7;
+            background-color: #f0f4f8;
             color: #333;
             height: 100vh;
         }
@@ -24,43 +24,65 @@
         .sidebar {
             width: 200px; /* 固定宽度 */
             background-color: #ffffff;
-            border-right: 1px solid #ddd;
-            padding: 10px;
-            overflow-y: auto;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sidebar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
         .sidebar h2 {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             margin-bottom: 15px;
-            color: #222;
+            color: #4e6ef2;
+            text-align: center;
+            border-bottom: 2px solid #4e6ef2;
+            padding-bottom: 8px;
         }
 
         .tree {
             list-style: none;
             padding: 0;
-            flex-grow: 1; /* 确保列表填满 */
         }
 
         .tree li {
-            margin: 8px 0;
+            margin: 10px 0;
         }
 
         .tree li a {
             text-decoration: none;
-            color: #007BFF;
+            color: #333;
             font-size: 1rem;
-            padding: 5px;
-            border-radius: 4px;
+            padding: 10px;
+            border-radius: 6px;
             display: block;
-            transition: background-color 0.3s ease;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .tree li a:hover {
-            background-color: #f0f4ff;
+            background-color: #4e6ef2;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+
+            body {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
