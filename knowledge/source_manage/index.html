@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>资源管理系统</title>
@@ -97,6 +99,61 @@
     th {
       background-color: #f4f4f4;
     }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      width: 90%;
+      max-width: 600px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .modal-header h2 {
+      margin: 0;
+    }
+    .modal-header button {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .search-container {
+      margin-bottom: 10px;
+    }
+    .search-container input {
+      width: calc(100% - 100px);
+      padding: 8px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .search-container button {
+      padding: 8px 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .search-container button:hover {
+      background: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -109,11 +166,11 @@
       <div class="tab" data-tab="ppt">PPT资源</div>
     </div>
 
-    <!-- Tab Content -->
+    <!-- Business Analysis -->
     <div class="tab-content active" id="business-analysis">
       <div class="header">
         <h1>业务分析资源管理</h1>
-        <button class="button">新增业务分析</button>
+        <button class="button open-modal" data-resource-type="业务分析">新增业务分析</button>
       </div>
       <table>
         <thead>
@@ -140,26 +197,15 @@
               <button class="action-button delete-button">删除</button>
             </td>
           </tr>
-          <tr>
-            <td>1</td>
-            <td>业务分析A</td>
-            <td>维度2</td>
-            <td>值1, 值2</td>
-            <td><button class="action-button approve-button">准入</button></td>
-            <td>分析A</td>
-            <td>
-              <button class="action-button edit-button">编辑</button>
-              <button class="action-button delete-button">删除</button>
-            </td>
-          </tr>
         </tbody>
       </table>
     </div>
 
+    <!-- Indicators -->
     <div class="tab-content" id="indicators">
       <div class="header">
         <h1>指标资源管理</h1>
-        <button class="button">新增指标资源</button>
+        <button class="button open-modal" data-resource-type="指标资源">新增指标资源</button>
       </div>
       <table>
         <thead>
@@ -190,10 +236,11 @@
       </table>
     </div>
 
+    <!-- Alerts -->
     <div class="tab-content" id="alerts">
       <div class="header">
         <h1>预警资源管理</h1>
-        <button class="button">新增预警资源</button>
+        <button class="button open-modal" data-resource-type="预警资源">新增预警资源</button>
       </div>
       <table>
         <thead>
@@ -224,10 +271,11 @@
       </table>
     </div>
 
+    <!-- PPT Resources -->
     <div class="tab-content" id="ppt">
       <div class="header">
         <h1>PPT资源管理</h1>
-        <button class="button">新增PPT资源</button>
+        <button class="button open-modal" data-resource-type="PPT资源">新增PPT资源</button>
       </div>
       <table>
         <thead>
@@ -259,6 +307,31 @@
     </div>
   </div>
 
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">新增资源</h2>
+        <button id="closeModal">&times;</button>
+      </div>
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="输入资源ID或名称">
+        <button id="searchButton">搜索</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>资源ID</th>
+            <th>资源名称</th>
+            <th>支持的维度</th>
+            <th>支持的枚举值</th>
+          </tr>
+        </thead>
+        <tbody id="searchResults"></tbody>
+      </table>
+    </div>
+  </div>
+
   <script>
     // Tab switching logic
     const tabs = document.querySelectorAll(".tab");
@@ -273,7 +346,52 @@
         document.getElementById(tab.dataset.tab).classList.add("active");
       });
     });
+
+    // Modal logic
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const openModalButtons = document.querySelectorAll(".open-modal");
+    const closeModal = document.getElementById("closeModal");
+
+    openModalButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        modalTitle.textContent = `新增${button.dataset.resourceType}`;
+        modal.style.display = "flex";
+      });
+    });
+
+    closeModal.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    // Search logic
+    const searchButton = document.getElementById("searchButton");
+    const searchResults = document.getElementById("searchResults");
+
+    searchButton.addEventListener("click", () => {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+
+      // Example data
+      const resources = [
+        { id: 1, name: "资源A", dimensions: "维度1", enums: "值1, 值2" },
+        { id: 2, name: "资源B", dimensions: "维度2", enums: "值3" }
+      ];
+
+      // Filter results
+      const results = resources.filter(resource =>
+        resource.id.toString().includes(query) || resource.name.toLowerCase().includes(query)
+      );
+
+      // Render results
+      searchResults.innerHTML = results.map(resource => `
+        <tr>
+          <td>${resource.id}</td>
+          <td>${resource.name}</td>
+          <td>${resource.dimensions}</td>
+          <td>${resource.enums}</td>
+        </tr>
+      `).join("");
+    });
   </script>
-
-
-</body></html>
+</body>
+</html>
