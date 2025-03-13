@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatBI原型目录</title>
+    <title>ChatBI原型</title>
     <style>
         /* 重置样式 */
         * {
@@ -16,39 +16,52 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            color: #333;
         }
         
         body {
-            font-family: 'Microsoft YaHei', Arial, sans-serif;
             display: flex;
             flex-direction: row;
+            background-color: #fcfcfc;
         }
         
         /* 左侧目录区域 */
         .sidebar {
             width: 280px;
             height: 100%;
-            background-color: #f8f9fa;
-            border-right: 1px solid #dee2e6;
+            background-color: #f5f7fa;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
+            transition: all 0.3s ease;
         }
         
         .sidebar-header {
-            padding: 15px;
-            background-color: #343a40;
+            padding: 18px 15px;
+            background: linear-gradient(to right, #4481eb, #04befe);
             color: white;
-            text-align: center;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            fill: white;
         }
         
         .sidebar-header h1 {
             margin: 0;
-            font-size: 20px;
+            font-size: 18px;
+            font-weight: 500;
         }
         
         .file-list-container {
             flex: 1;
             overflow-y: auto;
+            padding: 10px 0;
         }
         
         .file-list {
@@ -56,33 +69,34 @@
         }
         
         .file-list li {
-            border-bottom: 1px solid #dee2e6;
+            margin: 2px 0;
         }
         
-        .file-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .file-list li.active {
-            background-color: #e9ecef;
+        .file-list li.active .file-link {
+            background-color: rgba(68, 129, 235, 0.1);
+            border-left: 3px solid #4481eb;
+            color: #4481eb;
         }
         
         .file-link {
             display: flex;
             padding: 10px 15px;
+            border-left: 3px solid transparent;
             text-decoration: none;
-            color: #495057;
+            color: #5a6474;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
         
         .file-link:hover {
-            background-color: #e9ecef;
+            background-color: rgba(68, 129, 235, 0.05);
         }
         
         .file-number {
             margin-right: 10px;
-            color: #007bff;
-            font-weight: bold;
+            color: #4481eb;
+            font-weight: 500;
+            min-width: 24px;
         }
         
         /* 右侧内容区域 */
@@ -90,6 +104,8 @@
             flex: 1;
             height: 100%;
             overflow: hidden;
+            background-color: white;
+            transition: all 0.3s ease;
         }
         
         iframe {
@@ -103,92 +119,79 @@
         .context-menu {
             position: fixed;
             background: white;
-            border: 1px solid #ccc;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             display: none;
+            overflow: hidden;
         }
         
         .menu-item {
-            padding: 8px 12px;
+            padding: 10px 15px;
             cursor: pointer;
+            transition: background 0.2s;
         }
         
         .menu-item:hover {
-            background-color: #f0f0f0;
+            background-color: #f5f7fa;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="sidebar-header">
-            <h1>ChatBI原型目录</h1>
+            <svg class="logo-icon" viewBox="0 0 24 24">
+                <path d="M21,3H3A2,2 0 0,0 1,5V19A2,2 0 0,0 3,21H21A2,2 0 0,0 23,19V5A2,2 0 0,0 21,3M21,19H3V5H21V19M5,7H7V9H9V7H11V9H13V7H15V9H17V7H19V11H5V7M5,13H19V17H5V13Z" />
+            </svg>
+            <h1>ChatBI原型</h1>
         </div>
         <div class="file-list-container">
             <ul class="file-list">
-                <li data-path="anasys_route/index.html">
-                    <div class="file-link" onclick="loadPage('anasys_route/index.html')" oncontextmenu="showMenu(event, 'anasys_route/index.html'); return false;">
-                        <span class="file-number">1.1</span>
-                        <span>anasys_route\index</span>
-                    </div>
-                </li>
-                <li data-path="index_choose/index.html">
-                    <div class="file-link" onclick="loadPage('index_choose/index.html')" oncontextmenu="showMenu(event, 'index_choose/index.html'); return false;">
-                        <span class="file-number">2.1</span>
-                        <span>index_choose\index</span>
-                    </div>
-                </li>
-                <li data-path="knowledge/index.html">
-                    <div class="file-link" onclick="loadPage('knowledge/index.html')" oncontextmenu="showMenu(event, 'knowledge/index.html'); return false;">
-                        <span class="file-number">3.1</span>
-                        <span>knowledge\index</span>
-                    </div>
-                </li>
-                <li data-path="knowledge/role_manage/index.html">
-                    <div class="file-link" onclick="loadPage('knowledge/role_manage/index.html')" oncontextmenu="showMenu(event, 'knowledge/role_manage/index.html'); return false;">
-                        <span class="file-number">3.2</span>
-                        <span>knowledge\role_manage\index</span>
-                    </div>
-                </li>
-                <li data-path="knowledge/source_manage/index.html">
-                    <div class="file-link" onclick="loadPage('knowledge/source_manage/index.html')" oncontextmenu="showMenu(event, 'knowledge/source_manage/index.html'); return false;">
-                        <span class="file-number">3.2</span>
-                        <span>knowledge\source_manage\index</span>
-                    </div>
-                </li>
-                <li data-path="role_choose/index.html">
-                    <div class="file-link" onclick="loadPage('role_choose/index.html')" oncontextmenu="showMenu(event, 'role_choose/index.html'); return false;">
-                        <span class="file-number">4.1</span>
-                        <span>role_choose\index</span>
-                    </div>
-                </li>
                 <li data-path="侧边栏.html">
                     <div class="file-link" onclick="loadPage('侧边栏.html')" oncontextmenu="showMenu(event, '侧边栏.html'); return false;">
-                        <span class="file-number">5</span>
+                        <span class="file-number">1</span>
                         <span>侧边栏</span>
                     </div>
                 </li>
                 <li data-path="分析思路/分析思路.html">
                     <div class="file-link" onclick="loadPage('分析思路/分析思路.html')" oncontextmenu="showMenu(event, '分析思路/分析思路.html'); return false;">
-                        <span class="file-number">6.1</span>
+                        <span class="file-number">2.1</span>
                         <span>分析思路\分析思路</span>
+                    </div>
+                </li>
+                <li data-path="圈选匹配/指标圈选.html">
+                    <div class="file-link" onclick="loadPage('圈选匹配/指标圈选.html')" oncontextmenu="showMenu(event, '圈选匹配/指标圈选.html'); return false;">
+                        <span class="file-number">3.1</span>
+                        <span>圈选匹配\指标圈选</span>
+                    </div>
+                </li>
+                <li data-path="圈选匹配/角色圈选.html">
+                    <div class="file-link" onclick="loadPage('圈选匹配/角色圈选.html')" oncontextmenu="showMenu(event, '圈选匹配/角色圈选.html'); return false;">
+                        <span class="file-number">3.2</span>
+                        <span>圈选匹配\角色圈选</span>
+                    </div>
+                </li>
+                <li data-path="数据准入/资源准入/index.html">
+                    <div class="file-link" onclick="loadPage('数据准入/资源准入/index.html')" oncontextmenu="showMenu(event, '数据准入/资源准入/index.html'); return false;">
+                        <span class="file-number">3.2</span>
+                        <span>数据准入\资源准入\index</span>
                     </div>
                 </li>
                 <li data-path="权限管理/代客.html">
                     <div class="file-link" onclick="loadPage('权限管理/代客.html')" oncontextmenu="showMenu(event, '权限管理/代客.html'); return false;">
-                        <span class="file-number">7.1</span>
+                        <span class="file-number">4.1</span>
                         <span>权限管理\代客</span>
                     </div>
                 </li>
                 <li data-path="知识库/知识&策略.html">
                     <div class="file-link" onclick="loadPage('知识库/知识&策略.html')" oncontextmenu="showMenu(event, '知识库/知识&策略.html'); return false;">
-                        <span class="file-number">8.1</span>
+                        <span class="file-number">5.1</span>
                         <span>知识库\知识&策略</span>
                     </div>
                 </li>
                 <li data-path="知识库/知识导入.html">
                     <div class="file-link" onclick="loadPage('知识库/知识导入.html')" oncontextmenu="showMenu(event, '知识库/知识导入.html'); return false;">
-                        <span class="file-number">8.2</span>
+                        <span class="file-number">5.2</span>
                         <span>知识库\知识导入</span>
                     </div>
                 </li>
@@ -218,7 +221,12 @@
                 item.classList.remove('active');
             });
             
-            document.querySelector(`li[data-path="${path}"]`).classList.add('active');
+            const activeItem = document.querySelector(`li[data-path="${path}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+                // 确保选中项可见
+                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
         
         // 显示右键菜单
