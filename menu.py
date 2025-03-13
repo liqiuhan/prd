@@ -1,4 +1,13 @@
-<!DOCTYPE html>
+import os
+import datetime
+
+# 指定目录路径
+directory = r"D:\prd"
+# 设置替换的基础URL
+base_url = "https://effortless-pithivier-1fff6c.netlify.app"
+
+# 创建HTML文件
+html_content = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -318,55 +327,74 @@
         </div>
         <div class="file-list-container">
             <ul class="file-list">
-                <li data-path="https://effortless-pithivier-1fff6c.netlify.app/2侧边栏.html">
-                    <div class="file-link" onclick="loadPage('https://effortless-pithivier-1fff6c.netlify.app/2侧边栏.html')" oncontextmenu="showMenu(event, 'https://effortless-pithivier-1fff6c.netlify.app/2侧边栏.html'); return false;">
-                        <span class="file-number">1</span>
-                        <span class="file-name">2侧边栏</span>
+"""
+
+# 获取所有HTML文件路径
+html_files = []
+for root, dirs, files in os.walk(directory):
+    for file in files:
+        if file.lower().endswith('.html') and file != "目录.html":
+            file_path = os.path.join(root, file)
+            rel_path = os.path.relpath(file_path, directory)
+            html_files.append(rel_path)
+
+# 为文件分配编号
+current_level = 0
+primary_index = 0
+current_dir = ""
+level = 0  # 初始化level变量
+
+for index, rel_path in enumerate(sorted(html_files)):
+    file_dir = os.path.dirname(rel_path)
+    file_name = os.path.basename(rel_path)
+    
+    # 将路径中的反斜杠替换为正斜杠，用于URL
+    url_path = rel_path.replace("\\", "/")
+    
+    # 创建完整的URL
+    full_url = f"{base_url}/{url_path}"
+    
+    # 显示不带.html后缀的名称
+    display_name = rel_path
+    if display_name.lower().endswith('.html'):
+        display_name = display_name[:-5]  # 移除.html后缀
+    
+    # 确定目录级别并分配编号
+    if file_dir != current_dir:
+        current_dir = file_dir
+        dir_parts = file_dir.split('\\') if '\\' in file_dir else file_dir.split('/')
+        level = len(dir_parts) if file_dir else 0
+        
+        if level == 0:
+            primary_index += 1
+            number = f"{primary_index}"
+        elif level == 1:
+            primary_index += 1
+            number = f"{primary_index}.1"
+        else:
+            number = f"{primary_index}.{level}"
+    else:
+        # 使用之前确定的level值
+        if level == 0:
+            primary_index += 1
+            number = f"{primary_index}"
+        else:
+            parts = number.split('.')
+            if len(parts) > 1:
+                last_part = int(parts[-1]) + 1
+                number = '.'.join(parts[:-1] + [str(last_part)])
+            else:
+                number = f"{parts[0]}.1"
+    
+    # 添加到HTML内容，使用完整URL
+    html_content += f"""                <li data-path="{full_url}">
+                    <div class="file-link" onclick="loadPage('{full_url}')" oncontextmenu="showMenu(event, '{full_url}'); return false;">
+                        <span class="file-number">{number}</span>
+                        <span class="file-name">{display_name}</span>
                     </div>
-                </li>
-                <li data-path="https://effortless-pithivier-1fff6c.netlify.app/分析思路/分析思路.html">
-                    <div class="file-link" onclick="loadPage('https://effortless-pithivier-1fff6c.netlify.app/分析思路/分析思路.html')" oncontextmenu="showMenu(event, 'https://effortless-pithivier-1fff6c.netlify.app/分析思路/分析思路.html'); return false;">
-                        <span class="file-number">2.1</span>
-                        <span class="file-name">分析思路\分析思路</span>
-                    </div>
-                </li>
-                <li data-path="https://effortless-pithivier-1fff6c.netlify.app/圈选匹配/指标圈选.html">
-                    <div class="file-link" onclick="loadPage('https://effortless-pithivier-1fff6c.netlify.app/圈选匹配/指标圈选.html')" oncontextmenu="showMenu(event, 'https://effortless-pithivier-1fff6c.netlify.app/圈选匹配/指标圈选.html'); return false;">
-                        <span class="file-number">3.1</span>
-                        <span class="file-name">圈选匹配\指标圈选</span>
-                    </div>
-                </li>
-                <li data-path="https://effortless-pithivier-1fff6c.netlify.app/圈选匹配/角色圈选.html">
-                    <div class="file-link" onclick="loadPage('https://effortless-pithivier-1fff6c.netlify.app/圈选匹配/角色圈选.html')" oncontextmenu="showMenu(event, 'https://effortless-pithivier-1fff6c.netlify.app/圈选匹配/角色圈选.html'); return false;">
-                        <span class="file-number">3.2</span>
-                        <span class="file-name">圈选匹配\角色圈选</span>
-                    </div>
-                </li>
-                <li data-path="https://effortless-pithivier-1fff6c.netlify.app/数据准入/资源准入.html">
-                    <div class="file-link" onclick="loadPage('https://effortless-pithivier-1fff6c.netlify.app/数据准入/资源准入.html')" oncontextmenu="showMenu(event, 'https://effortless-pithivier-1fff6c.netlify.app/数据准入/资源准入.html'); return false;">
-                        <span class="file-number">4.1</span>
-                        <span class="file-name">数据准入\资源准入</span>
-                    </div>
-                </li>
-                <li data-path="https://effortless-pithivier-1fff6c.netlify.app/权限管理/代客.html">
-                    <div class="file-link" onclick="loadPage('https://effortless-pithivier-1fff6c.netlify.app/权限管理/代客.html')" oncontextmenu="showMenu(event, 'https://effortless-pithivier-1fff6c.netlify.app/权限管理/代客.html'); return false;">
-                        <span class="file-number">5.1</span>
-                        <span class="file-name">权限管理\代客</span>
-                    </div>
-                </li>
-                <li data-path="https://effortless-pithivier-1fff6c.netlify.app/知识库/知识&策略.html">
-                    <div class="file-link" onclick="loadPage('https://effortless-pithivier-1fff6c.netlify.app/知识库/知识&策略.html')" oncontextmenu="showMenu(event, 'https://effortless-pithivier-1fff6c.netlify.app/知识库/知识&策略.html'); return false;">
-                        <span class="file-number">6.1</span>
-                        <span class="file-name">知识库\知识&策略</span>
-                    </div>
-                </li>
-                <li data-path="https://effortless-pithivier-1fff6c.netlify.app/知识库/知识导入.html">
-                    <div class="file-link" onclick="loadPage('https://effortless-pithivier-1fff6c.netlify.app/知识库/知识导入.html')" oncontextmenu="showMenu(event, 'https://effortless-pithivier-1fff6c.netlify.app/知识库/知识导入.html'); return false;">
-                        <span class="file-number">6.2</span>
-                        <span class="file-name">知识库\知识导入</span>
-                    </div>
-                </li>
-            </ul>
+                </li>\n"""
+
+html_content += """            </ul>
         </div>
     </div>
     
@@ -490,3 +518,26 @@
     </script>
 </body>
 </html>
+"""
+
+try:
+    # 创建输出文件，确保目录存在
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        
+    output_path = os.path.join(directory, "目录.html")
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print(f"ChatBI原型目录已生成，保存在 {output_path}")
+    print(f"链接已更新: 所有 D:\\prd 路径已替换为 {base_url}")
+    
+    # 输出编号逻辑说明
+    print("\n编号逻辑说明:")
+    print("1. 文件按文件夹结构和名称排序")
+    print("2. 顶级目录的文件获得主编号(1, 2, 3...)")
+    print("3. 子目录文件编号规则:")
+    print("   - 第一级子目录: 主编号.1, 主编号.2, 主编号.3...")
+    print("   - 更深层子目录: 主编号.层级数")
+    print("4. 同一目录内的文件按顺序递增最后一位数字")
+except Exception as e:
+    print(f"生成目录时出错: {str(e)}")
