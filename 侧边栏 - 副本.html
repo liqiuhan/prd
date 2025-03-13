@@ -1,0 +1,633 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBI - 产品能力配置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f9f9fc;
+            color: #333;
+        }
+        
+        .sidebar {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 180px;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        
+        .sidebar.expanded {
+            width: 220px;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4e7eff;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar.collapsed .logo {
+            display: none;
+        }
+        
+        .toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            background-color: #f5f6fa;
+            color: #4e7eff;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-btn:hover {
+            background-color: #e8eaf6;
+        }
+        
+        .sidebar.collapsed .toggle-btn {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+        }
+        
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f6fa;
+            color: #4e7eff;
+        }
+        
+        .menu-item.active {
+            background-color: #f0f5ff;
+            color: #4e7eff;
+            border-left: 3px solid #4e7eff;
+        }
+        
+        .menu-item i {
+            font-size: 18px;
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+        
+        .sidebar.collapsed .menu-item {
+            padding: 12px 0;
+            justify-content: center;
+        }
+        
+        .sidebar.collapsed .menu-item i {
+            margin-right: 0;
+        }
+        
+        .submenu {
+            display: none;
+            padding-left: 20px;
+        }
+        
+        .sidebar.collapsed .submenu {
+            display: none !important;
+        }
+        
+        .submenu.show {
+            display: block;
+        }
+        
+        .submenu-item {
+            padding: 10px 16px;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .submenu-item:hover {
+            color: #4e7eff;
+        }
+        
+        .submenu-item.active {
+            color: #4e7eff;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            margin: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.03);
+            overflow-y: auto;
+        }
+        
+        .content-page {
+            display: none;
+        }
+        
+        .content-page.active {
+            display: block;
+        }
+        
+        .empty-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 16px;
+            padding: 100px 0;
+        }
+        
+        .empty-placeholder i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+        
+        /* 知识&策略页面样式 */
+        .knowledge-page {
+            height: 100%;
+        }
+        
+        .knowledge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .knowledge-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .knowledge-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .knowledge-btn {
+            background-color: #4e7eff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .knowledge-btn:hover {
+            background-color: #3a6ae6;
+        }
+        
+        .secondary-btn {
+            background-color: #fff;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        
+        .secondary-btn:hover {
+            background-color: #f5f6fa;
+            color: #4e7eff;
+        }
+        
+        .knowledge-btn i {
+            margin-right: 6px;
+        }
+        
+        .knowledge-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .knowledge-table th {
+            background-color: #f5f6fa;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .knowledge-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+        
+        .knowledge-table tr:hover {
+            background-color: #f9f9fc;
+        }
+        
+        .status-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .status-active {
+            background-color: #e6f7ee;
+            color: #52c41a;
+        }
+        
+        .status-inactive {
+            background-color: #fff2e8;
+            color: #fa8c16;
+        }
+        
+        .action-link {
+            color: #4e7eff;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        
+        .action-link:hover {
+            text-decoration: underline;
+        }
+        
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-list {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .tab-item.active {
+            color: #4e7eff;
+        }
+        
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #4e7eff;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .search-input:focus {
+            border-color: #4e7eff;
+        }
+        
+        .search-button {
+            background-color: #4e7eff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin-left: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .search-button:hover {
+            background-color: #3a6ae6;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .pagination-btn {
+            margin: 0 4px;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #666;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .pagination-btn:hover {
+            border-color: #4e7eff;
+            color: #4e7eff;
+        }
+        
+        .pagination-btn.active {
+            background-color: #4e7eff;
+            color: white;
+            border-color: #4e7eff;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 50vh;
+            }
+            
+            .sidebar.expanded, .sidebar.collapsed {
+                width: 100%;
+            }
+            
+            .main-content {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .knowledge-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .knowledge-actions {
+                width: 100%;
+            }
+            
+            .knowledge-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">ChatBI</div>
+            <button class="toggle-btn" id="toggle-sidebar">
+                <i class="fas fa-chevron-left" id="toggle-icon"></i>
+            </button>
+        </div>
+        <div class="menu-items">
+            <div class="menu-item active" data-has-submenu="true" data-submenu="submenu-1" data-page="page-assistant">
+                <i class="fas fa-robot"></i>
+                <span>业务助理</span>
+            </div>
+            <div class="submenu show" id="submenu-1">
+                <div class="submenu-item active" data-page="page-empty">助理管理</div>
+                <div class="submenu-item" data-page="page-empty">能力管理</div>
+            </div>
+            
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty">
+                <i class="fas fa-bell"></i>
+                <span>预警配置</span>
+            </div>
+            
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-3" data-page="page-empty">
+                <i class="fas fa-chart-bar"></i>
+                <span>分析能力</span>
+            </div>
+            <div class="submenu" id="submenu-3">
+                <div class="submenu-item" data-page="page-empty">奇妙等式</div>
+                <div class="submenu-item" data-page="page-empty">归因分析</div>
+                <div class="submenu-item" data-page="page-empty">业务分析</div>
+            </div>
+            
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty">
+                <i class="fas fa-lightbulb"></i>
+                <span>分析思路</span>
+            </div>
+            
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-5" data-page="page-empty">
+                <i class="fas fa-book"></i>
+                <span>知识库</span>
+            </div>
+            <div class="submenu" id="submenu-5">
+                <div class="submenu-item" data-page="page-empty">知识导入</div>
+                <div class="submenu-item" data-page="page-knowledge-strategy">知识&amp;策略</div>
+                <div class="submenu-item" data-page="page-empty">业务黑话</div>
+            </div>
+            
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-6" data-page="page-empty">
+                <i class="fas fa-tablet-alt"></i>
+                <span>指标准入</span>
+            </div>
+            <div class="submenu" id="submenu-6">
+                <div class="submenu-item" data-page="page-empty">指标准入</div>
+                <div class="submenu-item" data-page="page-empty">维度准入</div>
+                <div class="submenu-item" data-page="page-empty">枚举值准入</div>
+            </div>
+            
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty">
+                <i class="fas fa-users"></i>
+                <span>角色圈选</span>
+            </div>
+            
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty">
+                <i class="fas fa-headset"></i>
+                <span>问答监控</span>
+            </div>
+            
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty">
+                <i class="fas fa-tasks"></i>
+                <span>调度能力</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <!-- 空白页面 -->
+        <div class="content-page active" id="page-empty">
+            <div class="empty-placeholder">
+                <i class="fas fa-tools"></i>
+                <p>该功能页面正在建设中...</p>
+            </div>
+        </div>
+        
+        <!-- 知识&策略页面 -->
+        <div class="content-page" id="page-knowledge-strategy">
+            <div class="empty-placeholder">
+                <i class="fas fa-tools"></i>
+                <p>该功能页面正在建设中...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggle-sidebar');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            // 侧边栏收缩/展开按钮点击事件
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                
+                // 切换箭头图标方向
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleIcon.classList.remove('fa-chevron-left');
+                    toggleIcon.classList.add('fa-chevron-right');
+                } else {
+                    toggleIcon.classList.remove('fa-chevron-right');
+                    toggleIcon.classList.add('fa-chevron-left');
+                }
+                
+                // 如果有展开的菜单项且侧边栏已收缩，则关闭所有子菜单
+                if (sidebar.classList.contains('collapsed')) {
+                    sidebar.classList.remove('expanded');
+                    document.querySelectorAll('.submenu').forEach(submenu => {
+                        submenu.classList.remove('show');
+                    });
+                }
+            });
+            
+            // 菜单项点击事件
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 如果侧边栏是收缩状态，点击菜单项展开侧边栏
+                    if (sidebar.classList.contains('collapsed')) {
+                        sidebar.classList.remove('collapsed');
+                        toggleIcon.classList.remove('fa-chevron-right');
+                        toggleIcon.classList.add('fa-chevron-left');
+                    }
+                    
+                    const hasSubmenu = this.getAttribute('data-has-submenu') === 'true';
+                    const submenuId = this.getAttribute('data-submenu');
+                    
+                    if (hasSubmenu) {
+                        sidebar.classList.add('expanded');
+                        document.querySelectorAll('.submenu').forEach(submenu => {
+                            submenu.classList.remove('show');
+                        });
+                        document.getElementById(submenuId).classList.add('show');
+                    } else {
+                        sidebar.classList.remove('expanded');
+                        document.querySelectorAll('.submenu').forEach(submenu => {
+                            submenu.classList.remove('show');
+                        });
+                    }
+                });
+            });
+            
+            // 子菜单项点击事件
+            const submenuItems = document.querySelectorAll('.submenu-item');
+            submenuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // 移除所有子菜单项的active类
+                    submenuItems.forEach(i => i.classList.remove('active'));
+                    
+                    // 给当前点击的子菜单项添加active类
+                    this.classList.add('active');
+                    
+                    // 显示对应页面
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                });
+            });
+            
+            // 标签切换
+            const tabItems = document.querySelectorAll('.tab-item');
+            tabItems.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabItems.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // 显示指定页面
+            function showPage(pageId) {
+                // 隐藏所有页面
+                document.querySelectorAll('.content-page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // 显示指定页面
+                document.getElementById(pageId).classList.add('active');
+            }
+        });
+    </script>
+
+
+</body></html>
