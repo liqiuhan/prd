@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBI原型目录</title>
+    <style>
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            display: flex;
+            flex-direction: row;
+        }
+        
+        /* 左侧目录区域 */
+        .sidebar {
+            width: 280px;
+            height: 100%;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 15px;
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+        }
+        
+        .sidebar-header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .file-list-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .file-list {
+            list-style: none;
+        }
+        
+        .file-list li {
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .file-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .file-list li.active {
+            background-color: #e9ecef;
+        }
+        
+        .file-link {
+            display: flex;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #495057;
+            cursor: pointer;
+        }
+        
+        .file-link:hover {
+            background-color: #e9ecef;
+        }
+        
+        .file-number {
+            margin-right: 10px;
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+        /* 右侧内容区域 */
+        .content {
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        
+        /* 右键菜单 */
+        .context-menu {
+            position: fixed;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>ChatBI原型目录</h1>
+        </div>
+        <div class="file-list-container">
+            <ul class="file-list">
+                <li data-path="anasys_route/index.html">
+                    <div class="file-link" onclick="loadPage('anasys_route/index.html')" oncontextmenu="showMenu(event, 'anasys_route/index.html'); return false;">
+                        <span class="file-number">1.1</span>
+                        <span>anasys_route\index</span>
+                    </div>
+                </li>
+                <li data-path="index_choose/index.html">
+                    <div class="file-link" onclick="loadPage('index_choose/index.html')" oncontextmenu="showMenu(event, 'index_choose/index.html'); return false;">
+                        <span class="file-number">2.1</span>
+                        <span>index_choose\index</span>
+                    </div>
+                </li>
+                <li data-path="knowledge/index.html">
+                    <div class="file-link" onclick="loadPage('knowledge/index.html')" oncontextmenu="showMenu(event, 'knowledge/index.html'); return false;">
+                        <span class="file-number">3.1</span>
+                        <span>knowledge\index</span>
+                    </div>
+                </li>
+                <li data-path="knowledge/role_manage/index.html">
+                    <div class="file-link" onclick="loadPage('knowledge/role_manage/index.html')" oncontextmenu="showMenu(event, 'knowledge/role_manage/index.html'); return false;">
+                        <span class="file-number">3.2</span>
+                        <span>knowledge\role_manage\index</span>
+                    </div>
+                </li>
+                <li data-path="knowledge/source_manage/index.html">
+                    <div class="file-link" onclick="loadPage('knowledge/source_manage/index.html')" oncontextmenu="showMenu(event, 'knowledge/source_manage/index.html'); return false;">
+                        <span class="file-number">3.2</span>
+                        <span>knowledge\source_manage\index</span>
+                    </div>
+                </li>
+                <li data-path="role_choose/index.html">
+                    <div class="file-link" onclick="loadPage('role_choose/index.html')" oncontextmenu="showMenu(event, 'role_choose/index.html'); return false;">
+                        <span class="file-number">4.1</span>
+                        <span>role_choose\index</span>
+                    </div>
+                </li>
+                <li data-path="侧边栏.html">
+                    <div class="file-link" onclick="loadPage('侧边栏.html')" oncontextmenu="showMenu(event, '侧边栏.html'); return false;">
+                        <span class="file-number">5</span>
+                        <span>侧边栏</span>
+                    </div>
+                </li>
+                <li data-path="分析思路/分析思路.html">
+                    <div class="file-link" onclick="loadPage('分析思路/分析思路.html')" oncontextmenu="showMenu(event, '分析思路/分析思路.html'); return false;">
+                        <span class="file-number">6.1</span>
+                        <span>分析思路\分析思路</span>
+                    </div>
+                </li>
+                <li data-path="权限管理/代客.html">
+                    <div class="file-link" onclick="loadPage('权限管理/代客.html')" oncontextmenu="showMenu(event, '权限管理/代客.html'); return false;">
+                        <span class="file-number">7.1</span>
+                        <span>权限管理\代客</span>
+                    </div>
+                </li>
+                <li data-path="知识库/知识&策略.html">
+                    <div class="file-link" onclick="loadPage('知识库/知识&策略.html')" oncontextmenu="showMenu(event, '知识库/知识&策略.html'); return false;">
+                        <span class="file-number">8.1</span>
+                        <span>知识库\知识&策略</span>
+                    </div>
+                </li>
+                <li data-path="知识库/知识导入.html">
+                    <div class="file-link" onclick="loadPage('知识库/知识导入.html')" oncontextmenu="showMenu(event, '知识库/知识导入.html'); return false;">
+                        <span class="file-number">8.2</span>
+                        <span>知识库\知识导入</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="content" id="content">
+        <iframe id="content-iframe" name="content-frame" src="about:blank"></iframe>
+    </div>
+    
+    <div class="context-menu" id="context-menu">
+        <div class="menu-item" id="open-here">在当前窗口打开</div>
+        <div class="menu-item" id="open-new">在新标签页打开</div>
+    </div>
+
+    <script>
+        // 当前路径
+        let currentPath = '';
+        
+        // 在iframe中加载页面
+        function loadPage(path) {
+            document.getElementById('content-iframe').src = path;
+            
+            // 高亮当前选中项
+            document.querySelectorAll('.file-list li').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.querySelector(`li[data-path="${path}"]`).classList.add('active');
+        }
+        
+        // 显示右键菜单
+        function showMenu(event, path) {
+            currentPath = path;
+            
+            const menu = document.getElementById('context-menu');
+            menu.style.display = 'block';
+            menu.style.left = event.pageX + 'px';
+            menu.style.top = event.pageY + 'px';
+            
+            // 确保菜单在视口内
+            const rect = menu.getBoundingClientRect();
+            if (rect.right > window.innerWidth) {
+                menu.style.left = (window.innerWidth - rect.width) + 'px';
+            }
+            if (rect.bottom > window.innerHeight) {
+                menu.style.top = (window.innerHeight - rect.height) + 'px';
+            }
+        }
+        
+        // 绑定右键菜单事件
+        document.getElementById('open-here').addEventListener('click', function() {
+            loadPage(currentPath);
+            hideMenu();
+        });
+        
+        document.getElementById('open-new').addEventListener('click', function() {
+            window.open(currentPath, '_blank');
+            hideMenu();
+        });
+        
+        // 隐藏右键菜单
+        function hideMenu() {
+            document.getElementById('context-menu').style.display = 'none';
+        }
+        
+        // 点击页面任意处隐藏菜单
+        document.addEventListener('click', hideMenu);
+        
+        // 页面加载时打开第一个文件
+        window.onload = function() {
+            const firstItem = document.querySelector('.file-list li');
+            if (firstItem) {
+                const path = firstItem.getAttribute('data-path');
+                loadPage(path);
+            }
+        };
+    </script>
+</body>
+</html>
