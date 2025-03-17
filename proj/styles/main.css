@@ -1,0 +1,142 @@
+/* ===== 核心变量 ===== */
+:root {
+    /* 明亮模式变量 - 核心色彩 */
+    --bg-primary: #f8f9fc;
+    --bg-sidebar: #ffffff;
+    --bg-content: #ffffff;
+    --text-primary: #2c3e50;
+    --text-secondary: #606f7b;
+    --accent-color: #3a7bfd;
+    --accent-hover: #2563eb;
+    --border-color: #edf2f7;
+    --menu-hover: #f1f5f9;
+    --menu-active: #e6f0ff;
+    --submenu-hover: rgba(58, 123, 253, 0.05);
+    --submenu-active: rgba(58, 123, 253, 0.08);
+    --toggle-bg: #f1f5f9;
+    --shadow-color: rgba(71, 101, 237, 0.04);
+    --placeholder-color: #cbd5e0;
+    --tab-border: #edf2f7;
+}
+
+[data-theme="dark"] {
+    /* 深色模式变量 - 核心色彩 */
+    --bg-primary: #121224;
+    --bg-sidebar: #1e1e2f;
+    --bg-content: #252538;
+    --text-primary: #f3f4f6;
+    --text-secondary: #a0aec0;
+    --accent-color: #5983ff;
+    --accent-hover: #6d8eff;
+    --border-color: #2d2d45;
+    --menu-hover: #2a2a40;
+    --menu-active: #343458;
+    --submenu-hover: rgba(89, 131, 255, 0.1);
+    --submenu-active: rgba(89, 131, 255, 0.15);
+    --toggle-bg: #2a2a40;
+    --shadow-color: rgba(0, 0, 0, 0.15);
+    --placeholder-color: #4a4a69;
+    --tab-border: #2d2d45;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* ===== 主内容区域 ===== */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    background-color: var(--bg-content);
+    border-radius: 12px;
+    margin: 20px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 当内容是iframe时，移除padding */
+.main-content:has(.content-page.active iframe) {
+    padding: 0;
+}
+
+/* ===== 页面 ===== */
+.content-page {
+    display: none;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.content-page.active {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* 特殊处理iframe页面 */
+.content-page[id^="page-"] {
+    padding: 0;
+    margin: 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 所有iframe元素通用样式 */
+.content-page iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    overflow: hidden;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* ===== 空状态 ===== */
+.empty-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-secondary);
+    font-size: 16px;
+    padding: 100px 0;
+}
+
+.empty-placeholder i {
+    font-size: 60px;
+    margin-bottom: 20px;
+    color: var(--placeholder-color);
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .main-content {
+        margin: 10px;
+        padding: 20px;
+    }
+} 

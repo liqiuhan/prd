@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBI - 产品能力配置</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/settings.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">ChatBI</div>
+            <div class="sidebar-actions">
+                <button class="toggle-btn" id="toggle-sidebar" aria-label="折叠侧边栏">
+                    <i class="fas fa-angle-left" id="toggle-icon"></i>
+                </button>
+            </div>
+        </div>
+        <nav class="menu-items" id="sidebar-menu">
+            <!-- 业务助理 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-1" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-1">
+                <i class="fas fa-robot"></i>
+                <span>业务助理</span>
+            </div>
+            <div class="submenu" id="submenu-1">
+                <div class="submenu-item" data-page="page-empty" role="button">助理管理</div>
+                <div class="submenu-item" data-page="page-empty" role="button">能力管理</div>
+            </div>
+            
+            <!-- 预警配置 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty" role="button">
+                <i class="fas fa-bell"></i>
+                <span>预警配置</span>
+            </div>
+            
+            <!-- 分析能力 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-3" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-3">
+                <i class="fas fa-chart-bar"></i>
+                <span>分析能力</span>
+            </div>
+            <div class="submenu" id="submenu-3">
+                <div class="submenu-item" data-page="page-empty" role="button">奇妙等式</div>
+                <div class="submenu-item" data-page="page-empty" role="button">归因分析</div>
+                <div class="submenu-item" data-page="page-empty" role="button">业务分析</div>
+            </div>
+            
+            <!-- 分析思路 -->
+            <div class="menu-item active" data-has-submenu="false" data-page="page-analysis-approach" role="button">
+                <i class="fas fa-lightbulb"></i>
+                <span>分析思路</span>
+            </div>
+            
+            <!-- 知识库 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-5" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-5">
+                <i class="fas fa-book"></i>
+                <span>知识库</span>
+            </div>
+            <div class="submenu" id="submenu-5">
+                <div class="submenu-item" data-page="page-knowledge-import" role="button">知识导入</div>
+                <div class="submenu-item" data-page="page-knowledge-strategy" role="button">知识&amp;策略</div>
+                <div class="submenu-item" data-page="page-business-jargon" role="button">业务黑话</div>
+                <div class="submenu-item" data-page="page-tag-management" role="button">标签管理</div>
+                <div class="submenu-item" data-page="page-org-structure" role="button">组织架构管理</div>
+            </div>
+            
+            <!-- 指标准入 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-6" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-6">
+                <i class="fas fa-tablet-alt"></i>
+                <span>指标准入</span>
+            </div>
+            <div class="submenu" id="submenu-6">
+                <div class="submenu-item" data-page="page-empty" role="button">指标准入</div>
+                <div class="submenu-item" data-page="page-empty" role="button">维度准入</div>
+                <div class="submenu-item" data-page="page-empty" role="button">枚举值准入</div>
+            </div>
+            
+            <!-- 角色圈选 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty" role="button">
+                <i class="fas fa-users"></i>
+                <span>角色圈选</span>
+            </div>
+            
+            <!-- 问答监控 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty" role="button">
+                <i class="fas fa-headset"></i>
+                <span>问答监控</span>
+            </div>
+            
+            <!-- 调度能力 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty" role="button">
+                <i class="fas fa-tasks"></i>
+                <span>调度能力</span>
+            </div>
+            
+            <!-- 分隔线 -->
+            <div class="menu-divider"></div>
+            
+            <!-- 系统设置 - 新增 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-settings" role="button">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </div>
+        </nav>
+    </div>
+    
+    <main class="main-content" id="main-content">
+        <!-- 空白页面模板 -->
+        <div class="content-page" id="page-empty">
+            <div class="empty-placeholder">
+                <i class="fas fa-tools"></i>
+                <p>该功能页面正在建设中...</p>
+            </div>
+        </div>
+        
+        <!-- 知识&策略页面 -->
+        <div class="content-page" id="page-knowledge-strategy">
+            <iframe id="knowledge-strategy-frame" src="pages/Knowledge_Strategy.html"></iframe>
+            </div>
+
+        <!-- 知识导入页面 -->
+        <div class="content-page" id="page-knowledge-import">
+            <iframe id="knowledge-import-frame" src="pages/Knowledge_import.html"></iframe>
+        </div>
+
+        <!-- 分析思路页面 -->
+        <div class="content-page active" id="page-analysis-approach">
+            <iframe id="analysis-approach-frame" src="pages/page-analysis-approach.html"></iframe>
+        </div>
+        
+        <!-- 业务黑话页面 -->
+        <div class="content-page" id="page-business-jargon">
+            <div class="page-header">
+                <h1 class="page-title">业务黑话词典</h1>
+            </div>
+            
+            <div class="page-content">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchBusinessJargonTab('knowledge-list')">知识列表</div>
+                    <div class="tab" onclick="switchBusinessJargonTab('add-knowledge')">新建知识</div>
+                </div>
+                
+                <div id="knowledge-list" class="tab-content active">
+                    <div class="search-bar">
+                        <input type="text" class="search-input" id="search-input" placeholder="搜索业务黑话..." onkeyup="searchKnowledge()">
+                    </div>
+                    
+                    <div class="knowledge-list" id="knowledge-items">
+                        <!-- 示例数据，实际应用中可以通过JavaScript动态加载 -->
+                        <div class="knowledge-item">
+                            <div class="knowledge-term">赋能</div>
+                            <div class="knowledge-explanation">指提供资源、工具或权力，使他人能够完成任务或实现目标。在企业环境中，常用于描述管理层为员工提供支持的行为。</div>
+                        </div>
+                        
+                        <div class="knowledge-item">
+                            <div class="knowledge-term">闭环</div>
+                            <div class="knowledge-explanation">指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。</div>
+                        </div>
+                        
+                        <div class="knowledge-item">
+                            <div class="knowledge-term">抓手</div>
+                            <div class="knowledge-explanation">指实现目标的具体方法、途径或工具，是将战略落地的关键点。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="add-knowledge" class="tab-content">
+                    <div class="section">
+                        <h2>添加新的业务黑话</h2>
+                        <form id="knowledge-form">
+                            <div class="form-group">
+                                <label for="term">术语名称</label>
+                                <input type="text" id="term" name="term" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="explanation">解释说明</label>
+                                <textarea id="explanation" name="explanation" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="example">使用示例（可选）</label>
+                                <textarea id="example" name="example"></textarea>
+                            </div>
+                            
+                            <button type="button" onclick="addKnowledge()">提交</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 标签管理页面 -->
+        <div class="content-page" id="page-tag-management">
+            <div class="page-header">
+                <h1 class="page-title">标签管理</h1>
+            </div>
+            
+            <div class="page-content">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTagTab('tag-list')">标签列表</div>
+                    <div class="tab" onclick="switchTagTab('add-tag')">新建标签</div>
+                </div>
+                
+                <div id="tag-list" class="tab-content active">
+                    <div class="search-bar">
+                        <input type="text" class="search-input" id="tag-search-input" placeholder="搜索标签..." onkeyup="searchTags()">
+                    </div>
+                    
+                    <div class="tag-list-container">
+                        <div class="tag-list-header">
+                            <div class="tag-header-item">标签名称</div>
+                            <div class="tag-header-item">标签类型</div>
+                            <div class="tag-header-item">创建时间</div>
+                            <div class="tag-header-item">使用次数</div>
+                            <div class="tag-header-item">操作</div>
+                        </div>
+                        
+                        <div class="tag-list" id="tag-items">
+                            <!-- 示例数据，实际应用中可以通过JavaScript动态加载 -->
+                            <div class="tag-item">
+                                <div class="tag-name">销售数据</div>
+                                <div class="tag-type">业务类型</div>
+                                <div class="tag-created">2023-10-15</div>
+                                <div class="tag-usage">42</div>
+                                <div class="tag-actions">
+                                    <button class="btn-edit" onclick="editTag(1)"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="deleteTag(1)"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-item">
+                                <div class="tag-name">财务报表</div>
+                                <div class="tag-type">文档类型</div>
+                                <div class="tag-created">2023-09-20</div>
+                                <div class="tag-usage">28</div>
+                                <div class="tag-actions">
+                                    <button class="btn-edit" onclick="editTag(2)"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="deleteTag(2)"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-item">
+                                <div class="tag-name">市场分析</div>
+                                <div class="tag-type">分析类型</div>
+                                <div class="tag-created">2023-11-05</div>
+                                <div class="tag-usage">15</div>
+                                <div class="tag-actions">
+                                    <button class="btn-edit" onclick="editTag(3)"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-delete" onclick="deleteTag(3)"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="add-tag" class="tab-content">
+                    <div class="section">
+                        <h2>添加新标签</h2>
+                        <form id="tag-form">
+                            <div class="form-group">
+                                <label for="tag-name">标签名称</label>
+                                <input type="text" id="tag-name" name="tag-name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tag-type">标签类型</label>
+                                <select id="tag-type" name="tag-type" required>
+                                    <option value="">请选择标签类型</option>
+                                    <option value="business">业务类型</option>
+                                    <option value="document">文档类型</option>
+                                    <option value="analysis">分析类型</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tag-description">标签描述</label>
+                                <textarea id="tag-description" name="tag-description"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tag-color">标签颜色</label>
+                                <input type="color" id="tag-color" name="tag-color" value="#3498db">
+                            </div>
+                            
+                            <button type="button" onclick="addTag()">提交</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 组织架构管理页面 -->
+        <div class="content-page" id="page-org-structure">
+            <div class="page-header">
+                <h1 class="page-title">组织架构管理</h1>
+            </div>
+            
+            <div class="page-content">
+                <div class="org-structure-container">
+                    <div class="org-sidebar">
+                        <div class="org-search">
+                            <input type="text" placeholder="搜索部门或人员..." id="org-search-input">
+                            <button class="search-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                        
+                        <div class="org-tree" id="org-tree">
+                            <ul>
+                                <li class="org-tree-item expanded">
+                                    <div class="org-node">
+                                        <i class="fas fa-building"></i>
+                                        <span>总公司</span>
+                                        <i class="fas fa-chevron-down toggle-icon"></i>
+                                    </div>
+                                    <ul>
+                                        <li class="org-tree-item">
+                                            <div class="org-node">
+                                                <i class="fas fa-chart-line"></i>
+                                                <span>市场部</span>
+                                                <i class="fas fa-chevron-right toggle-icon"></i>
+                                            </div>
+                                        </li>
+                                        <li class="org-tree-item">
+                                            <div class="org-node">
+                                                <i class="fas fa-code"></i>
+                                                <span>技术部</span>
+                                                <i class="fas fa-chevron-right toggle-icon"></i>
+                                            </div>
+                                        </li>
+                                        <li class="org-tree-item">
+                                            <div class="org-node">
+                                                <i class="fas fa-money-bill-wave"></i>
+                                                <span>财务部</span>
+                                                <i class="fas fa-chevron-right toggle-icon"></i>
+                                            </div>
+                                        </li>
+                                        <li class="org-tree-item">
+                                            <div class="org-node">
+                                                <i class="fas fa-users"></i>
+                                                <span>人力资源部</span>
+                                                <i class="fas fa-chevron-right toggle-icon"></i>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="org-actions">
+                            <button class="btn-add-dept"><i class="fas fa-plus"></i> 添加部门</button>
+                            <button class="btn-add-employee"><i class="fas fa-user-plus"></i> 添加人员</button>
+                        </div>
+                    </div>
+                    
+                    <div class="org-content">
+                        <div class="org-detail-header">
+                            <h2>部门详情</h2>
+                            <div class="org-detail-actions">
+                                <button class="btn-edit"><i class="fas fa-edit"></i> 编辑</button>
+                                <button class="btn-delete"><i class="fas fa-trash"></i> 删除</button>
+                            </div>
+                        </div>
+                        
+                        <div class="org-detail-info">
+                            <div class="info-group">
+                                <label>部门名称</label>
+                                <div class="info-value">总公司</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <label>部门编码</label>
+                                <div class="info-value">HQ001</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <label>上级部门</label>
+                                <div class="info-value">无</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <label>负责人</label>
+                                <div class="info-value">张三</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <label>创建时间</label>
+                                <div class="info-value">2022-01-01</div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <label>部门描述</label>
+                                <div class="info-value">公司总部，负责全公司的战略规划和业务协调。</div>
+                            </div>
+                        </div>
+                        
+                        <div class="org-member-list">
+                            <h3>部门成员 <span class="member-count">(12)</span></h3>
+                            
+                            <div class="member-list-header">
+                                <div class="member-header-item">姓名</div>
+                                <div class="member-header-item">职位</div>
+                                <div class="member-header-item">工号</div>
+                                <div class="member-header-item">联系方式</div>
+                                <div class="member-header-item">操作</div>
+                            </div>
+                            
+                            <div class="member-list">
+                                <div class="member-item">
+                                    <div class="member-name">张三</div>
+                                    <div class="member-position">总经理</div>
+                                    <div class="member-id">EMP001</div>
+                                    <div class="member-contact">zhangsan@example.com</div>
+                                    <div class="member-actions">
+                                        <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                
+                                <div class="member-item">
+                                    <div class="member-name">李四</div>
+                                    <div class="member-position">副总经理</div>
+                                    <div class="member-id">EMP002</div>
+                                    <div class="member-contact">lisi@example.com</div>
+                                    <div class="member-actions">
+                                        <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                
+                                <div class="member-item">
+                                    <div class="member-name">王五</div>
+                                    <div class="member-position">财务总监</div>
+                                    <div class="member-id">EMP003</div>
+                                    <div class="member-contact">wangwu@example.com</div>
+                                    <div class="member-actions">
+                                        <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 系统设置页面 -->
+        <div class="content-page" id="page-settings">
+            <!-- 系统设置页面 -->
+            <div class="page-header">
+                <h1 class="page-title">系统设置</h1>
+            </div>
+            
+            <!-- 外观设置 -->
+            <div class="setting-section">
+                <h2><i class="fas fa-palette"></i>外观设置</h2>
+                
+                <div class="setting-item">
+                    <div class="setting-item-label">
+                        <div class="setting-item-title">主题模式</div>
+                        <div class="setting-item-desc">选择界面的显示模式</div>
+                    </div>
+                    <div>
+                        <div class="theme-selector">
+                            <div class="theme-option theme-light" data-theme="light" title="明亮模式">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="theme-option theme-dark" data-theme="dark" title="深色模式">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div class="theme-option theme-auto" data-theme="auto" title="跟随系统">
+                                <i class="fas fa-sun"></i>
+                                <i class="fas fa-moon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script>
+        // 标签管理页面的Tab切换功能
+        function switchTagTab(tabId) {
+            // 隐藏所有标签内容
+            document.querySelectorAll('#page-tag-management .tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 取消所有标签的激活状态
+            document.querySelectorAll('#page-tag-management .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 激活选中的标签和内容
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`#page-tag-management .tab[onclick="switchTagTab('${tabId}')"]`).classList.add('active');
+        }
+        
+        // 标签搜索功能
+        function searchTags() {
+            const searchInput = document.getElementById('tag-search-input').value.toLowerCase();
+            const tagItems = document.querySelectorAll('#tag-items .tag-item');
+            
+            tagItems.forEach(item => {
+                const tagName = item.querySelector('.tag-name').textContent.toLowerCase();
+                const tagType = item.querySelector('.tag-type').textContent.toLowerCase();
+                
+                if (tagName.includes(searchInput) || tagType.includes(searchInput)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // 添加标签功能
+        function addTag() {
+            // 实际应用中应该通过AJAX提交到后端
+            alert('标签添加功能将在后端实现');
+        }
+        
+        // 编辑标签功能
+        function editTag(tagId) {
+            // 实际应用中应该通过AJAX获取标签信息并显示编辑表单
+            alert(`编辑标签ID: ${tagId}`);
+        }
+        
+        // 删除标签功能
+        function deleteTag(tagId) {
+            if (confirm('确定要删除这个标签吗？')) {
+                // 实际应用中应该通过AJAX提交到后端
+                alert(`删除标签ID: ${tagId}`);
+            }
+        }
+        
+        // 组织架构树的展开/折叠功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const orgNodes = document.querySelectorAll('.org-node');
+            
+            orgNodes.forEach(node => {
+                node.addEventListener('click', function() {
+                    const parentLi = this.parentElement;
+                    const toggleIcon = this.querySelector('.toggle-icon');
+                    
+                    if (parentLi.classList.contains('expanded')) {
+                        parentLi.classList.remove('expanded');
+                        toggleIcon.classList.remove('fa-chevron-down');
+                        toggleIcon.classList.add('fa-chevron-right');
+                    } else {
+                        parentLi.classList.add('expanded');
+                        toggleIcon.classList.remove('fa-chevron-right');
+                        toggleIcon.classList.add('fa-chevron-down');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

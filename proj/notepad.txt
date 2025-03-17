@@ -1,0 +1,57 @@
+# ChatBI 开发规范与经验总结
+
+## 页面集成规范
+
+### 已开发完成的页面集成
+
+为避免耦合问题，所有已开发完成的子菜单页面应以 iframe 形式嵌入主内容区域。以下是相关规范和经验总结：
+
+#### CSS 样式规范
+
+1. 主内容区域 (.main-content) 样式设置：
+   - 使用 flex 布局
+   - 设置 position: relative
+   - 设置 overflow: hidden
+   - 当包含 iframe 页面时，移除内边距 (padding: 0)
+
+2. 内容页面 (.content-page) 样式设置：
+   - 设置 position: relative
+   - 设置 height: 100%
+   - 设置 width: 100%（激活状态）
+   - 设置 overflow: hidden
+
+3. iframe 页面容器样式设置：
+   - 设置 padding: 0 和 margin: 0
+   - 设置 position: relative
+   - 设置 width: 100% 和 height: 100%
+   - 设置 overflow: hidden
+
+4. iframe 元素样式设置：
+   - 设置 position: absolute
+   - 设置 top/left/right/bottom: 0
+   - 设置 width: 100% 和 height: 100%
+   - 设置 border: none
+   - 设置 overflow: hidden
+
+5. **内容填充要求**：
+   - 所有页面内容必须完全填充主内容区域，不留空白边缘
+   - iframe内部页面应设计为100%宽高，确保内容完整显示
+   - 避免出现滚动条，除非内容确实需要滚动
+
+#### HTML 结构规范
+
+1. iframe 页面容器结构：
+```html
+<div class="content-page" id="page-[功能名称]">
+    <iframe id="[功能名称]-frame" src="pages/page-[功能名称].html"></iframe>
+</div>
+```
+
+2. 避免在 HTML 中使用内联样式，统一在 CSS 文件中定义样式
+
+#### 已开发页面集成流程
+
+1. 在 chatbi.html 中添加对应的内容页面容器
+2. 确保已开发页面放置在 pages 目录下
+3. 确保 CSS 样式正确应用
+4. 测试页面在不同尺寸下是否能完全填充主内容区域 

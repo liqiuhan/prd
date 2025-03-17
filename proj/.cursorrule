@@ -1,0 +1,65 @@
+{
+  "project": {
+    "name": "ChatBI原型",
+    "description": "ChatBI产品的B端管理页面原型",
+    "version": "1.0.0",
+    "author": "产品经理",
+    "license": "Private"
+  },
+  "files": {
+    "html": {
+      "indent": 4,
+      "format": true,
+      "extensions": [".html", ".htm"]
+    },
+    "css": {
+      "indent": 4,
+      "format": true,
+      "extensions": [".css"]
+    },
+    "js": {
+      "indent": 4,
+      "format": true,
+      "extensions": [".js"]
+    }
+  },
+  "folders": {
+    "pages": {
+      "description": "存放各页面的HTML内容",
+      "patterns": ["*.html"]
+    },
+    "pages/components": {
+      "description": "存放可复用的UI组件",
+      "patterns": ["*.html"]
+    },
+    "styles": {
+      "description": "存放CSS样式文件",
+      "patterns": ["*.css"]
+    },
+    "js": {
+      "description": "存放JavaScript文件",
+      "patterns": ["*.js"]
+    }
+  },
+  "ai": {
+    "instructions": [
+      "不要擅自设计页面内容，仅提供空白模板和基础结构",
+      "等待产品经理提供具体设计需求",
+      "所有页面内容应由产品经理明确指定后再实现",
+      "在Windows环境下注意命令行语法与Linux的差异"
+    ],
+    "context_window": 10000,
+    "temperature": 0.7
+  },
+  "commands": {
+    "windows": {
+      "create_directory": "mkdir",
+      "create_nested_directory": "New-Item -Path \"$PATH\" -ItemType Directory -Force",
+      "path_separator": "\\"
+    },
+    "unix": {
+      "create_directory": "mkdir -p",
+      "path_separator": "/"
+    }
+  }
+} 

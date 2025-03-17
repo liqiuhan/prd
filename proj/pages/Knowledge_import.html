@@ -1,0 +1,1176 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识导入</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --light: #f1f5f9;
+            --dark: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9fc;
+            color: #334155;
+            padding: 20px;
+        }
+        
+        .knowledge-page {
+            height: 100%;
+            background-color: #f9f9fc;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            outline: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--light);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        
+        .knowledge-type-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .knowledge-type-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .knowledge-type-card:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+        
+        .knowledge-type-card.active {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        
+        .knowledge-type-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .knowledge-type-card.active .knowledge-type-icon {
+            color: var(--primary);
+        }
+        
+        .knowledge-type-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .knowledge-type-desc {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+        
+        .import-steps {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .import-step {
+            padding: 12px 15px;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            font-weight: 500;
+        }
+        
+        .import-step::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: transparent;
+        }
+        
+        .import-step.active {
+            color: var(--primary);
+        }
+        
+        .import-step.active::after {
+            background-color: var(--primary);
+        }
+        
+        .import-step.completed {
+            color: var(--success);
+        }
+        
+        .import-step.completed::after {
+            background-color: var(--success);
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        .step-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .source-option {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .source-option:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+        
+        .source-option.active {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        
+        .source-icon {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-right: 15px;
+        }
+        
+        .source-option.active .source-icon {
+            color: var(--primary);
+        }
+        
+        .source-details {
+            flex: 1;
+        }
+        
+        .source-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .source-desc {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+        
+        .file-list {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-icon {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        .file-name {
+            flex: 1;
+        }
+        
+        .file-size {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+        
+        .file-remove {
+            color: var(--danger);
+            cursor: pointer;
+        }
+        
+        .qa-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .qa-table th, .qa-table td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .qa-table th {
+            background-color: #f8fafc;
+        }
+        
+        .preview-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .preview-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .preview-content {
+            margin-bottom: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+        }
+        
+        .preview-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        .source-content {
+            display: none;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+        
+        .tag-document {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .tag-qa {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .knowledge-slice-container {
+            margin-top: 20px;
+        }
+        
+        .knowledge-slice {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f8fafc;
+        }
+        
+        .slice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .slice-title {
+            font-weight: 600;
+        }
+        
+        .slice-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .slice-action {
+            cursor: pointer;
+            color: var(--secondary);
+        }
+        
+        .slice-action:hover {
+            color: var(--primary);
+        }
+        
+        .add-slice-btn {
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            background-color: transparent;
+            color: var(--secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .add-slice-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        
+        .add-slice-btn i {
+            margin-right: 5px;
+        }
+        
+        .preview-section {
+            margin-bottom: 30px;
+        }
+        
+        .preview-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .knowledge-type-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .import-steps {
+                flex-direction: column;
+            }
+            
+            .import-step {
+                padding: 10px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="knowledge-page">
+        <div class="container">
+            <div class="header">
+                <h1>知识导入</h1>
+            </div>
+
+            <!-- 知识导入卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>知识导入</h2>
+                </div>
+
+                <!-- 导入步骤指示器 -->
+                <div class="import-steps">
+                    <div class="import-step active" data-step="1">1. 选择知识类型</div>
+                    <div class="import-step" data-step="2">2. 选择来源与内容</div>
+                    <div class="import-step" data-step="3">3. 内容处理</div>
+                    <div class="import-step" data-step="4">4. 预览确认</div>
+                </div>
+
+                <!-- 步骤1: 选择知识类型 -->
+                <div class="step-content active" data-step="1">
+                    <div class="knowledge-type-selector">
+                        <div class="knowledge-type-card" data-type="document">
+                            <div class="knowledge-type-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="knowledge-type-title">文档知识</div>
+                            <div class="knowledge-type-desc">上传文档，系统自动提取内容</div>
+                        </div>
+                        
+                        <div class="knowledge-type-card" data-type="webpage">
+                            <div class="knowledge-type-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="knowledge-type-title">网页知识</div>
+                            <div class="knowledge-type-desc">输入网页链接，系统抓取网页内容</div>
+                        </div>
+                        
+                        <div class="knowledge-type-card" data-type="qa">
+                            <div class="knowledge-type-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="knowledge-type-title">问答知识</div>
+                            <div class="knowledge-type-desc">导入问答对，适用于常见问题解答</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-buttons">
+                        <div></div> <!-- 占位，保持对齐 -->
+                        <button class="btn btn-primary" id="next-step-1">
+                            下一步 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤2: 选择来源与内容 -->
+                <div class="step-content" data-step="2">
+                    <!-- 文档知识来源选项 -->
+                    <div class="source-options document-sources">
+                        <div class="source-option" data-source="file">
+                            <div class="source-icon">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <div class="source-details">
+                                <div class="source-title">上传文件</div>
+                                <div class="source-desc">支持 PDF, DOCX, TXT, HTML 等格式</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 网页知识来源选项 -->
+                    <div class="source-options webpage-sources" style="display: none;">
+                        <div class="source-option" data-source="url">
+                            <div class="source-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="source-details">
+                                <div class="source-title">网页链接</div>
+                                <div class="source-desc">输入网页URL，系统将抓取内容</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问答知识来源选项 -->
+                    <div class="source-options qa-sources" style="display: none;">
+                        <div class="source-option" data-source="csv">
+                            <div class="source-icon">
+                                <i class="fas fa-file-csv"></i>
+                            </div>
+                            <div class="source-details">
+                                <div class="source-title">CSV/Excel文件</div>
+                                <div class="source-desc">上传包含问题和答案的表格文件</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 文件上传区域 -->
+                    <div class="source-content file-content" style="display: none;">
+                        <div class="upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h3>拖拽文件到此处</h3>
+                            <p>支持 PDF, DOCX, TXT, HTML 等格式</p>
+                            <button class="btn btn-primary" style="margin-top: 15px;">
+                                <i class="fas fa-folder-open"></i> 选择文件
+                            </button>
+                        </div>
+                        
+                        <div class="file-list">
+                            <div class="file-item">
+                                <i class="fas fa-file-pdf file-icon"></i>
+                                <div class="file-name">产品说明书.pdf</div>
+                                <div class="file-size">2.4 MB</div>
+                                <div class="file-remove"><i class="fas fa-times"></i></div>
+                            </div>
+                            <div class="file-item">
+                                <i class="fas fa-file-word file-icon"></i>
+                                <div class="file-name">技术文档.docx</div>
+                                <div class="file-size">1.8 MB</div>
+                                <div class="file-remove"><i class="fas fa-times"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- URL输入区域 -->
+                    <div class="source-content url-content" style="display: none;">
+                        <div class="form-group">
+                            <label>输入网页URL</label>
+                            <input type="text" class="form-control" placeholder="https://example.com/page">
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-globe"></i> 获取内容
+                        </button>
+                    </div>
+                    
+                    <!-- CSV上传区域 -->
+                    <div class="source-content csv-content" style="display: none;">
+                        <div class="upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-csv"></i>
+                            </div>
+                            <h3>上传CSV或Excel文件</h3>
+                            <p>文件应包含问题和答案列</p>
+                            <button class="btn btn-primary" style="margin-top: 15px;">
+                                <i class="fas fa-folder-open"></i> 选择文件
+                            </button>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label>列映射</label>
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <div style="flex: 1;">
+                                    <label>问题列</label>
+                                    <select class="form-control">
+                                        <option>A列 (问题)</option>
+                                        <option>B列</option>
+                                        <option>C列</option>
+                                    </select>
+                                </div>
+                                <div style="flex: 1;">
+                                    <label>答案列</label>
+                                    <select class="form-control">
+                                        <option>B列 (答案)</option>
+                                        <option>A列</option>
+                                        <option>C列</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-buttons">
+                        <button class="btn btn-outline" id="prev-step-2">
+                            <i class="fas fa-arrow-left"></i> 上一步
+                        </button>
+                        <button class="btn btn-primary" id="next-step-2">
+                            下一步 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤3: 内容处理 (所有知识类型都需要此步骤) -->
+                <div class="step-content" data-step="3">
+                    <!-- 文档知识处理选项 -->
+                    <div id="document-process-options">
+                        <div class="form-group">
+                            <label>知识分类</label>
+                            <select class="form-control">
+                                <option value="">选择分类</option>
+                                <option value="product">产品说明</option>
+                                <option value="tech">技术文档</option>
+                                <option value="faq">常见问题</option>
+                                <option value="guide">使用指南</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>业务线</label>
+                            <select class="form-control">
+                                <option value="">选择业务线</option>
+                                <option value="sales">销售业务</option>
+                                <option value="rental">租赁业务</option>
+                                <option value="newhouse">新房业务</option>
+                                <option value="operation">运营管理</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <input type="text" class="form-control" placeholder="输入关键词，用逗号分隔">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>处理选项</label>
+                            <div style="margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="chunk" checked="">
+                                    <label for="chunk">自动分块</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        将长文本自动分割成适合AI处理的小块
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="extract" checked="">
+                                    <label for="extract">提取关键信息</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        从原始内容中提取重要的事实和信息点
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="embed" checked="">
+                                    <label for="embed">生成嵌入向量</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        为内容生成向量嵌入，以便语义搜索
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 网页知识处理选项 -->
+                    <div id="webpage-process-options" style="display: none;">
+                        <div class="form-group">
+                            <label>知识分类</label>
+                            <select class="form-control">
+                                <option value="">选择分类</option>
+                                <option value="product">产品说明</option>
+                                <option value="tech">技术文档</option>
+                                <option value="faq">常见问题</option>
+                                <option value="guide">使用指南</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>业务线</label>
+                            <select class="form-control">
+                                <option value="">选择业务线</option>
+                                <option value="sales">销售业务</option>
+                                <option value="rental">租赁业务</option>
+                                <option value="newhouse">新房业务</option>
+                                <option value="operation">运营管理</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <input type="text" class="form-control" placeholder="输入关键词，用逗号分隔">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>处理选项</label>
+                            <div style="margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="webpage-chunk" checked="">
+                                    <label for="webpage-chunk">自动分块</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        将长文本自动分割成适合AI处理的小块
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="webpage-extract" checked="">
+                                    <label for="webpage-extract">提取关键信息</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        从原始内容中提取重要的事实和信息点
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="webpage-embed" checked="">
+                                    <label for="webpage-embed">生成嵌入向量</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        为内容生成向量嵌入，以便语义搜索
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问答知识处理选项 -->
+                    <div id="qa-process-options" style="display: none;">
+                        <div class="form-group">
+                            <label>知识分类</label>
+                            <select class="form-control">
+                                <option value="">选择分类</option>
+                                <option value="product">产品说明</option>
+                                <option value="tech">技术文档</option>
+                                <option value="faq">常见问题</option>
+                                <option value="guide">使用指南</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>业务线</label>
+                            <select class="form-control">
+                                <option value="">选择业务线</option>
+                                <option value="sales">销售业务</option>
+                                <option value="rental">租赁业务</option>
+                                <option value="newhouse">新房业务</option>
+                                <option value="operation">运营管理</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <input type="text" class="form-control" placeholder="输入关键词，用逗号分隔">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>处理选项</label>
+                            <div style="margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="qa-embed" checked="">
+                                    <label for="qa-embed">生成嵌入向量</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        为问答对生成向量嵌入，以便语义搜索
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-buttons">
+                        <button class="btn btn-outline" id="prev-step-3">
+                            <i class="fas fa-arrow-left"></i> 上一步
+                        </button>
+                        <button class="btn btn-primary" id="next-step-3">
+                            下一步 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤4: 预览确认 -->
+                <div class="step-content" data-step="4">
+                    <h3 style="margin-bottom: 20px;">知识预览</h3>
+                    
+                    <!-- 文档知识预览 -->
+                    <div class="document-preview">
+                        <!-- 文档切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">文档切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">产品使用说明文档</div>
+                                <div class="preview-content">
+                                    这是一份产品使用说明文档的内容摘要，描述了产品的基本功能和使用方法。系统已经将内容分割成了适合智能体处理的知识片段...
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-document">文档切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问答切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">问答切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">如何安装该产品？</div>
+                                <div class="preview-content">
+                                    1. 下载安装包
+                                    2. 运行安装向导
+                                    3. 按照提示完成安装
+                                    4. 重启系统
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-item">
+                                <div class="preview-title">系统要求是什么？</div>
+                                <div class="preview-content">
+                                    系统需要Windows 10或更高版本，至少4GB内存，10GB可用磁盘空间，并且需要.NET Framework 4.8或更高版本。
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 网页知识预览 -->
+                    <div class="webpage-preview" style="display: none;">
+                        <!-- 网页切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">网页切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">公司产品介绍页面</div>
+                                <div class="preview-content">
+                                    这是从公司网站抓取的产品介绍页面内容，包含了产品的特点、优势和应用场景。系统已经将内容分割成了适合智能体处理的知识片段...
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-document">网页切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问答切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">问答切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">产品有哪些主要功能？</div>
+                                <div class="preview-content">
+                                    产品主要功能包括数据分析、报表生成、自动化处理和多平台兼容等，能够满足企业在不同场景下的各种需求。
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-item">
+                                <div class="preview-title">如何联系客服？</div>
+                                <div class="preview-content">
+                                    您可以通过官网提供的在线客服、电子邮件或客服热线与我们联系，我们的工作时间是周一至周五9:00-18:00。
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 客户服务</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问答知识预览 -->
+                    <div class="qa-preview" style="display: none;">
+                        <div class="preview-item">
+                            <div class="preview-title">如何重置密码？</div>
+                            <div class="preview-content">
+                                点击登录页面的"忘记密码"链接，按照提示操作，系统会向您的注册邮箱发送一封密码重置邮件。
+                            </div>
+                            <div class="preview-meta">
+                                <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                <div>分类: 常见问题</div>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-item">
+                            <div class="preview-title">系统支持哪些文件格式？</div>
+                            <div class="preview-content">
+                                系统目前支持PDF、DOCX、TXT、CSV等格式的文件，未来还将支持更多的文件格式。
+                            </div>
+                            <div class="preview-meta">
+                                <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                <div>分类: 系统功能</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 知识切片预览 -->
+                    <div class="chunk-preview" style="display: none;">
+                        <div class="preview-item">
+                            <div class="preview-title">系统架构概述 - 切片 #1</div>
+                            <div class="preview-content">
+                                本系统采用前后端分离架构，前端使用React框架，后端采用Spring Boot。这种架构使得系统更加灵活和可扩展。
+                            </div>
+                            <div class="preview-meta">
+                                <div>类型: <span class="tag tag-chunk">知识切片</span></div>
+                                <div>分类: 技术文档</div>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-item">
+                            <div class="preview-title">系统架构概述 - 切片 #2</div>
+                            <div class="preview-content">
+                                数据存储使用PostgreSQL关系型数据库和Elasticsearch搜索引擎，为知识检索提供高效支持。
+                            </div>
+                            <div class="preview-meta">
+                                <div>类型: <span class="tag tag-chunk">知识切片</span></div>
+                                <div>分类: 技术文档</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-buttons">
+                        <button class="btn btn-outline" id="prev-step-4">
+                            <i class="fas fa-arrow-left"></i> 上一步
+                        </button>
+                        <button class="btn btn-primary" id="finish-import">
+                            <i class="fas fa-check"></i> 完成导入
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 知识类型选择
+            const knowledgeTypeCards = document.querySelectorAll('.knowledge-type-card');
+            let selectedKnowledgeType = null;
+            
+            knowledgeTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 移除所有卡片的活动状态
+                    knowledgeTypeCards.forEach(c => c.classList.remove('active'));
+                    // 添加当前卡片的活动状态
+                    this.classList.add('active');
+                    selectedKnowledgeType = this.getAttribute('data-type');
+                });
+            });
+            
+            // 导入步骤切换
+            const importSteps = document.querySelectorAll('.import-step');
+            const stepContents = document.querySelectorAll('.step-content');
+            
+            // 下一步按钮
+            document.getElementById('next-step-1').addEventListener('click', function() {
+                if (!selectedKnowledgeType) {
+                    alert('请选择知识类型');
+                    return;
+                }
+                goToStep(2);
+            });
+            
+            document.getElementById('next-step-2').addEventListener('click', function() {
+                // 所有知识类型都需要第3步内容处理
+                goToStep(3);
+            });
+            
+            document.getElementById('next-step-3').addEventListener('click', function() {
+                goToStep(4);
+            });
+            
+            // 上一步按钮
+            document.getElementById('prev-step-2').addEventListener('click', function() {
+                goToStep(1);
+            });
+            
+            document.getElementById('prev-step-3').addEventListener('click', function() {
+                goToStep(2);
+            });
+            
+            document.getElementById('prev-step-4').addEventListener('click', function() {
+                // 所有知识类型都返回到步骤3
+                goToStep(3);
+            });
+            
+            document.getElementById('finish-import').addEventListener('click', function() {
+                alert('知识导入成功！');
+                // 重置流程
+                selectedKnowledgeType = null;
+                goToStep(1);
+                // 重置卡片选择
+                knowledgeTypeCards.forEach(c => c.classList.remove('active'));
+            });
+            
+            function goToStep(stepNumber) {
+                // 更新步骤指示器
+                importSteps.forEach(step => {
+                    const step_num = parseInt(step.getAttribute('data-step'));
+                    step.classList.remove('active', 'completed');
+                    
+                    if (step_num === stepNumber) {
+                        step.classList.add('active');
+                    } else if (step_num < stepNumber) {
+                        step.classList.add('completed');
+                    }
+                });
+                
+                // 更新步骤内容
+                stepContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (parseInt(content.getAttribute('data-step')) === stepNumber) {
+                        content.classList.add('active');
+                    }
+                });
+                
+                // 如果是步骤2，根据选择的知识类型显示相应的来源选项
+                if (stepNumber === 2) {
+                    // 隐藏所有来源选项
+                    document.querySelectorAll('.source-options').forEach(option => {
+                        option.style.display = 'none';
+                    });
+                    
+                    // 显示相应的来源选项
+                    const activeSourceOptions = document.querySelector(`.${selectedKnowledgeType}-sources`);
+                    if (activeSourceOptions) {
+                        activeSourceOptions.style.display = 'block';
+                        
+                        // 默认选中第一个来源选项
+                        const firstSourceOption = activeSourceOptions.querySelector('.source-option');
+                        if (firstSourceOption) {
+                            firstSourceOption.click();
+                        }
+                    }
+                }
+                
+                // 如果是步骤4，根据知识类型显示相应的预览
+                if (stepNumber === 4) {
+                    // 隐藏所有预览
+                    document.querySelector('.document-preview').style.display = 'none';
+                    document.querySelector('.webpage-preview').style.display = 'none';
+                    document.querySelector('.qa-preview').style.display = 'none';
+                    
+                    // 显示相应的预览
+                    if (selectedKnowledgeType === 'document') {
+                        document.querySelector('.document-preview').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'webpage') {
+                        document.querySelector('.webpage-preview').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'qa') {
+                        document.querySelector('.qa-preview').style.display = 'block';
+                    }
+                }
+                
+                // 如果是步骤3，根据知识类型显示相应的处理选项
+                if (stepNumber === 3) {
+                    // 隐藏所有处理选项
+                    document.getElementById('document-process-options').style.display = 'none';
+                    document.getElementById('webpage-process-options').style.display = 'none';
+                    document.getElementById('qa-process-options').style.display = 'none';
+                    
+                    // 显示相应的处理选项
+                    if (selectedKnowledgeType === 'document') {
+                        document.getElementById('document-process-options').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'webpage') {
+                        document.getElementById('webpage-process-options').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'qa') {
+                        document.getElementById('qa-process-options').style.display = 'block';
+                    }
+                }
+            }
+            
+            // 来源选项切换
+            const sourceOptions = document.querySelectorAll('.source-option');
+            
+            sourceOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 找到父元素下的所有选项
+                    const parentOptions = this.parentElement.querySelectorAll('.source-option');
+                    
+                    // 移除所有选项的活动状态
+                    parentOptions.forEach(o => o.classList.remove('active'));
+                    
+                    // 添加当前选项的活动状态
+                    this.classList.add('active');
+                    
+                    // 隐藏所有内容区域
+                    document.querySelectorAll('.source-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // 显示相应的内容区域
+                    const source = this.getAttribute('data-source');
+                    const sourceContent = document.querySelector(`.${source}-content`);
+                    if (sourceContent) {
+                        sourceContent.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body></html>

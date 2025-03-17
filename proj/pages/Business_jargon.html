@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>业务黑话</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 0;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .knowledge-list {
+            margin-bottom: 30px;
+        }
+        .knowledge-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        .knowledge-term {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .knowledge-explanation {
+            color: #555;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #eee;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>业务黑话词典</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('knowledge-list')">知识列表</div>
+            <div class="tab" onclick="switchTab('add-knowledge')">新建知识</div>
+        </div>
+        
+        <div id="knowledge-list" class="tab-content active">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="search-input" placeholder="搜索业务黑话..." onkeyup="searchKnowledge()">
+            </div>
+            
+            <div class="knowledge-list" id="knowledge-items">
+                <!-- 示例数据，实际应用中可以通过JavaScript动态加载 -->
+                <div class="knowledge-item">
+                    <div class="knowledge-term">赋能</div>
+                    <div class="knowledge-explanation">指提供资源、工具或权力，使他人能够完成任务或实现目标。在企业环境中，常用于描述管理层为员工提供支持的行为。</div>
+                </div>
+                
+                <div class="knowledge-item">
+                    <div class="knowledge-term">闭环</div>
+                    <div class="knowledge-explanation">指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。</div>
+                </div>
+                
+                <div class="knowledge-item">
+                    <div class="knowledge-term">抓手</div>
+                    <div class="knowledge-explanation">指实现目标的具体方法、途径或工具，是将战略落地的关键点。</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="add-knowledge" class="tab-content">
+            <div class="section">
+                <h2>添加新的业务黑话</h2>
+                <form id="knowledge-form">
+                    <div class="form-group">
+                        <label for="term">术语名称</label>
+                        <input type="text" id="term" name="term" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="explanation">解释说明</label>
+                        <textarea id="explanation" name="explanation" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="example">使用示例（可选）</label>
+                        <textarea id="example" name="example"></textarea>
+                    </div>
+                    
+                    <button type="button" onclick="addKnowledge()">提交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换标签页
+        function switchTab(tabId) {
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 取消所有标签的活动状态
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabId).classList.add('active');
+            
+            // 设置选中标签的活动状态
+            Array.from(document.querySelectorAll('.tab')).find(tab => 
+                tab.textContent.includes(tabId === 'knowledge-list' ? '知识列表' : '新建知识')
+            ).classList.add('active');
+        }
+        
+        // 添加新知识
+        function addKnowledge() {
+            const term = document.getElementById('term').value.trim();
+            const explanation = document.getElementById('explanation').value.trim();
+            const example = document.getElementById('example').value.trim();
+            
+            if (!term || !explanation) {
+                alert('请填写术语名称和解释说明！');
+                return;
+            }
+            
+            // 创建新的知识项
+            const knowledgeItem = document.createElement('div');
+            knowledgeItem.className = 'knowledge-item';
+            
+            const termElement = document.createElement('div');
+            termElement.className = 'knowledge-term';
+            termElement.textContent = term;
+            
+            const explanationElement = document.createElement('div');
+            explanationElement.className = 'knowledge-explanation';
+            explanationElement.textContent = explanation;
+            
+            knowledgeItem.appendChild(termElement);
+            knowledgeItem.appendChild(explanationElement);
+            
+            if (example) {
+                const exampleElement = document.createElement('div');
+                exampleElement.className = 'knowledge-example';
+                exampleElement.innerHTML = `<strong>示例：</strong>${example}`;
+                knowledgeItem.appendChild(exampleElement);
+            }
+            
+            // 添加到列表中
+            document.getElementById('knowledge-items').prepend(knowledgeItem);
+            
+            // 重置表单
+            document.getElementById('knowledge-form').reset();
+            
+            // 切换到知识列表标签
+            switchTab('knowledge-list');
+            
+            // 显示成功消息
+            alert('新知识添加成功！');
+        }
+        
+        // 搜索功能
+        function searchKnowledge() {
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            const items = document.querySelectorAll('.knowledge-item');
+            
+            items.forEach(item => {
+                const term = item.querySelector('.knowledge-term').textContent.toLowerCase();
+                const explanation = item.querySelector('.knowledge-explanation').textContent.toLowerCase();
+                
+                if (term.includes(searchText) || explanation.includes(searchText)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
