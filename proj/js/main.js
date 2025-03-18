@@ -190,11 +190,14 @@ const ChatBI = {
     
     // 子菜单项点击处理
     handleSubmenuItemClick: function(event) {
-        event.stopPropagation();
         const submenuItem = event.currentTarget;
         
-        // 更新子菜单项活动状态
-        this.elements.submenuItems.forEach(i => i.classList.remove('active'));
+        // 移除所有子菜单项的激活状态
+        this.elements.submenuItems.forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // 设置点击项的激活状态
         submenuItem.classList.add('active');
         
         // 加载对应页面
@@ -230,9 +233,10 @@ const ChatBI = {
         if (targetPage) {
             targetPage.classList.add('active');
             
-            // 如果是分析思路页面，确保iframe高度正确
-            if (pageId === 'page-analysis-approach') {
-                const iframe = document.getElementById('analysis-approach-frame');
+            // 处理iframe高度设置
+            if (pageId === 'page-analysis-approach' || pageId === 'page-knowledge-strategy') {
+                const iframeId = pageId === 'page-analysis-approach' ? 'analysis-approach-frame' : 'knowledge-strategy-frame';
+                const iframe = document.getElementById(iframeId);
                 if (iframe) {
                     // 设置iframe高度为窗口高度减去一些边距
                     const setIframeHeight = () => {
@@ -244,8 +248,31 @@ const ChatBI = {
                 }
             }
             
+            // 知识导入页面的iframe高度设置，仅在该页面激活时进行
+            if (pageId === 'page-knowledge-import') {
+                const importFrame = document.getElementById('knowledge-import-frame');
+                if (importFrame) {
+                    // 设置iframe高度为窗口高度减去一些边距
+                    importFrame.style.height = (window.innerHeight - 80) + 'px';
+                    
+                    // 检查iframe加载状态
+                    if (importFrame.getAttribute('src') !== 'pages/Knowledge_import.html') {
+                        importFrame.setAttribute('src', 'pages/Knowledge_import.html');
+                    }
+                    
+                    // 添加iframe加载事件监听
+                    importFrame.onload = function() {
+                        console.log('知识导入iframe加载完成');
+                    };
+                } else {
+                    console.error('未找到知识导入iframe元素');
+                }
+            }
+            
             // 如果页面内容为空，尝试从外部加载
             if (pageId !== 'page-analysis-approach' && 
+                pageId !== 'page-knowledge-strategy' &&
+                pageId !== 'page-knowledge-import' &&
                 (targetPage.innerHTML.trim() === '' || 
                 (targetPage.innerHTML.indexOf('<!-- 页面内容将通过JavaScript动态加载 -->') !== -1 && 
                  pageId !== 'page-empty'))) {

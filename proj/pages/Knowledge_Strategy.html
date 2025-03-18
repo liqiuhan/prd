@@ -683,7 +683,7 @@
                         <div class="filter-title">筛选条件</div>
                         <div class="filter-groups">
                             <div class="filter-group">
-                                <div class="filter-group-title">知识类型</div>
+                                <div class="filter-group-title">切片类型</div>
                                 <div class="filter-options">
                                     <div class="filter-option active">全部</div>
                                     <div class="filter-option">文档</div>
@@ -705,10 +705,12 @@
                                 <div class="filter-group-title">业务线</div>
                                 <div class="filter-options">
                                     <div class="filter-option active">全部</div>
-                                    <div class="filter-option">销售业务</div>
-                                    <div class="filter-option">租赁业务</div>
-                                    <div class="filter-option">新房业务</div>
-                                    <div class="filter-option">运营管理</div>
+                                    <div class="filter-option">运营中心</div>
+                                    <div class="filter-option">新房</div>
+                                    <div class="filter-option">整装</div>
+                                    <div class="filter-option">北链</div>
+                                    <div class="filter-option">业策</div>
+                                    <div class="filter-option">品质</div>
                                 </div>
                             </div>
                         </div>
@@ -751,14 +753,17 @@
                                             <th width="5%">ID</th>
                                             <th width="12%">标题</th>
                                             <th width="6%">类型</th>
-                                            <th width="6%">分类</th>
+                                            <th width="6%">内容分类</th>
                                             <th width="6%">业务线</th>
-                                            <th width="18%">内容</th>
-                                            <th width="18%">标签</th>
+                                            <th width="6%">关键词</th>
+                                            <th width="15%">内容</th>
+                                            <th width="6%">一级分类</th>
+                                            <th width="6%">二级分类</th>
+                                            <th width="6%">三级分类</th>
                                             <th width="8%">上传者</th>
-                                            <th width="7%">关联思路</th>
-                                            <th width="7%">创建时间</th>
-                                            <th width="7%">操作</th>
+                                            <th width="6%">关联思路</th>
+                                            <th width="6%">创建时间</th>
+                                            <th width="6%">操作</th>
                                         </tr>
                                     </thead>
                                     <tbody id="knowledge-list">
@@ -767,14 +772,12 @@
                                             <td>销售业绩达成分析</td>
                                             <td>文档</td>
                                             <td>知识</td>
-                                            <td>销售业务</td>
+                                            <td>整装</td>
+                                            <td></td>
                                             <td class="content-preview">本文档详细分析了销售业绩达成的关键因素，包括客户资源管理、带看效率以及成交转化率...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">业绩</span>
-                                                    <span class="tag-level2">二手</span>
-                                                </div>
-                                            </td>
+                                            <td>业绩</td>
+                                            <td>二手</td>
+                                            <td></td>
                                             <td>李明</td>
                                             <td>3</td>
                                             <td>2025-03-10</td>
@@ -788,14 +791,12 @@
                                             <td>高质量房源获取指南</td>
                                             <td>文档</td>
                                             <td>策略</td>
-                                            <td>租赁业务</td>
+                                            <td>北链</td>
+                                            <td></td>
                                             <td class="content-preview">如何高效获取高质量房源是地产经纪人成功的关键。本指南从房源定位、业主沟通和资源整合三方面...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">房源</span>
-                                                    <span class="tag-level2">面访</span>
-                                                </div>
-                                            </td>
+                                            <td>房源</td>
+                                            <td>面访</td>
+                                            <td></td>
                                             <td>张华</td>
                                             <td>5</td>
                                             <td>2025-03-08</td>
@@ -809,13 +810,12 @@
                                             <td>如何提高客户转化率？</td>
                                             <td>问答切片</td>
                                             <td>知识</td>
-                                            <td>销售业务</td>
+                                            <td>整装</td>
+                                            <td></td>
                                             <td class="content-preview">问：如何提高客户转化率？答：提高客户转化率需要：1.精准分析客户需求；2.提供个性化房源推荐；3.优化带看流程；4.加强成交信任...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">客源</span>
-                                                </div>
-                                            </td>
+                                            <td>客源</td>
+                                            <td></td>
+                                            <td></td>
                                             <td>王芳</td>
                                             <td>2</td>
                                             <td>2025-03-05</td>
@@ -829,14 +829,12 @@
                                             <td>商机转化技巧</td>
                                             <td>文档切片</td>
                                             <td>策略</td>
-                                            <td>新房业务</td>
+                                            <td>新房</td>
+                                            <td></td>
                                             <td class="content-preview">商机转化的核心在于正确识别高质量客户。400电话咨询中，通过提问意向度、预算范围和看房计划，可以快速筛选出...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">商机</span>
-                                                    <span class="tag-level2">400</span>
-                                                </div>
-                                            </td>
+                                            <td>商机</td>
+                                            <td>400</td>
+                                            <td></td>
                                             <td>赵伟</td>
                                             <td>4</td>
                                             <td>2025-03-01</td>
@@ -850,15 +848,12 @@
                                             <td>优质房源评定标准</td>
                                             <td>文档</td>
                                             <td>知识</td>
-                                            <td>新房业务</td>
+                                            <td>新房</td>
+                                            <td></td>
                                             <td class="content-preview">本文档详细解析了房源等级评定标准，优房需要满足地段、户型、价格等多方面优势，并且产权清晰，无重大瑕疵...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">房源</span>
-                                                    <span class="tag-level2">房源等级</span>
-                                                    <span class="tag-level3">优房</span>
-                                                </div>
-                                            </td>
+                                            <td>房源</td>
+                                            <td>房源等级</td>
+                                            <td>优房</td>
                                             <td>陈明</td>
                                             <td>6</td>
                                             <td>2025-02-28</td>
@@ -872,13 +867,12 @@
                                             <td>有效带看技巧大全</td>
                                             <td>文档</td>
                                             <td>策略</td>
-                                            <td>销售业务</td>
+                                            <td>整装</td>
+                                            <td></td>
                                             <td class="content-preview">如何提高带看效率和转化率？本文档总结了十大带看技巧，帮助经纪人提升客户体验和成交率...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">带看</span>
-                                                </div>
-                                            </td>
+                                            <td>带看</td>
+                                            <td></td>
+                                            <td></td>
                                             <td>刘华</td>
                                             <td>8</td>
                                             <td>2025-02-25</td>
@@ -892,13 +886,12 @@
                                             <td>客户异议处理方法</td>
                                             <td>问答切片</td>
                                             <td>知识</td>
-                                            <td>销售业务</td>
+                                            <td>整装</td>
+                                            <td></td>
                                             <td class="content-preview">问：客户对房源价格有异议怎么处理？答：首先要理解客户的真实顾虑，然后从市场行情、房源独特价值、未来升值潜力等多方面进行解析...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">客源</span>
-                                                </div>
-                                            </td>
+                                            <td>客源</td>
+                                            <td></td>
+                                            <td></td>
                                             <td>王丽</td>
                                             <td>3</td>
                                             <td>2025-02-20</td>
@@ -912,14 +905,12 @@
                                             <td>房源拍摄技巧</td>
                                             <td>文档</td>
                                             <td>策略</td>
-                                            <td>租赁业务</td>
+                                            <td>北链</td>
+                                            <td></td>
                                             <td class="content-preview">高质量的房源照片能显著提升客户询盘率。本指南详细介绍了光线处理、角度选择、构图要点等专业拍摄技巧...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">房源</span>
-                                                    <span class="tag-level2">好房</span>
-                                                </div>
-                                            </td>
+                                            <td>房源</td>
+                                            <td>好房</td>
+                                            <td></td>
                                             <td>张强</td>
                                             <td>4</td>
                                             <td>2025-02-15</td>
@@ -933,14 +924,12 @@
                                             <td>新房销售策略</td>
                                             <td>文档</td>
                                             <td>策略</td>
-                                            <td>新房业务</td>
+                                            <td>新房</td>
+                                            <td></td>
                                             <td class="content-preview">新房销售与二手房有明显区别，需要不同的策略。本文档分析了新房销售的关键环节和转化技巧...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">业绩</span>
-                                                    <span class="tag-level2">新房</span>
-                                                </div>
-                                            </td>
+                                            <td>业绩</td>
+                                            <td>新房</td>
+                                            <td></td>
                                             <td>李强</td>
                                             <td>7</td>
                                             <td>2025-02-10</td>
@@ -954,15 +943,12 @@
                                             <td>中等质量房源管理</td>
                                             <td>文档</td>
                                             <td>知识</td>
-                                            <td>新房业务</td>
+                                            <td>新房</td>
+                                            <td></td>
                                             <td class="content-preview">中房的特点、挑战和价值分析，以及如何对这类房源进行有效维护和推广，提高成交概率...</td>
-                                            <td>
-                                                <div class="tags-container">
-                                                    <span class="tag-level1">房源</span>
-                                                    <span class="tag-level2">房源等级</span>
-                                                    <span class="tag-level3">中房</span>
-                                                </div>
-                                            </td>
+                                            <td>房源</td>
+                                            <td>房源等级</td>
+                                            <td>中房</td>
                                             <td>周明</td>
                                             <td>5</td>
                                             <td>2025-02-05</td>
@@ -1004,11 +990,10 @@
                         <input type="text" id="knowledge-title" class="form-control" placeholder="输入知识标题">
                     </div>
                     <div class="form-group">
-                        <label for="knowledge-type">知识类型</label>
+                        <label for="knowledge-type">切片类型</label>
                         <select id="knowledge-type" class="form-control">
-                            <option value="document">文档</option>
-                            <option value="qa">问答对</option>
-                            <option value="chunk">切片</option>
+                            <option value="qa">问答切片</option>
+                            <option value="chunk">文档切片</option>
                         </select>
                     </div>
                     
@@ -1018,6 +1003,23 @@
                             <option value="knowledge">知识</option>
                             <option value="strategy">策略</option>
                         </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="knowledge-business">业务线</label>
+                        <select id="knowledge-business" class="form-control">
+                            <option value="运营中心">运营中心</option>
+                            <option value="新房">新房</option>
+                            <option value="整装">整装</option>
+                            <option value="北链">北链</option>
+                            <option value="业策">业策</option>
+                            <option value="品质">品质</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="knowledge-keywords">关键词</label>
+                        <input type="text" id="knowledge-keywords" class="form-control" placeholder="请输入关键词，多个关键词用逗号分隔">
                     </div>
                     
                     <!-- 文档/切片内容输入区 -->
@@ -1037,70 +1039,41 @@
                     
                     <div class="form-group">
                         <label>标签</label>
-                        <div id="selected-tags" class="selected-tags">
+                        
+                        <!-- 标签筛选器样式选择 -->
+                        <div class="level-filter" style="margin-top: 0;">
+                            <div class="level-filter-container">
+                                <select class="level-filter-select" id="tag-level1-select">
+                                    <option value="">选择一级标签</option>
+                                    <option value="业绩">业绩</option>
+                                    <option value="房源">房源</option>
+                                    <option value="客源">客源</option>
+                                    <option value="带看">带看</option>
+                                    <option value="商机">商机</option>
+                                    <option value="行指">行指</option>
+                                </select>
+                                <span class="level-filter-arrow">→</span>
+                                <select class="level-filter-select" id="tag-level2-select" disabled>
+                                    <option value="">选择二级标签</option>
+                                </select>
+                                <span class="level-filter-arrow">→</span>
+                                <select class="level-filter-select" id="tag-level3-select" disabled>
+                                    <option value="">选择三级标签</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- 已选标签显示区域 -->
+                        <div id="selected-tags" class="selected-tags" style="margin-top: 15px;">
                             <!-- 已选标签将显示在这里 -->
                         </div>
-                        <div class="tag-selector">
-                            <div class="tag-category">
-                                <div class="tag-category-title">选择一级标签</div>
-                                <div class="tag-options">
-                                    <div class="tag-option" data-category="全部" data-level="1">全部</div>
-                                    <div class="tag-option" data-category="业绩" data-level="1">业绩</div>
-                                    <div class="tag-option" data-category="房源" data-level="1">房源</div>
-                                    <div class="tag-option" data-category="客源" data-level="1">客源</div>
-                                    <div class="tag-option" data-category="带看" data-level="1">带看</div>
-                                    <div class="tag-option" data-category="商机" data-level="1">商机</div>
-                                    <div class="tag-option" data-category="行指" data-level="1">行指</div>
-                                </div>
-                            </div>
-                            
-                            <!-- 业绩的二级标签 -->
-                            <div class="tag-subcategory" id="业绩-subcategory">
-                                <div class="tag-category-title">业绩子分类</div>
-                                <div class="tag-options">
-                                    <div class="tag-option tag-suboption" data-category="业绩" data-subitem="二手" data-level="2">二手</div>
-                                    <div class="tag-option tag-suboption" data-category="业绩" data-subitem="新房" data-level="2">新房</div>
-                                    <div class="tag-option tag-suboption" data-category="业绩" data-subitem="租赁" data-level="2">租赁</div>
-                                </div>
-                            </div>
-                            
-                            <!-- 商机的二级标签 -->
-                            <div class="tag-subcategory" id="商机-subcategory">
-                                <div class="tag-category-title">商机子分类</div>
-                                <div class="tag-options">
-                                    <div class="tag-option tag-suboption" data-category="商机" data-subitem="400" data-level="2">400</div>
-                                    <div class="tag-option tag-suboption" data-category="商机" data-subitem="线索" data-level="2">线索</div>
-                                </div>
-                            </div>
-                            
-                            <!-- 房源的二级标签 -->
-                            <div class="tag-subcategory" id="房源-subcategory">
-                                <div class="tag-category-title">房源子分类</div>
-                                <div class="tag-options">
-                                    <div class="tag-option tag-suboption" data-category="房源" data-subitem="面访" data-level="2">面访</div>
-                                    <div class="tag-option tag-suboption" data-category="房源" data-subitem="好房" data-level="2">好房</div>
-                                    <div class="tag-option tag-suboption" data-category="房源" data-subitem="房源维护" data-level="2">房源维护</div>
-                                    <div class="tag-option tag-suboption" data-category="房源" data-subitem="房评" data-level="2">房评</div>
-                                    <div class="tag-option tag-suboption" data-category="房源" data-subitem="房源等级" data-level="2">房源等级</div>
-                                </div>
-                            </div>
-                            
-                            <!-- 房源等级的三级标签 -->
-                            <div class="tag-subsubcategory" id="房源等级-subsubcategory">
-                                <div class="tag-category-title">房源等级细分</div>
-                                <div class="tag-options">
-                                    <div class="tag-option tag-subsuboption" data-category="房源" data-subitem="房源等级" data-subsubitem="优房" data-level="3">优房</div>
-                                    <div class="tag-option tag-subsuboption" data-category="房源" data-subitem="房源等级" data-subsubitem="良房" data-level="3">良房</div>
-                                    <div class="tag-option tag-subsuboption" data-category="房源" data-subitem="房源等级" data-subsubitem="中房" data-level="3">中房</div>
-                                    <div class="tag-option tag-subsuboption" data-category="房源" data-subitem="房源等级" data-subsubitem="差房" data-level="3">差房</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
+                    
                     <div class="form-group">
                         <label for="knowledge-uploader">上传者</label>
                         <input type="text" id="knowledge-uploader" class="form-control" placeholder="输入上传者姓名">
                     </div>
+                    
                     <div class="modal-footer">
                         <button class="btn" id="cancel-knowledge">取消</button>
                         <button class="btn btn-primary" id="save-knowledge">保存</button>
@@ -1165,7 +1138,7 @@
                     });
                 });
                 
-                // 知识类型变化事件
+                // 切片类型变化事件
                 const typeSelect = document.getElementById('knowledge-type');
                 if (typeSelect) {
                     typeSelect.addEventListener('change', function() {
@@ -1182,6 +1155,9 @@
                         }
                     });
                 }
+                
+                // 初始化知识标签选择器
+                initTagSelectors();
                 
                 // 层级筛选器处理
                 const level1Filter = document.getElementById('level1-filter');
@@ -1280,41 +1256,14 @@
                 
                 if (addBtn) {
                     addBtn.addEventListener('click', function() {
-                        document.querySelector('.modal-header h3').textContent = '添加知识';
-                        document.getElementById('knowledge-id').value = '';
-                        document.getElementById('knowledge-title').value = '';
-                        document.getElementById('knowledge-content').value = '';
-                        document.getElementById('knowledge-question').value = '';
-                        document.getElementById('knowledge-answer').value = '';
-                        document.getElementById('knowledge-uploader').value = '';
-                        document.getElementById('knowledge-category').value = 'knowledge';
-                        
-                        // 默认选择文档类型
-                        const typeSelect = document.getElementById('knowledge-type');
-                        typeSelect.value = 'document';
-                        
-                        // 显示正确的内容输入区域
-                        document.getElementById('normal-content-container').style.display = 'block';
-                        document.getElementById('qa-content-container').style.display = 'none';
-                        
-                        // 清空已选标签
-                        const selectedTagsContainer = document.getElementById('selected-tags');
-                        selectedTagsContainer.innerHTML = '';
-                        
-                        // 重置标签选择器
-                        document.querySelectorAll('.tag-option').forEach(opt => {
-                            opt.classList.remove('selected');
-                        });
-                        
-                        // 隐藏所有子分类和孙分类
-                        document.querySelectorAll('.tag-subcategory').forEach(sub => {
-                            sub.classList.remove('active');
-                        });
-                        document.querySelectorAll('.tag-subsubcategory').forEach(subsub => {
-                            subsub.classList.remove('active');
-                        });
-                        
-                        modal.style.display = 'flex';
+                        console.log('添加知识按钮被点击');
+                        try {
+                            // 直接以超链接形式跳转到知识导入页面
+                            window.location.href = 'Knowledge_import.html';
+                        } catch (error) {
+                            console.error('跳转到知识导入页面时发生错误:', error);
+                            alert('跳转到知识导入页面时发生错误: ' + error.message);
+                        }
                     });
                     
                     closeBtn.addEventListener('click', function() {
@@ -1337,9 +1286,186 @@
                         saveKnowledge();
                     });
                 }
+            }
+            
+            // 初始化知识标签选择器
+            function initTagSelectors() {
+                const tagLevel1Select = document.getElementById('tag-level1-select');
+                const tagLevel2Select = document.getElementById('tag-level2-select');
+                const tagLevel3Select = document.getElementById('tag-level3-select');
+                const selectedTagsContainer = document.getElementById('selected-tags');
                 
-                // 标签选择器处理
-                setupTagSelector();
+                // 一级标签选择事件
+                tagLevel1Select.addEventListener('change', function() {
+                    const selectedValue = this.value;
+                    
+                    // 清空二级和三级标签选项
+                    tagLevel2Select.innerHTML = '<option value="">选择二级标签</option>';
+                    tagLevel3Select.innerHTML = '<option value="">选择三级标签</option>';
+                    tagLevel3Select.disabled = true;
+                    
+                    if (selectedValue && tagRelations[selectedValue]) {
+                        // 添加对应的二级标签选项
+                        tagRelations[selectedValue].forEach(subItem => {
+                            const option = document.createElement('option');
+                            option.value = subItem;
+                            option.textContent = subItem;
+                            tagLevel2Select.appendChild(option);
+                        });
+                        
+                        // 启用二级标签选择器
+                        tagLevel2Select.disabled = false;
+                    } else {
+                        // 禁用二级标签选择器
+                        tagLevel2Select.disabled = true;
+                    }
+                    
+                    // 如果有一级标签，添加到已选标签区域
+                    if (selectedValue) {
+                        // 先清除其他一级标签及其子标签
+                        clearTags();
+                        
+                        // 添加当前选中的一级标签
+                        addTagToUI(selectedValue, 1);
+                    }
+                });
+                
+                // 二级标签选择事件
+                tagLevel2Select.addEventListener('change', function() {
+                    const selectedValue = this.value;
+                    const parentValue = tagLevel1Select.value;
+                    
+                    // 清空三级标签选项
+                    tagLevel3Select.innerHTML = '<option value="">选择三级标签</option>';
+                    
+                    if (selectedValue && tag3Relations[selectedValue]) {
+                        // 添加对应的三级标签选项
+                        tag3Relations[selectedValue].forEach(subItem => {
+                            const option = document.createElement('option');
+                            option.value = subItem;
+                            option.textContent = subItem;
+                            tagLevel3Select.appendChild(option);
+                        });
+                        
+                        // 启用三级标签选择器
+                        tagLevel3Select.disabled = false;
+                    } else {
+                        // 禁用三级标签选择器
+                        tagLevel3Select.disabled = true;
+                    }
+                    
+                    // 如果有二级标签，添加到已选标签区域
+                    if (selectedValue) {
+                        // 先清除其他二级标签及其子标签
+                        clearTags(2);
+                        
+                        // 添加当前选中的二级标签
+                        addTagToUI(selectedValue, 2, parentValue);
+                    }
+                });
+                
+                // 三级标签选择事件
+                tagLevel3Select.addEventListener('change', function() {
+                    const selectedValue = this.value;
+                    const parentValue = tagLevel2Select.value;
+                    const grandParentValue = tagLevel1Select.value;
+                    
+                    // 如果有三级标签，添加到已选标签区域
+                    if (selectedValue) {
+                        // 先清除其他三级标签
+                        clearTags(3);
+                        
+                        // 添加当前选中的三级标签
+                        addTagToUI(selectedValue, 3, parentValue, grandParentValue);
+                    }
+                });
+                
+                // 清除标签
+                function clearTags(level = 1) {
+                    const selectedTagsContainer = document.getElementById('selected-tags');
+                    
+                    if (level === 1) {
+                        // 清除所有标签
+                        selectedTagsContainer.innerHTML = '';
+                    } else if (level === 2) {
+                        // 清除二级和三级标签
+                        document.querySelectorAll('.selected-tag-level2, .selected-tag-level3').forEach(tag => {
+                            selectedTagsContainer.removeChild(tag);
+                        });
+                    } else if (level === 3) {
+                        // 清除三级标签
+                        document.querySelectorAll('.selected-tag-level3').forEach(tag => {
+                            selectedTagsContainer.removeChild(tag);
+                        });
+                    }
+                }
+                
+                // 添加标签到UI
+                function addTagToUI(tagText, level, parentCategory = '', grandparentCategory = '') {
+                    const selectedTagsContainer = document.getElementById('selected-tags');
+                    
+                    // 检查是否已存在相同级别的标签
+                    const existingTags = document.querySelectorAll(`.selected-tag-level${level}`);
+                    existingTags.forEach(tag => {
+                        selectedTagsContainer.removeChild(tag);
+                    });
+                    
+                    const tagElement = document.createElement('div');
+                    tagElement.className = `selected-tag-level${level}`;
+                    tagElement.setAttribute('data-text', tagText);
+                    tagElement.setAttribute('data-level', level);
+                    
+                    if (parentCategory) {
+                        tagElement.setAttribute('data-parent', parentCategory);
+                    }
+                    
+                    if (grandparentCategory) {
+                        tagElement.setAttribute('data-grandparent', grandparentCategory);
+                    }
+                    
+                    tagElement.innerHTML = `${tagText} <span class="remove-tag">×</span>`;
+                    
+                    // 为删除按钮添加事件
+                    tagElement.querySelector('.remove-tag').addEventListener('click', function() {
+                        // 移除标签
+                        selectedTagsContainer.removeChild(tagElement);
+                        
+                        // 重置对应的选择器
+                        if (level === 1) {
+                            tagLevel1Select.value = '';
+                            tagLevel2Select.innerHTML = '<option value="">选择二级标签</option>';
+                            tagLevel2Select.disabled = true;
+                            tagLevel3Select.innerHTML = '<option value="">选择三级标签</option>';
+                            tagLevel3Select.disabled = true;
+                        } else if (level === 2) {
+                            tagLevel2Select.value = '';
+                            tagLevel3Select.innerHTML = '<option value="">选择三级标签</option>';
+                            tagLevel3Select.disabled = true;
+                        } else if (level === 3) {
+                            tagLevel3Select.value = '';
+                        }
+                    });
+                    
+                    // 将标签添加到容器中
+                    selectedTagsContainer.appendChild(tagElement);
+                }
+            }
+            
+            // 重置标签选择器
+            function resetTagSelectors() {
+                const tagLevel1Select = document.getElementById('tag-level1-select');
+                const tagLevel2Select = document.getElementById('tag-level2-select');
+                const tagLevel3Select = document.getElementById('tag-level3-select');
+                
+                tagLevel1Select.value = '';
+                tagLevel2Select.innerHTML = '<option value="">选择二级标签</option>';
+                tagLevel2Select.disabled = true;
+                tagLevel3Select.innerHTML = '<option value="">选择三级标签</option>';
+                tagLevel3Select.disabled = true;
+                
+                // 清空已选标签
+                const selectedTagsContainer = document.getElementById('selected-tags');
+                selectedTagsContainer.innerHTML = '';
             }
             
             // 筛选表格
@@ -1792,20 +1918,32 @@
                         const title = row.cells[1].textContent;
                         const type = row.cells[2].textContent;
                         const category = row.cells[3].textContent;
-                        const content = row.cells[4].textContent;
-                        const uploader = row.cells[6].textContent;
+                        const business = row.cells[4].textContent; // 获取业务线
+                        const keywords = row.cells[5].textContent; // 获取关键词
+                        const content = row.cells[6].textContent;
+                        
+                        // 获取标签
+                        const level1 = row.cells[7].textContent;
+                        const level2 = row.cells[8].textContent;
+                        const level3 = row.cells[9].textContent;
+                        
+                        const uploader = row.cells[10].textContent;
                         
                         document.querySelector('.modal-header h3').textContent = '编辑知识';
                         document.getElementById('knowledge-id').value = id;
                         document.getElementById('knowledge-title').value = title;
+                        document.getElementById('knowledge-keywords').value = keywords; // 设置关键词
                         
-                        // 设置知识类型
+                        // 设置业务线
+                        const businessSelect = document.getElementById('knowledge-business');
+                        businessSelect.value = business;
+                        
+                        // 设置切片类型
                         const typeSelect = document.getElementById('knowledge-type');
-                        let typeValue = 'document';
+                        let typeValue = 'qa';
                         
-                        if (type === '文档') typeValue = 'document';
-                        else if (type === '问答对') typeValue = 'qa';
-                        else if (type === '切片') typeValue = 'chunk';
+                        if (type === '问答切片') typeValue = 'qa';
+                        else if (type === '文档切片') typeValue = 'chunk';
                         
                         typeSelect.value = typeValue;
                         
@@ -1818,7 +1956,7 @@
                         
                         categorySelect.value = categoryValue;
                         
-                        // 根据知识类型显示不同的内容输入区域
+                        // 根据切片类型显示不同的内容输入区域
                         if (typeValue === 'qa') {
                             document.getElementById('normal-content-container').style.display = 'none';
                             document.getElementById('qa-content-container').style.display = 'block';
@@ -1848,283 +1986,39 @@
                         selectedTagsContainer.innerHTML = '';
                         
                         // 重置标签选择器
-                        document.querySelectorAll('.tag-option').forEach(opt => {
-                            opt.classList.remove('selected');
-                        });
+                        resetTagSelectors();
                         
-                        // 隐藏所有子分类和孙分类
-                        document.querySelectorAll('.tag-subcategory').forEach(sub => {
-                            sub.classList.remove('active');
-                        });
-                        document.querySelectorAll('.tag-subsubcategory').forEach(subsub => {
-                            subsub.classList.remove('active');
-                        });
-                        
-                        // 获取并添加标签
-                        const level1Tags = row.cells[5].querySelectorAll('.tag-level1');
-                        const level2Tags = row.cells[5].querySelectorAll('.tag-level2');
-                        const level3Tags = row.cells[5].querySelectorAll('.tag-level3');
-                        
-                        // 先确定要选中的一级标签（只选择一个）
-                        if (level1Tags.length > 0) {
-                            const firstTag = level1Tags[0].textContent.trim();
+                        // 设置标签
+                        if (level1) {
+                            const tagLevel1Select = document.getElementById('tag-level1-select');
+                            tagLevel1Select.value = level1;
                             
-                            // 在选择器中标记为选中
-                            const option = document.querySelector(`.tag-option[data-category="${firstTag}"][data-level="1"]`);
-                            if (option) {
-                                option.classList.add('selected');
-                                
-                                // 展开子分类
-                                const subcategory = document.getElementById(`${firstTag}-subcategory`);
-                                if (subcategory) {
-                                    subcategory.classList.add('active');
-                                }
-                                
-                                // 添加到已选标签
-                                addTag(firstTag, 1);
-                            }
-                        }
-                        
-                        // 再添加二级标签（如果有）
-                        if (level2Tags.length > 0) {
-                            const tagText = level2Tags[0].textContent.trim();
-                            let parentCategory = '';
+                            // 触发change事件
+                            const event = new Event('change');
+                            tagLevel1Select.dispatchEvent(event);
                             
-                            // 查找父分类
-                            for (const category in tagRelations) {
-                                if (tagRelations[category].includes(tagText)) {
-                                    parentCategory = category;
-                                    break;
-                                }
-                            }
-                            
-                            if (parentCategory) {
-                                // 在选择器中标记为选中
-                                const option = document.querySelector(`.tag-suboption[data-category="${parentCategory}"][data-subitem="${tagText}"]`);
-                                if (option) {
-                                    option.classList.add('selected');
+                            if (level2) {
+                                // 等待二级标签选择器更新
+                                setTimeout(() => {
+                                    const tagLevel2Select = document.getElementById('tag-level2-select');
+                                    tagLevel2Select.value = level2;
+                                    tagLevel2Select.dispatchEvent(new Event('change'));
                                     
-                                    // 展开孙分类
-                                    const subsubcategory = document.getElementById(`${tagText}-subsubcategory`);
-                                    if (subsubcategory) {
-                                        subsubcategory.classList.add('active');
+                                    if (level3) {
+                                        // 等待三级标签选择器更新
+                                        setTimeout(() => {
+                                            const tagLevel3Select = document.getElementById('tag-level3-select');
+                                            tagLevel3Select.value = level3;
+                                            tagLevel3Select.dispatchEvent(new Event('change'));
+                                        }, 100);
                                     }
-                                }
-                                
-                                // 添加到已选标签
-                                addTag(tagText, 2, parentCategory);
-                            }
-                        }
-                        
-                        // 最后添加三级标签（如果有）
-                        if (level3Tags.length > 0) {
-                            const tagText = level3Tags[0].textContent.trim();
-                            let parentCategory = '';
-                            let grandparentCategory = '';
-                            
-                            // 查找父分类和祖父分类
-                            for (const subitem in tag3Relations) {
-                                if (tag3Relations[subitem].includes(tagText)) {
-                                    parentCategory = subitem;
-                                    
-                                    // 查找祖父分类
-                                    for (const category in tagRelations) {
-                                        if (tagRelations[category].includes(subitem)) {
-                                            grandparentCategory = category;
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                }
-                            }
-                            
-                            if (parentCategory && grandparentCategory) {
-                                // 在选择器中标记为选中
-                                const option = document.querySelector(`.tag-subsuboption[data-category="${grandparentCategory}"][data-subitem="${parentCategory}"][data-subsubitem="${tagText}"]`);
-                                if (option) {
-                                    option.classList.add('selected');
-                                }
-                                
-                                // 添加到已选标签
-                                addTag(tagText, 3, parentCategory, grandparentCategory);
+                                }, 100);
                             }
                         }
                         
                         modal.style.display = 'flex';
                     });
                 });
-            }
-            
-            // 保存知识
-            function saveKnowledge() {
-                // 获取表单数据
-                const id = document.getElementById('knowledge-id').value;
-                const title = document.getElementById('knowledge-title').value;
-                const typeValue = document.getElementById('knowledge-type').value;
-                const categoryValue = document.getElementById('knowledge-category').value;
-                const uploader = document.getElementById('knowledge-uploader').value;
-                const modal = document.getElementById('knowledge-modal');
-                
-                // 验证必填字段
-                if (!title) {
-                    alert('请输入标题');
-                    return;
-                }
-                
-                if (!uploader) {
-                    alert('请输入上传者');
-                    return;
-                }
-                
-                // 根据知识类型获取内容
-                let content = '';
-                let typeText = '';
-                
-                switch (typeValue) {
-                    case 'document':
-                        content = document.getElementById('knowledge-content').value;
-                        typeText = '文档';
-                        break;
-                    case 'qa':
-                        const question = document.getElementById('knowledge-question').value;
-                        const answer = document.getElementById('knowledge-answer').value;
-                        
-                        if (!question) {
-                            alert('请输入问题');
-                            return;
-                        }
-                        
-                        if (!answer) {
-                            alert('请输入回答');
-                            return;
-                        }
-                        
-                        content = `问：${question} 答：${answer}`;
-                        typeText = '问答对';
-                        break;
-                    case 'chunk':
-                        content = document.getElementById('knowledge-content').value;
-                        typeText = '切片';
-                        break;
-                }
-                
-                if (!content) {
-                    alert('请输入内容');
-                    return;
-                }
-                
-                // 根据内容分类类型获取分类文本
-                let categoryText = '';
-                switch (categoryValue) {
-                    case 'knowledge':
-                        categoryText = '知识';
-                        break;
-                    case 'strategy':
-                        categoryText = '策略';
-                        break;
-                }
-                
-                // 获取标签
-                const level1Tags = [];
-                const level2Tags = [];
-                const level3Tags = [];
-                
-                document.querySelectorAll('#selected-tags .selected-tag-level1').forEach(item => {
-                    level1Tags.push(item.getAttribute('data-text'));
-                });
-                
-                document.querySelectorAll('#selected-tags .selected-tag-level2').forEach(item => {
-                    level2Tags.push({
-                        text: item.getAttribute('data-text'),
-                        parent: item.getAttribute('data-parent')
-                    });
-                });
-                
-                document.querySelectorAll('#selected-tags .selected-tag-level3').forEach(item => {
-                    level3Tags.push({
-                        text: item.getAttribute('data-text'),
-                        parent: item.getAttribute('data-parent'),
-                        grandparent: item.getAttribute('data-grandparent')
-                    });
-                });
-                
-                // 创建标签HTML
-                let tagsHtml = '<div class="tags-container">';
-                
-                level1Tags.forEach(tag => {
-                    tagsHtml += `<span class="tag-level1">${tag}</span>`;
-                });
-                
-                level2Tags.forEach(tag => {
-                    tagsHtml += `<span class="tag-level2">${tag.text}</span>`;
-                });
-                
-                level3Tags.forEach(tag => {
-                    tagsHtml += `<span class="tag-level3">${tag.text}</span>`;
-                });
-                
-                tagsHtml += '</div>';
-                
-                // 添加或更新知识条目
-                if (id) {
-                    // 更新现有知识
-                    const rows = document.querySelectorAll('.knowledge-table tbody tr');
-                    rows.forEach(row => {
-                        if (row.cells[0].textContent === id) {
-                            row.cells[1].textContent = title;
-                            row.cells[2].textContent = typeText;
-                            row.cells[3].textContent = categoryText;
-                            row.cells[4].innerHTML = `<span class="content-preview">${content}</span>`;
-                            row.cells[5].innerHTML = tagsHtml;
-                            row.cells[6].textContent = uploader;
-                        }
-                    });
-                } else {
-                    // 添加新知识
-                    const newId = knowledgeCounter++;
-                    const today = new Date();
-                    const date = today.getFullYear() + '-' + 
-                        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                        String(today.getDate()).padStart(2, '0');
-                    
-                    const relatedThoughts = Math.floor(Math.random() * 5); // 模拟关联思路数量
-                    
-                    const newRow = `
-                    <tr>
-                        <td>${newId}</td>
-                        <td>${title}</td>
-                        <td>${typeText}</td>
-                        <td>${categoryText}</td>
-                        <td>${relatedThoughts}</td>
-                        <td class="content-preview">${content}</td>
-                        <td>${tagsHtml}</td>
-                        <td>${uploader}</td>
-                        <td>${relatedThoughts}</td>
-                        <td>${date}</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-sm btn-edit">编辑</button>
-                            <button class="btn btn-sm btn-delete">删除</button>
-                        </td>
-                    </tr>
-                    `;
-                    
-                    // 移除可能存在的"无数据"行
-                    const noDataRow = document.getElementById('no-data-row');
-                    if (noDataRow) {
-                        noDataRow.remove();
-                    }
-                    
-                    // 添加新行
-                    const tbody = document.getElementById('knowledge-list');
-                    tbody.insertAdjacentHTML('afterbegin', newRow);
-                    
-                    // 为新行添加事件处理
-                    setupEditButtons();
-                    setupDeleteButtons();
-                }
-                
-                // 关闭模态框
-                modal.style.display = 'none';
             }
             
             // 初始化页面显示

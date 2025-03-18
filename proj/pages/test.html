@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 安全策略和样式部分保持不变 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>指标准入管理系统</title>
+    <style>
+        /* 保持原有样式不变 */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; }
+        body { background-color: #f5f7fa; color: #333; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); padding: 20px; }
+        /* 其他样式保持不变... */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部和筛选区域保持不变 -->
+        
+        <!-- 表格区域 -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <!-- 表头保持不变 -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 修改分类单元格增加data-category属性 -->
+                    <tr>
+                        <td><input type="checkbox" class="checkbox-custom row-checkbox"></td>
+                        <td>KPI001</td>
+                        <td><a href="#" class="indicator-link">用户活跃度</a></td>
+                        <td class="editable" data-field="alias">活跃度,UAV</td>
+                        <td class="dropdown-select" data-category="level1">贝壳城市</td>
+                        <td class="dropdown-select" data-category="level2">客源</td>
+                        <td class="dropdown-select" data-category="level3">好房</td>
+                        <td class="dropdown-select" data-category="level4">房源点评</td>
+                        <!-- 其他单元格保持不变 -->
+                    </tr>
+                    <!-- 其他行保持相同结构 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 版本弹窗保持不变 -->
+    </div>
+
+    <script>
+        // 修复后的分类切换功能
+        document.querySelectorAll('.dropdown-select').forEach(dropdown => {
+            dropdown.addEventListener('click', function() {
+                const currentValue = this.textContent.trim();
+                let options = [];
+                const categoryType = this.dataset.category;
+
+                // 独立选项配置
+                const optionMap = {
+                    level1: ['贝壳城市', '北链', '整装'],
+                    level2: ['房源', '客源', '商机', '门店'],
+                    level3: ['好房', '议价', '房源维护'],
+                    level4: ['房源点评', '房源分等']
+                };
+
+                options = optionMap[categoryType] || [];
+
+                // 生成选项
+                const select = document.createElement('select');
+                select.className = 'category-select';
+                options.forEach(option => {
+                    const optionElem = document.createElement('option');
+                    optionElem.value = option;
+                    optionElem.textContent = option;
+                    optionElem.selected = option === currentValue;
+                    select.appendChild(optionElem);
+                });
+
+                // 事件处理
+                const handleSelect = () => {
+                    this.textContent = select.value;
+                    select.removeEventListener('change', handleSelect);
+                    select.removeEventListener('blur', handleBlur);
+                };
+
+                const handleBlur = () => {
+                    this.textContent = select.value;
+                    select.removeEventListener('change', handleSelect);
+                    select.removeEventListener('blur', handleBlur);
+                };
+
+                select.addEventListener('change', handleSelect);
+                select.addEventListener('blur', handleBlur);
+
+                this.innerHTML = '';
+                this.appendChild(select);
+                select.focus();
+            });
+        });
+
+        // 其他功能保持不变
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+            toggleBatchActions();
+        });
+
+        function toggleBatchActions() {
+            const anyChecked = [...document.querySelectorAll('.row-checkbox')].some(c => c.checked);
+            document.querySelector('.selection-actions').classList.toggle('active', anyChecked);
+        }
+
+        // 版本弹窗控制
+        const versionModal = document.getElementById('versionModal');
+        document.getElementById('showVersionBtn').addEventListener('click', () => versionModal.style.display = 'flex');
+        document.querySelector('.close-btn').addEventListener('click', () => versionModal.style.display = 'none');
+        window.addEventListener('click', e => e.target === versionModal && (versionModal.style.display = 'none'));
+    </script>
+</body>
+</html>
