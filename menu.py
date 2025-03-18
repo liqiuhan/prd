@@ -354,8 +354,8 @@ for index, rel_path in enumerate(sorted(html_files)):
     # 创建完整的URL
     full_url = f"{base_url}/{url_path}"
     
-    # 显示不带.html后缀的名称
-    display_name = rel_path
+    # 显示不带.html后缀的文件名（不包含路径）
+    display_name = file_name
     if display_name.lower().endswith('.html'):
         display_name = display_name[:-5]  # 移除.html后缀
     
@@ -386,7 +386,7 @@ for index, rel_path in enumerate(sorted(html_files)):
             else:
                 number = f"{parts[0]}.1"
     
-    # 添加到HTML内容，使用完整URL
+    # 添加到HTML内容，使用完整URL和仅显示文件名
     html_content += f"""                <li data-path="{full_url}">
                     <div class="file-link" onclick="loadPage('{full_url}')" oncontextmenu="showMenu(event, '{full_url}'); return false;">
                         <span class="file-number">{number}</span>
@@ -530,6 +530,7 @@ try:
         f.write(html_content)
     print(f"ChatBI原型目录已生成，保存在 {output_path}")
     print(f"链接已更新: 所有 D:\\prd 路径已替换为 {base_url}")
+    print("目录项只显示文件名，不显示完整路径")
     
     # 输出编号逻辑说明
     print("\n编号逻辑说明:")
