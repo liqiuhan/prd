@@ -1,0 +1,1791 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>指标圈选工具</title>
+    <!-- 添加D3.js依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@6"></script>
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --primary-light: #91d5ff;
+            --border-color: #e8e8e8;
+            --background-color: #f5f5f5;
+            --hover-color: #e6f7ff;
+            --text-color: #333;
+            --light-text: #666;
+            --node-spacing: 15px;
+            --level-spacing: 100px;
+            --success-color: #52c41a;
+            --error-color: #ff4d4f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 16px;
+            color: #000;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #40a9ff;
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+        }
+        
+        button.secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        button.secondary:hover {
+            background-color: var(--hover-color);
+        }
+        
+        button.success {
+            background-color: var(--success-color);
+        }
+        
+        button.success:hover {
+            background-color: #73d13d;
+            box-shadow: 0 2px 8px rgba(82, 196, 26, 0.2);
+        }
+        
+        button.danger {
+            background-color: #ff4d4f;
+        }
+        
+        button.danger:hover {
+            background-color: #ff7875;
+        }
+        
+        .user-prompt {
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.6;
+        }
+        
+        .user-prompt p {
+            margin-bottom: 8px;
+        }
+        
+        .user-prompt strong {
+            color: var(--primary-color);
+        }
+        
+        .user-prompt .role-package {
+            font-weight: 500;
+            background-color: var(--hover-color);
+            border-radius: 4px;
+            padding: 2px 8px;
+            margin: 0 2px;
+        }
+        
+        .reset-btn {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        /* 横向层级筛选器样式 */
+        .metrics-filter {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+        
+        .filter-level {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+            min-width: 200px;
+            flex: 1;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s;
+        }
+        
+        .filter-level:hover {
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-level h3 {
+            margin-bottom: 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-color);
+        }
+        
+        .filter-level h3::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: a16px;
+            background-color: var(--primary-color);
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+        
+        .select-all {
+            font-size: 13px;
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        
+        .select-all:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .checkbox-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .checkbox-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .checkbox-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .checkbox-container::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        
+        .checkbox-container::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+        }
+        
+        .checkbox-item:hover {
+            background-color: var(--hover-color);
+            border-radius: 4px;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+        }
+        
+        /* 美化版思维导图样式 */
+        .mindmap-container {
+            margin-top: 15px;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: white;
+            overflow: auto;
+            min-height: 350px;
+            position: relative;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .mindmap {
+            display: flex;
+            justify-content: flex-start;
+            padding: 20px;
+            position: relative;
+            min-height: 300px;
+        }
+        
+        .mind-column {
+            display: flex;
+            flex-direction: column;
+            margin-right: 80px; /* 调整列间距 */
+            position: relative;
+            justify-content: center;
+            min-width: 140px; /* 确保每列有足够宽度 */
+        }
+        
+        .mind-node-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px 0;
+            margin: 5px 0;
+        }
+        
+        .mind-node {
+            padding: 8px 15px;
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
+            background-color: white;
+            margin: 8px 0; /* 减少节点垂直间距 */
+            white-space: nowrap;
+            position: relative;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .mind-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: #40a9ff;
+        }
+        
+        .mind-node .delete-btn {
+            width: 16px;
+            height: 16px;
+            background: #ff4d4f;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mind-node .delete-btn:hover {
+            background: #ff7875;
+            transform: scale(1.1);
+        }
+        
+        .mind-node.no-permission {
+            border-color: var(--error-color);
+            color: var(--error-color);
+        }
+        
+        /* 曲线连接器的SVG样式 */
+        svg.connector-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: visible;
+        }
+        
+        path.connector {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 1.5;
+            stroke-opacity: 0.8;
+            pointer-events: none;
+        }
+        
+        path.connector-no-permission {
+            stroke: var(--error-color);
+            stroke-dasharray: 5, 5;
+        }
+        
+        .connector-dot {
+            fill: var(--primary-color);
+            stroke: none;
+        }
+        
+        .connector-dot-no-permission {
+            fill: var(--error-color);
+        }
+        
+        .step-nav {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 150px;
+            position: relative;
+        }
+        
+        .step-item:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: 1;
+        }
+        
+        .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-item.active .step-num {
+            background-color: var(--primary-color);
+        }
+        
+        .step-item.completed .step-num {
+            background-color: #52c41a;
+        }
+        
+        .step-item.completed:not(:last-child)::after {
+            background-color: #52c41a;
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+        
+        .step-item.active .step-label {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .step-item.completed .step-label {
+            color: #52c41a;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .mindmap-empty-state {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #999;
+            font-size: 16px;
+        }
+        
+        .filter-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+        }
+        
+        .auth-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .auth-btn i {
+            font-size: 14px;
+        }
+        
+        .auth-info {
+            background-color: #fff7e6;
+            border-left: 4px solid #fa8c16;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .auth-info p {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-filter {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .filter-level {
+                min-width: auto;
+            }
+            
+            .step-nav {
+                overflow-x: auto;
+                padding-bottom: 10px;
+                justify-content: flex-start;
+            }
+            
+            .step-item {
+                width: 100px;
+            }
+            
+            .step-label {
+                font-size: 12px;
+            }
+            
+            .filter-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filter-actions .left, .filter-actions .right {
+                display: flex;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 主页面 -->
+    <div id="mainPage" class="page active">
+        <div class="container">
+            <div class="header">
+                <h1>指标圈选工具</h1>
+            </div>
+            
+            <div class="card">
+                <div class="step-nav">
+                    <div class="step-item active">
+                        <div class="step-num">1</div>
+                        <div class="step-label">指标圈选</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-label">权限管理</div>
+                    </div>
+                </div>
+                
+                <div id="step1Content" class="step-content">
+                    <div class="user-prompt">
+                        <p>管理员<strong>张三</strong>为您配置了<span class="role-package">城市总</span>、<span class="role-package">COO管驾</span>角色包，您拥有以下指标权限。</p>
+                        <p>您可以额外选择您想看的指标或者删除不想看的指标，之后您的可查指标范围将根据您的选择改变。</p>
+                        <button class="secondary reset-btn" id="resetToRoleBtn">
+                            <span>重置为角色包范围</span>
+                        </button>
+                    </div>
+                    
+                    <div class="metrics-filter">
+                        <div class="filter-level" id="level1">
+                            <h3>
+                                <div>第一层级: 业务域</div>
+                                <button class="select-all" data-level="1">全选</button>
+                            </h3>
+                            <div class="checkbox-container">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="business1" data-level="1" data-value="用户增长">
+                                    <label for="business1">用户增长</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="business2" data-level="1" data-value="内容生态">
+                                    <label for="business2">内容生态</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="business3" data-level="1" data-value="商业变现">
+                                    <label for="business3">商业变现</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="business4" data-level="1" data-value="社区运营">
+                                    <label for="business4">社区运营</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-level" id="level2" style="display: none;">
+                            <h3>
+                                <div>第二层级: 业务线</div>
+                                <button class="select-all" data-level="2">全选</button>
+                            </h3>
+                            <div class="checkbox-container" data-parent="用户增长">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line1" data-level="2" data-value="新用户获取">
+                                    <label for="line1">新用户获取</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line2" data-level="2" data-value="用户留存">
+                                    <label for="line2">用户留存</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line3" data-level="2" data-value="用户活跃">
+                                    <label for="line3">用户活跃</label>
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-container" data-parent="内容生态" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line4" data-level="2" data-value="内容创作">
+                                    <label for="line4">内容创作</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line5" data-level="2" data-value="内容分发">
+                                    <label for="line5">内容分发</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line6" data-level="2" data-value="内容互动">
+                                    <label for="line6">内容互动</label>
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-container" data-parent="商业变现" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line7" data-level="2" data-value="广告变现">
+                                    <label for="line7">广告变现</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line8" data-level="2" data-value="会员订阅">
+                                    <label for="line8">会员订阅</label>
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-container" data-parent="社区运营" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line9" data-level="2" data-value="社区活动">
+                                    <label for="line9">社区活动</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="line10" data-level="2" data-value="用户互动">
+                                    <label for="line10">用户互动</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-level" id="level3" style="display: none;">
+                            <h3>
+                                <div>第三层级: 指标分类</div>
+                                <button class="select-all" data-level="3">全选</button>
+                            </h3>
+                            <div class="checkbox-container" data-parent="新用户获取">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category1" data-level="3" data-value="渠道效果">
+                                    <label for="category1">渠道效果</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category2" data-level="3" data-value="获客成本">
+                                    <label for="category2">获客成本</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category3" data-level="3" data-value="转化率">
+                                    <label for="category3">转化率</label>
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-container" data-parent="用户留存" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category4" data-level="3" data-value="留存率">
+                                    <label for="category4">留存率</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category5" data-level="3" data-value="流失率">
+                                    <label for="category5">流失率</label>
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-container" data-parent="用户活跃" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category6" data-level="3" data-value="日活">
+                                    <label for="category6">日活</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category7" data-level="3" data-value="月活">
+                                    <label for="category7">月活</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category8" data-level="3" data-value="使用时长">
+                                    <label for="category8">使用时长</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 内容创作的指标分类 -->
+                            <div class="checkbox-container" data-parent="内容创作" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category9" data-level="3" data-value="创作数量">
+                                    <label for="category9">创作数量</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category10" data-level="3" data-value="创作质量">
+                                    <label for="category10">创作质量</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 内容分发的指标分类 -->
+                            <div class="checkbox-container" data-parent="内容分发" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category11" data-level="3" data-value="分发效率">
+                                    <label for="category11">分发效率</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="category12" data-level="3" data-value="分发精准度">
+                                    <label for="category12">分发精准度</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 其他业务线下的指标分类 -->
+                        </div>
+                        
+                        <div class="filter-level" id="level4" style="display: none;">
+                            <h3>
+                                <div>第四层级: 指标类型</div>
+                                <button class="select-all" data-level="4">全选</button>
+                            </h3>
+                            <div class="checkbox-container" data-parent="渠道效果">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type1" data-level="4" data-value="流量指标">
+                                    <label for="type1">流量指标</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type2" data-level="4" data-value="质量指标">
+                                    <label for="type2">质量指标</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type3" data-level="4" data-value="增长指标">
+                                    <label for="type3">增长指标</label>
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-container" data-parent="获客成本" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type4" data-level="4" data-value="CAC">
+                                    <label for="type4">CAC</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type5" data-level="4" data-value="ROI">
+                                    <label for="type5">ROI</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 留存率的指标类型 -->
+                            <div class="checkbox-container" data-parent="留存率" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type6" data-level="4" data-value="次日留存">
+                                    <label for="type6">次日留存</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type7" data-level="4" data-value="周留存">
+                                    <label for="type7">周留存</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type8" data-level="4" data-value="月留存">
+                                    <label for="type8">月留存</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 创作数量的指标类型 -->
+                            <div class="checkbox-container" data-parent="创作数量" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type9" data-level="4" data-value="日均创作量">
+                                    <label for="type9">日均创作量</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="type10" data-level="4" data-value="活跃创作者">
+                                    <label for="type10">活跃创作者</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 其他指标分类下的指标类型 -->
+                        </div>
+                        
+                        <div class="filter-level" id="level5" style="display: none;">
+                            <h3>
+                                <div>第五层级: 指标名称</div>
+                                <button class="select-all" data-level="5">全选</button>
+                            </h3>
+                            <div class="checkbox-container" data-parent="流量指标">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric1" data-level="5" data-value="UV">
+                                    <label for="metric1">UV</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric2" data-level="5" data-value="PV">
+                                    <label for="metric2">PV</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric3" data-level="5" data-value="点击率">
+                                    <label for="metric3">点击率</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric4" data-level="5" data-value="跳出率">
+                                    <label for="metric4">跳出率</label>
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-container" data-parent="质量指标" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric5" data-level="5" data-value="转化率">
+                                    <label for="metric5">转化率</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric6" data-level="5" data-value="质量分">
+                                    <label for="metric6">质量分</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 次日留存的指标名称 -->
+                            <div class="checkbox-container" data-parent="次日留存" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric7" data-level="5" data-value="新用户次日留存率">
+                                    <label for="metric7">新用户次日留存率</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric8" data-level="5" data-value="活跃用户次日留存率">
+                                    <label for="metric8">活跃用户次日留存率</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 周留存的指标名称 -->
+                            <div class="checkbox-container" data-parent="周留存" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric9" data-level="5" data-value="周活跃用户数">
+                                    <label for="metric9">周活跃用户数</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric10" data-level="5" data-value="周留存率">
+                                    <label for="metric10">周留存率</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 日均创作量的指标名称 -->
+                            <div class="checkbox-container" data-parent="日均创作量" style="display: none;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric11" data-level="5" data-value="人均创作量">
+                                    <label for="metric11">人均创作量</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="metric12" data-level="5" data-value="高质量创作占比">
+                                    <label for="metric12">高质量创作占比</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 其他指标类型下的指标名称 -->
+                        </div>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <div class="left">
+                            <button class="secondary" id="clearAllBtn">清空选择</button>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px;">已选指标路径</h3>
+                    <div class="mindmap-container">
+                        <div id="mindmapContainer" class="mindmap">
+                            <!-- 思维导图将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="nextStep1Btn">下一步</button>
+                    </div>
+                </div>
+                
+                <div id="step2Content" class="step-content" style="display: none;">
+                    <div class="preview-section">
+                        <h3>已选指标路径预览</h3>
+                        
+                        <div class="auth-info">
+                            <p>标红的指标为您没有权限的指标，点击一键申请，可为自己申请以下全部指标权限。</p>
+                            <button id="oneClickRequestBtn">一键申请</button>
+                        </div>
+                        
+                        <div class="mindmap-container">
+                            <div id="previewMindmapContainer" class="mindmap">
+                                <!-- 思维导图将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="secondary" id="prevStep2Btn">上一步</button>
+                        <button id="saveBtn">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取页面元素
+            const mainPage = document.getElementById('mainPage');
+            
+            // 步骤内容
+            const step1Content = document.getElementById('step1Content');
+            const step2Content = document.getElementById('step2Content');
+            
+            // 步骤按钮
+            const nextStep1Btn = document.getElementById('nextStep1Btn');
+            const prevStep2Btn = document.getElementById('prevStep2Btn');
+            const saveBtn = document.getElementById('saveBtn');
+            const oneClickRequestBtn = document.getElementById('oneClickRequestBtn');
+            
+            // 筛选器相关按钮
+            const selectAllBtns = document.querySelectorAll('.select-all');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            const resetToRoleBtn = document.getElementById('resetToRoleBtn');
+            
+            // 步骤导航项
+            const stepItems = document.querySelectorAll('.step-item');
+            
+            // 复选框
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+            // 思维导图容器
+            const mindmapContainer = document.getElementById('mindmapContainer');
+            const previewMindmapContainer = document.getElementById('previewMindmapContainer');
+            
+            // 存储选中的指标路径
+            let selectedPaths = [];
+            // 存储角色包默认指标路径
+            const rolePackageDefaultPaths = [
+                ["用户增长", "新用户获取", "渠道效果", "流量指标", "UV"],
+                ["用户增长", "新用户获取", "渠道效果", "流量指标", "PV"],
+                ["用户增长", "用户留存", "留存率", "周留存", "周活跃用户数"],
+                ["内容生态", "内容创作", "创作数量", "日均创作量", "人均创作量"],
+                ["商业变现", "广告变现", "广告效果", "点击率", "千次展示收益"]
+            ];
+            
+            // 存储无权限的指标集合（用于在预览中标红）
+            const noPermissionPaths = [
+                ["内容生态", "内容创作", "创作质量", "内容评分", "优质内容率"],
+                ["内容生态", "内容分发", "分发效率", "推荐算法", "精准推荐率"],
+                ["社区运营", "社区活动", "活动效果", "参与度", "人均互动次数"],
+                ["社区运营", "社区活动", "用户留存", "活动复参率", "连续参与率"]
+            ];
+            
+            // 一键申请按钮点击事件
+            oneClickRequestBtn.addEventListener('click', function() {
+                alert('已提交申请，等待审批。');
+            });
+            
+            // 初始化页面时加载角色包默认权限
+            function loadDefaultRolePermissions() {
+                // 模拟加载默认权限
+                selectedPaths = [...rolePackageDefaultPaths];
+                
+                // 勾选对应的复选框
+                selectedPaths.forEach(path => {
+                    // 第一层级
+                    const level1Checkbox = document.querySelector(`input[data-level="1"][data-value="${path[0]}"]`);
+                    if (level1Checkbox && !level1Checkbox.checked) {
+                        level1Checkbox.checked = true;
+                        const event = new Event('change');
+                        level1Checkbox.dispatchEvent(event);
+                    }
+                    
+                    // 确保其他层级对应的复选框也被勾选
+                    setTimeout(() => {
+                        // 第二层级
+                        const level2Checkbox = document.querySelector(`input[data-level="2"][data-value="${path[1]}"]`);
+                        if (level2Checkbox && !level2Checkbox.checked) {
+                            level2Checkbox.checked = true;
+                            const event = new Event('change');
+                            level2Checkbox.dispatchEvent(event);
+                        }
+                        
+                        setTimeout(() => {
+                            // 第三层级
+                            const level3Checkbox = document.querySelector(`input[data-level="3"][data-value="${path[2]}"]`);
+                            if (level3Checkbox && !level3Checkbox.checked) {
+                                level3Checkbox.checked = true;
+                                const event = new Event('change');
+                                level3Checkbox.dispatchEvent(event);
+                            }
+                            
+                            setTimeout(() => {
+                                // 第四层级
+                                const level4Checkbox = document.querySelector(`input[data-level="4"][data-value="${path[3]}"]`);
+                                if (level4Checkbox && !level4Checkbox.checked) {
+                                    level4Checkbox.checked = true;
+                                    const event = new Event('change');
+                                    level4Checkbox.dispatchEvent(event);
+                                }
+                                
+                                setTimeout(() => {
+                                    // 第五层级
+                                    const level5Checkbox = document.querySelector(`input[data-level="5"][data-value="${path[4]}"]`);
+                                    if (level5Checkbox && !level5Checkbox.checked) {
+                                        level5Checkbox.checked = true;
+                                        const event = new Event('change');
+                                        level5Checkbox.dispatchEvent(event);
+                                    }
+                                    
+                                    // 更新思维导图
+                                    renderMindmap(mindmapContainer, true);
+                                }, 100);
+                            }, 100);
+                        }, 100);
+                    }, 100);
+                });
+            }
+            
+            // 重置为角色包范围按钮
+            resetToRoleBtn.addEventListener('click', function() {
+                if (confirm('确定要重置为角色包默认范围吗？您当前的自定义选择将被清空。')) {
+                    // 清空现有选择
+                    clearAllSelections();
+                    
+                    // 加载角色包默认权限
+                    loadDefaultRolePermissions();
+                }
+            });
+            
+            // 全选按钮事件
+            selectAllBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const level = btn.dataset.level;
+                    const levelContainer = document.getElementById(`level${level}`);
+                    
+                    // 获取当前显示的复选框
+                    const visibleCheckboxes = levelContainer.querySelectorAll('.checkbox-container[style*="display: flex"] input[type="checkbox"]');
+                    
+                    // 判断是否需要全选或取消全选
+                    const needToCheck = Array.from(visibleCheckboxes).some(cb => !cb.checked);
+                    
+                    // 全选或取消全选
+                    visibleCheckboxes.forEach(cb => {
+                        if (cb.checked !== needToCheck) {
+                            cb.checked = needToCheck;
+                            // 触发change事件
+                            const event = new Event('change');
+                            cb.dispatchEvent(event);
+                        }
+                    });
+                });
+            });
+            
+            // 清空选择按钮事件
+            clearAllBtn.addEventListener('click', () => {
+                if (confirm('确定要清空所有选择吗？')) {
+                    clearAllSelections();
+                }
+            });
+            
+            // 清空所有选择的函数
+            function clearAllSelections() {
+                // 取消所有勾选的复选框
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        cb.checked = false;
+                        // 触发change事件
+                        const event = new Event('change');
+                        cb.dispatchEvent(event);
+                    }
+                });
+                
+                // 隐藏所有子级
+                for (let i = 2; i <= 5; i++) {
+                    document.getElementById(`level${i}`).style.display = 'none';
+                }
+                
+                // 清空选中路径
+                selectedPaths = [];
+                renderMindmap(mindmapContainer, true);
+            }
+            
+            // 步骤1下一步按钮
+            nextStep1Btn.addEventListener('click', () => {
+                if (selectedPaths.length === 0) {
+                    alert('请至少选择一个指标');
+                    return;
+                }
+                
+                step1Content.style.display = 'none';
+                step2Content.style.display = 'block';
+                stepItems[0].classList.remove('active');
+                stepItems[0].classList.add('completed');
+                stepItems[1].classList.add('active');
+                
+                // 渲染预览思维导图，加入无权限的指标
+                setTimeout(() => {
+                    renderPreviewMindmap();
+                }, 10);
+            });
+            
+            // 步骤2上一步按钮
+            prevStep2Btn.addEventListener('click', () => {
+                step2Content.style.display = 'none';
+                step1Content.style.display = 'block';
+                stepItems[1].classList.remove('active');
+                stepItems[0].classList.remove('completed');
+                stepItems[0].classList.add('active');
+            });
+            
+            // 保存按钮
+            saveBtn.addEventListener('click', () => {
+                alert('保存成功！您的指标权限已更新。');
+                resetPage();
+            });
+            
+            // 处理指标层级筛选逻辑 - 支持多选
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const checkbox = e.target;
+                    const level = parseInt(checkbox.dataset.level);
+                    const value = checkbox.dataset.value;
+                    
+                    if (checkbox.checked) {
+                        // 显示下一层级
+                        if (level < 5) {
+                            const nextLevel = document.getElementById(`level${level + 1}`);
+                            nextLevel.style.display = 'block';
+                            
+                            // 获取当前层级所有选中的值
+                            const checkedValues = [];
+                            document.querySelectorAll(`input[data-level="${level}"]:checked`).forEach(cb => {
+                                checkedValues.push(cb.dataset.value);
+                            });
+                            
+                            // 显示所有选中项的子项
+                            const childContainers = nextLevel.querySelectorAll(`.checkbox-container`);
+                            childContainers.forEach(container => {
+                                if (checkedValues.includes(container.dataset.parent)) {
+                                    container.style.display = 'flex';
+                                } else {
+                                    container.style.display = 'none';
+                                }
+                            });
+                        }
+                        
+                        // 更新选中路径
+                        updateSelectedPath(level, value, checkbox.checked);
+                    } else {
+                        // 如果是取消勾选
+                        // 检查当前层级是否还有其他选中项
+                        const currentLevelChecked = document.querySelectorAll(`input[data-level="${level}"]:checked`).length;
+                        
+                        // 如果当前层级没有选中项，则隐藏所有后续层级
+                        if (currentLevelChecked === 0) {
+                            for (let i = level + 1; i <= 5; i++) {
+                                document.getElementById(`level${i}`).style.display = 'none';
+                            }
+                        } else if (level < 5) {
+                            // 如果仍有其他选中项，只需更新下一级的显示
+                            const nextLevel = document.getElementById(`level${level + 1}`);
+                            
+                            // 获取当前层级所有选中的值
+                            const checkedValues = [];
+                            document.querySelectorAll(`input[data-level="${level}"]:checked`).forEach(cb => {
+                                checkedValues.push(cb.dataset.value);
+                            });
+                            
+                            // 更新子容器显示
+                            const childContainers = nextLevel.querySelectorAll(`.checkbox-container`);
+                            childContainers.forEach(container => {
+                                if (container.dataset.parent === value) {
+                                    // 隐藏取消选中项的子容器
+                                    container.style.display = 'none';
+                                    
+                                    // 取消该容器内所有选中状态
+                                    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                                        if (cb.checked) {
+                                            cb.checked = false;
+                                            // 触发change事件
+                                            const event = new Event('change');
+                                            cb.dispatchEvent(event);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        
+                        // 更新选中路径
+                        updateSelectedPath(level, value, checkbox.checked);
+                    }
+                });
+            });
+            
+            // 更新选中的指标路径
+            function updateSelectedPath(level, value, isChecked) {
+                if (isChecked) {
+                    // 确保不是从父节点触发的事件导致重复选择
+                    if (level === 5) {
+                        // 构建完整路径
+                        let parentValue4 = null, parentValue3 = null, parentValue2 = null, parentValue1 = null;
+                
+                        // 查找父级
+                        const level5Container = Array.from(document.querySelectorAll('.checkbox-container')).find(container =>
+                            container.querySelector(`input[data-level="5"][data-value="${value}"]`)
+                        );
+                        
+                        if (level5Container) {
+                            parentValue4 = level5Container.dataset.parent;
+                            
+                            const level4Container = Array.from(document.querySelectorAll('.checkbox-container')).find(container =>
+                                container.querySelector(`input[data-level="4"][data-value="${parentValue4}"]`)
+                            );
+                            
+                            if (level4Container) {
+                                parentValue3 = level4Container.dataset.parent;
+                                
+                                const level3Container = Array.from(document.querySelectorAll('.checkbox-container')).find(container =>
+                                    container.querySelector(`input[data-level="3"][data-value="${parentValue3}"]`)
+                                );
+                                
+                                if (level3Container) {
+                                    parentValue2 = level3Container.dataset.parent;
+                                    
+                                    const level2Container = Array.from(document.querySelectorAll('.checkbox-container')).find(container =>
+                                        container.querySelector(`input[data-level="2"][data-value="${parentValue2}"]`)
+                                    );
+                                    
+                                    if (level2Container) {
+                                        parentValue1 = level2Container.dataset.parent;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // 检查是否找到了完整路径
+                        if (parentValue1 && parentValue2 && parentValue3 && parentValue4) {
+                            const fullPath = [parentValue1, parentValue2, parentValue3, parentValue4, value];
+                            
+                            // 检查路径是否已存在
+                            const pathExists = selectedPaths.some(path => 
+                                path[0] === fullPath[0] && 
+                                path[1] === fullPath[1] && 
+                                path[2] === fullPath[2] && 
+                                path[3] === fullPath[3] && 
+                                path[4] === fullPath[4]
+                            );
+                            
+                            if (!pathExists) {
+                                selectedPaths.push(fullPath);
+                                // 更新思维导图
+                                renderMindmap(mindmapContainer, true);
+                            }
+                        }
+                    }
+                } else {
+                    // 移除包含该值的路径
+                    selectedPaths = selectedPaths.filter(path => {
+                        return path[level - 1] !== value;
+                    });
+                    
+                    // 更新思维导图
+                    renderMindmap(mindmapContainer, true);
+                }
+            }
+            
+            // 渲染思维导图
+            function renderMindmap(container, enableDelete = true) {
+                container.innerHTML = '';
+                
+                if (selectedPaths.length === 0) {
+                    container.innerHTML = '<div class="mindmap-empty-state">暂无选中的指标</div>';
+                    return;
+                }
+                
+                // 创建SVG连接器层
+                const svgConnector = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svgConnector.setAttribute("class", "connector-layer");
+                container.appendChild(svgConnector);
+                
+                // 构建多层次结构
+                const structureByLevel = [];
+                
+                // 初始化层级结构
+                for (let i = 0; i < 5; i++) {
+                    structureByLevel.push(new Map());
+                }
+                
+                // 填充层级结构
+                selectedPaths.forEach(path => {
+                    for (let level = 0; level < path.length; level++) {
+                        const value = path[level];
+                        
+                        if (!structureByLevel[level].has(value)) {
+                            structureByLevel[level].set(value, {
+                                children: new Set(),
+                                parent: level > 0 ? path[level - 1] : null
+                            });
+                        }
+                        
+                        // 添加子节点关系
+                        if (level < path.length - 1) {
+                            structureByLevel[level].get(value).children.add(path[level + 1]);
+                        }
+                    }
+                });
+                
+                // 创建思维导图DOM结构
+                for (let level = 0; level < structureByLevel.length; level++) {
+                    const levelColumn = document.createElement('div');
+                    levelColumn.className = 'mind-column';
+                    levelColumn.dataset.level = level + 1;
+                    
+                    // 处理此级别的所有节点
+                    const levelData = structureByLevel[level];
+                    const nodes = Array.from(levelData.keys());
+                    
+                    // 如果是第一级别，直接创建节点
+                    if (level === 0) {
+                        nodes.forEach(nodeName => {
+                            const nodeGroup = document.createElement('div');
+                            nodeGroup.className = 'mind-node-group';
+                            
+                            const nodeElement = document.createElement('div');
+                            nodeElement.className = 'mind-node';
+                            nodeElement.textContent = nodeName;
+                            nodeElement.dataset.value = nodeName;
+                            nodeElement.dataset.level = level + 1;
+                            
+                            nodeGroup.appendChild(nodeElement);
+                            levelColumn.appendChild(nodeGroup);
+                        });
+                    } else {
+                        // 对于其他级别，根据父节点分组
+                        const nodesByParent = {};
+                        
+                        nodes.forEach(nodeName => {
+                            const parentName = levelData.get(nodeName).parent;
+                            if (!nodesByParent[parentName]) {
+                                nodesByParent[parentName] = [];
+                            }
+                            nodesByParent[parentName].push(nodeName);
+                        });
+                        
+                        // 为每个父节点创建子节点组
+                        Object.keys(nodesByParent).forEach(parentName => {
+                            const childNodes = nodesByParent[parentName];
+                            const nodeGroup = document.createElement('div');
+                            nodeGroup.className = 'mind-node-group';
+                            nodeGroup.dataset.parent = parentName;
+                            
+                            childNodes.forEach(nodeName => {
+                                const nodeElement = document.createElement('div');
+                                nodeElement.className = 'mind-node';
+                                nodeElement.textContent = nodeName;
+                                nodeElement.dataset.value = nodeName;
+                                nodeElement.dataset.level = level + 1;
+                                nodeElement.dataset.parent = parentName;
+                                
+                                // 添加删除按钮
+                                if (enableDelete && level === 4) { // 只在第五级(指标名称)添加删除按钮
+                                    const deleteBtn = document.createElement('span');
+                                    deleteBtn.className = 'delete-btn';
+                                    deleteBtn.textContent = 'x';
+                                    deleteBtn.title = '删除';
+                                    
+                                    // 点击删除按钮
+                                    deleteBtn.addEventListener('click', () => {
+                                        // 查找完整路径
+                                        const fullPath = [];
+                                        let currentLevel = parseInt(nodeElement.dataset.level);
+                                        let currentValue = nodeElement.dataset.value;
+                                        
+                                        fullPath.unshift(currentValue);
+                                        let parentValue = nodeElement.dataset.parent;
+                                        
+                                        // 递归查找父节点和祖先节点
+                                        while (currentLevel > 1) {
+                                            fullPath.unshift(parentValue);
+                                            currentLevel--;
+                                            
+                                            // 找到上一级节点的父节点
+                                            if (currentLevel > 1) {
+                                                const parentNode = levelColumn.parentNode.querySelector(
+                                                    `.mind-column[data-level="${currentLevel}"] .mind-node[data-value="${parentValue}"]`
+                                                );
+                                                if (parentNode) {
+                                                    parentValue = parentNode.dataset.parent;
+                                                }
+                                            }
+                                        }
+                                        
+                                        // 从选中路径中移除
+                                        selectedPaths = selectedPaths.filter(path => {
+                                            return !(path[4] === fullPath[4] && 
+                                                   path[3] === fullPath[3] && 
+                                                   path[2] === fullPath[2] && 
+                                                   path[1] === fullPath[1] && 
+                                                   path[0] === fullPath[0]);
+                                        });
+                                        
+                                        // 取消对应的勾选框
+                                        const checkbox = document.querySelector(`input[data-level="5"][data-value="${nodeName}"]`);
+                                        if (checkbox) {
+                                            checkbox.checked = false;
+                                            
+                                            // 触发change事件来更新UI
+                                            const event = new Event('change');
+                                            checkbox.dispatchEvent(event);
+                                        } else {
+                                            // 如果找不到勾选框，直接重新渲染思维导图
+                                            renderMindmap(container, enableDelete);
+                                        }
+                                    });
+                                    
+                                    nodeElement.appendChild(deleteBtn);
+                                }
+                                
+                                nodeGroup.appendChild(nodeElement);
+                            });
+                            
+                            levelColumn.appendChild(nodeGroup);
+                        });
+                    }
+                    
+                    container.appendChild(levelColumn);
+                }
+                
+                // 添加连接线
+                setTimeout(() => {
+                    drawConnections(container, svgConnector);
+                }, 100);
+            }
+            
+            // 渲染预览思维导图（包括无权限的指标）
+            function renderPreviewMindmap() {
+                previewMindmapContainer.innerHTML = '';
+                
+                // 合并有权限和无权限的指标路径
+                const allPaths = [...selectedPaths, ...noPermissionPaths];
+                
+                if (allPaths.length === 0) {
+                    previewMindmapContainer.innerHTML = '<div class="mindmap-empty-state">暂无选中的指标</div>';
+                    return;
+                }
+                
+                // 创建SVG连接器层
+                const svgConnector = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svgConnector.setAttribute("class", "connector-layer");
+                previewMindmapContainer.appendChild(svgConnector);
+                
+                // 构建多层次结构
+                const structureByLevel = [];
+                
+                // 初始化层级结构
+                for (let i = 0; i < 5; i++) {
+                    structureByLevel.push(new Map());
+                }
+                
+                // 填充层级结构
+                allPaths.forEach(path => {
+                    for (let level = 0; level < path.length; level++) {
+                        const value = path[level];
+                        
+                        if (!structureByLevel[level].has(value)) {
+                            structureByLevel[level].set(value, {
+                                children: new Set(),
+                                parent: level > 0 ? path[level - 1] : null,
+                                // 标记无权限的节点
+                                isNoPermission: isNoPermissionPath(path)
+                            });
+                        }
+                        
+                        // 添加子节点关系
+                        if (level < path.length - 1) {
+                            structureByLevel[level].get(value).children.add(path[level + 1]);
+                        }
+                    }
+                });
+                
+                // 创建思维导图DOM结构
+                for (let level = 0; level < structureByLevel.length; level++) {
+                    const levelColumn = document.createElement('div');
+                    levelColumn.className = 'mind-column';
+                    levelColumn.dataset.level = level + 1;
+                    
+                    // 处理此级别的所有节点
+                    const levelData = structureByLevel[level];
+                    const nodes = Array.from(levelData.keys());
+                    
+                    // 如果是第一级别，直接创建节点
+                    if (level === 0) {
+                        nodes.forEach(nodeName => {
+                            const nodeGroup = document.createElement('div');
+                            nodeGroup.className = 'mind-node-group';
+                            
+                            const nodeElement = document.createElement('div');
+                            nodeElement.className = 'mind-node';
+                            
+                            // 检查是否是无权限节点
+                            const nodeInfo = levelData.get(nodeName);
+                            if (nodeInfo.isNoPermission) {
+                                nodeElement.classList.add('no-permission');
+                            }
+                            
+                            nodeElement.textContent = nodeName;
+                            nodeElement.dataset.value = nodeName;
+                            nodeElement.dataset.level = level + 1;
+                            nodeElement.dataset.noPermission = nodeInfo.isNoPermission;
+                            
+                            nodeGroup.appendChild(nodeElement);
+                            levelColumn.appendChild(nodeGroup);
+                        });
+                    } else {
+                        // 对于其他级别，根据父节点分组
+                        const nodesByParent = {};
+                        
+                        nodes.forEach(nodeName => {
+                            const parentName = levelData.get(nodeName).parent;
+                            if (!nodesByParent[parentName]) {
+                                nodesByParent[parentName] = [];
+                            }
+                            nodesByParent[parentName].push(nodeName);
+                        });
+                        
+                        // 为每个父节点创建子节点组
+                        Object.keys(nodesByParent).forEach(parentName => {
+                            const childNodes = nodesByParent[parentName];
+                            const nodeGroup = document.createElement('div');
+                            nodeGroup.className = 'mind-node-group';
+                            nodeGroup.dataset.parent = parentName;
+                            
+                            childNodes.forEach(nodeName => {
+                                const nodeElement = document.createElement('div');
+                                nodeElement.className = 'mind-node';
+                                
+                                // 检查是否是无权限节点
+                                const nodeInfo = levelData.get(nodeName);
+                                if (nodeInfo.isNoPermission) {
+                                    nodeElement.classList.add('no-permission');
+                                }
+                                
+                                nodeElement.textContent = nodeName;
+                                nodeElement.dataset.value = nodeName;
+                                nodeElement.dataset.level = level + 1;
+                                nodeElement.dataset.parent = parentName;
+                                nodeElement.dataset.noPermission = nodeInfo.isNoPermission;
+                                
+                                nodeGroup.appendChild(nodeElement);
+                            });
+                            
+                            levelColumn.appendChild(nodeGroup);
+                        });
+                    }
+                    
+                    previewMindmapContainer.appendChild(levelColumn);
+                }
+                
+                // 添加连接线
+                setTimeout(() => {
+                    drawPreviewConnections(previewMindmapContainer, svgConnector);
+                }, 100);
+            }
+            
+            // 绘制思维导图的连接线
+            function drawConnections(container, svg) {
+                // 清除SVG内容
+                svg.innerHTML = '';
+                
+                // 获取容器的尺寸
+                const containerWidth = container.scrollWidth;
+                const containerHeight = container.scrollHeight;
+                
+                // 设置SVG尺寸，确保足够大
+                svg.setAttribute('width', containerWidth);
+                svg.setAttribute('height', containerHeight);
+                
+                // 获取所有节点
+                const nodes = container.querySelectorAll('.mind-node');
+                
+                // 存储已处理的连接，避免重复
+                const processedConnections = new Set();
+                
+                nodes.forEach(node => {
+                    // 只为非第一级节点创建连接
+                    const level = parseInt(node.dataset.level);
+                    if (level > 1) {
+                        const parentValue = node.dataset.parent;
+                        
+                        // 查找父节点
+                        const parentSelector = `.mind-node[data-level="${level-1}"][data-value="${parentValue}"]`;
+                        const parentNodes = container.querySelectorAll(parentSelector);
+                        
+                        if (parentNodes.length > 0) {
+                            const parent = parentNodes[0];
+                            
+                            // 创建连接ID以避免重复
+                            const connectionId = `${parent.dataset.value}-${node.dataset.value}`;
+                            if (processedConnections.has(connectionId)) return;
+                            processedConnections.add(connectionId);
+                            
+                            // 获取节点位置
+                            const parentRect = parent.getBoundingClientRect();
+                            const nodeRect = node.getBoundingClientRect();
+                            const containerRect = container.getBoundingClientRect();
+                            
+                            // 计算相对于容器的坐标
+                            const parentRight = parentRect.right - containerRect.left;
+                            const parentCenterY = parentRect.top + parentRect.height / 2 - containerRect.top;
+                            const nodeLeft = nodeRect.left - containerRect.left;
+                            const nodeCenterY = nodeRect.top + nodeRect.height / 2 - containerRect.top;
+                            
+                            // 创建曲线
+                            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                            
+                            // 设置曲线控制点 (贝塞尔曲线)
+                            const controlPointX = parentRight + (nodeLeft - parentRight) * 0.5;
+                            const pathData = `M ${parentRight} ${parentCenterY} 
+                                           C ${controlPointX} ${parentCenterY}, 
+                                             ${controlPointX} ${nodeCenterY}, 
+                                             ${nodeLeft} ${nodeCenterY}`;
+                            
+                            path.setAttribute('d', pathData);
+                            path.setAttribute('class', 'connector');
+                            svg.appendChild(path);
+                            
+                            // 添加起始点和终点的圆点
+                            const startDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                            startDot.setAttribute('cx', parentRight);
+                            startDot.setAttribute('cy', parentCenterY);
+                            startDot.setAttribute('r', 3);
+                            startDot.setAttribute('class', 'connector-dot');
+                            svg.appendChild(startDot);
+                            
+                            const endDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                            endDot.setAttribute('cx', nodeLeft);
+                            endDot.setAttribute('cy', nodeCenterY);
+                            endDot.setAttribute('r', 3);
+                            endDot.setAttribute('class', 'connector-dot');
+                            svg.appendChild(endDot);
+                        }
+                    }
+                });
+            }
+            
+            // 绘制预览思维导图的连接线（包括无权限的标记）
+            function drawPreviewConnections(container, svg) {
+                // 清除SVG内容
+                svg.innerHTML = '';
+                
+                // 获取容器的尺寸
+                const containerWidth = container.scrollWidth;
+                const containerHeight = container.scrollHeight;
+                
+                // 设置SVG尺寸，确保足够大
+                svg.setAttribute('width', containerWidth);
+                svg.setAttribute('height', containerHeight);
+                
+                // 获取所有节点
+                const nodes = container.querySelectorAll('.mind-node');
+                
+                // 存储已处理的连接，避免重复
+                const processedConnections = new Set();
+                
+                nodes.forEach(node => {
+                    // 只为非第一级节点创建连接
+                    const level = parseInt(node.dataset.level);
+                    if (level > 1) {
+                        const parentValue = node.dataset.parent;
+                        
+                        // 查找父节点
+                        const parentSelector = `.mind-node[data-level="${level-1}"][data-value="${parentValue}"]`;
+                        const parentNodes = container.querySelectorAll(parentSelector);
+                        
+                        if (parentNodes.length > 0) {
+                            const parent = parentNodes[0];
+                            
+                            // 创建连接ID以避免重复
+                            const connectionId = `${parent.dataset.value}-${node.dataset.value}`;
+                            if (processedConnections.has(connectionId)) return;
+                            processedConnections.add(connectionId);
+                            
+                            // 获取节点位置
+                            const parentRect = parent.getBoundingClientRect();
+                            const nodeRect = node.getBoundingClientRect();
+                            const containerRect = container.getBoundingClientRect();
+                            
+                            // 计算相对于容器的坐标
+                            const parentRight = parentRect.right - containerRect.left;
+                            const parentCenterY = parentRect.top + parentRect.height / 2 - containerRect.top;
+                            const nodeLeft = nodeRect.left - containerRect.left;
+                            const nodeCenterY = nodeRect.top + nodeRect.height / 2 - containerRect.top;
+                            
+                            // 创建曲线
+                            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                            
+                            // 设置曲线控制点 (贝塞尔曲线)
+                            const controlPointX = parentRight + (nodeLeft - parentRight) * 0.5;
+                            const pathData = `M ${parentRight} ${parentCenterY} 
+                                           C ${controlPointX} ${parentCenterY}, 
+                                             ${controlPointX} ${nodeCenterY}, 
+                                             ${nodeLeft} ${nodeCenterY}`;
+                            
+                            path.setAttribute('d', pathData);
+                            path.setAttribute('class', 'connector');
+                            
+                            // 如果节点是无权限的，添加虚线样式
+                            if (node.dataset.noPermission === "true" || parent.dataset.noPermission === "true") {
+                                path.classList.add('connector-no-permission');
+                            }
+                            
+                            svg.appendChild(path);
+                            
+                            // 添加起始点和终点的圆点
+                            const startDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                            startDot.setAttribute('cx', parentRight);
+                            startDot.setAttribute('cy', parentCenterY);
+                            startDot.setAttribute('r', 3);
+                            startDot.setAttribute('class', 'connector-dot');
+                            
+                            if (parent.dataset.noPermission === "true") {
+                                startDot.classList.add('connector-dot-no-permission');
+                            }
+                            
+                            svg.appendChild(startDot);
+                            
+                            const endDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                            endDot.setAttribute('cx', nodeLeft);
+                            endDot.setAttribute('cy', nodeCenterY);
+                            endDot.setAttribute('r', 3);
+                            endDot.setAttribute('class', 'connector-dot');
+                            
+                            if (node.dataset.noPermission === "true") {
+                                endDot.classList.add('connector-dot-no-permission');
+                            }
+                            
+                            svg.appendChild(endDot);
+                        }
+                    }
+                });
+            }
+            
+            // 检查路径是否为无权限路径
+            function isNoPermissionPath(path) {
+                return noPermissionPaths.some(noPermissionPath => 
+                    noPermissionPath[0] === path[0] &&
+                    noPermissionPath[1] === path[1] &&
+                    noPermissionPath[2] === path[2] &&
+                    noPermissionPath[3] === path[3] &&
+                    noPermissionPath[4] === path[4]
+                );
+            }
+            
+            // 重置页面
+            function resetPage() {
+                // 重置步骤显示
+                step1Content.style.display = 'block';
+                step2Content.style.display = 'none';
+                
+                // 重置步骤导航
+                stepItems.forEach((item, index) => {
+                    item.classList.remove('active', 'completed');
+                    if (index === 0) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // 重置勾选状态和层级显示
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                for (let i = 2; i <= 5; i++) {
+                    document.getElementById(`level${i}`).style.display = 'none';
+                }
+                
+                // 清空选中的指标路径
+                selectedPaths = [];
+                
+                // 重置思维导图
+                mindmapContainer.innerHTML = '<div class="mindmap-empty-state">暂无选中的指标</div>';
+                previewMindmapContainer.innerHTML = '<div class="mindmap-empty-state">暂无选中的指标</div>';
+                
+                // 加载角色包默认权限
+                loadDefaultRolePermissions();
+            }
+            
+            // 窗口大小改变时重新绘制连接线
+            window.addEventListener('resize', () => {
+                if (step1Content.style.display !== 'none') {
+                    const svg = mindmapContainer.querySelector('.connector-layer');
+                    if (svg) {
+                        drawConnections(mindmapContainer, svg);
+                    }
+                } else if (step2Content.style.display !== 'none') {
+                    const svg = previewMindmapContainer.querySelector('.connector-layer');
+                    if (svg) {
+                        drawPreviewConnections(previewMindmapContainer, svg);
+                    }
+                }
+            });
+            
+            // 初始化思维导图
+            mindmapContainer.innerHTML = '<div class="mindmap-empty-state">暂无选中的指标</div>';
+            previewMindmapContainer.innerHTML = '<div class="mindmap-empty-state">暂无选中的指标</div>';
+            
+            // 在页面加载时填充角色包默认选择的指标
+            loadDefaultRolePermissions();
+        });
+    </script>
+
+
+</body></html>

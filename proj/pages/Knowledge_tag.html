@@ -1,0 +1,1206 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资产标签管理系统</title>
+    <!-- 引入D3.js和Markmap的完整包，包含所有需要的功能 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.14.4/dist/index.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid #409eff;
+            color: #409eff;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .action-bar {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        button {
+            background-color: #409eff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #66b1ff;
+        }
+        
+        button.danger {
+            background-color: #f56c6c;
+        }
+        
+        button.danger:hover {
+            background-color: #f78989;
+        }
+        
+        button.secondary {
+            background-color: #909399;
+        }
+        
+        button.secondary:hover {
+            background-color: #a6a9ad;
+        }
+        
+        button:disabled {
+            background-color: #c0c4cc;
+            cursor: not-allowed;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ebeef5;
+        }
+        
+        th {
+            background-color: #f5f7fa;
+            color: #606266;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f5f7fa;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+            background-color: #409eff;
+        }
+        
+        .badge.badge-success {
+            background-color: #67c23a;
+        }
+        
+        .badge.badge-warning {
+            background-color: #e6a23c;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            position: relative;
+        }
+        
+        .modal-title {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #909399;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #606266;
+        }
+        
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+        
+        .tag-values {
+            margin-top: 10px;
+        }
+        
+        .tag-value-item {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        
+        .tag-value-item input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .mindmap-container {
+            height: 500px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .mindmap-tools {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mindmap-editor {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        
+        .preview-container {
+            padding: 20px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .preview-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .preview-list {
+            margin-left: 20px;
+        }
+        
+        .preview-item {
+            margin-bottom: 5px;
+        }
+        
+        .preview-sublevel {
+            margin-left: 20px;
+        }
+        
+        .empty-tip {
+            text-align: center;
+            color: #909399;
+            padding: 30px;
+        }
+        
+        .markdown-preview {
+            margin-top: 15px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            padding: 10px;
+            height: 250px;
+            overflow: auto;
+        }
+        
+        .markdown-preview ul {
+            margin-left: 20px;
+        }
+        
+        .tabs-editor {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        
+        .tab-editor {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-editor.active {
+            border-bottom: 2px solid #409eff;
+            color: #409eff;
+            font-weight: bold;
+        }
+        
+        .editor-content {
+            display: none;
+        }
+        
+        .editor-content.active {
+            display: block;
+        }
+        
+        /* 树形结构样式 */
+        .tree-view {
+            margin-top: 15px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 450px;
+            overflow: auto;
+        }
+        
+        .tree-node {
+            margin-bottom: 5px;
+        }
+        
+        .tree-content {
+            display: flex;
+            align-items: center;
+            padding: 5px 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .tree-content:hover {
+            background-color: #f0f9ff;
+        }
+        
+        .tree-toggle {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            margin-right: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .tree-label {
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .tree-children {
+            margin-left: 25px;
+            height: auto;
+            overflow: hidden;
+            transition: height 0.3s;
+        }
+        
+        .tree-node.collapsed > .tree-children {
+            display: none;
+        }
+        
+        .tree-node.root > .tree-content > .tree-label {
+            font-weight: bold;
+            color: #409eff;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 20px;
+                max-width: calc(100% - 40px);
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .action-bar div {
+                margin-top: 10px;
+                display: flex;
+                flex-wrap: wrap;
+            }
+            
+            .action-bar div button {
+                margin-bottom: 5px;
+            }
+            
+            .mindmap-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>资产标签管理系统</h1>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="single-tags">单层标签</div>
+            <div class="tab" data-tab="multi-tags">多层标签</div>
+        </div>
+        
+        <div id="single-tags" class="tab-content active">
+            <div class="action-bar">
+                <h2>单层标签列表</h2>
+                <div>
+                    <button id="add-single-tag">新建标签</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="single-tag-table">
+                    <thead>
+                        <tr>
+                            <th>标签ID</th>
+                            <th>标签名称</th>
+                            <th>枚举值数量</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 数据将通过JS动态添加 -->
+                    </tbody>
+                </table>
+                <div id="single-tags-empty" class="empty-tip">暂无标签数据，请点击"新建标签"按钮创建</div>
+            </div>
+        </div>
+        
+        <div id="multi-tags" class="tab-content">
+            <div class="action-bar">
+                <h2>多层标签列表</h2>
+                <div>
+                    <button id="add-multi-tag">新建标签</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="multi-tag-table">
+                    <thead>
+                        <tr>
+                            <th>标签ID</th>
+                            <th>标签名称</th>
+                            <th>层级数</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 数据将通过JS动态添加 -->
+                    </tbody>
+                </table>
+                <div id="multi-tags-empty" class="empty-tip">暂无标签数据，请点击"新建标签"按钮创建</div>
+            </div>
+        </div>
+        
+        <!-- 单层标签模态框 -->
+        <div id="single-tag-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-single-tag-modal">×</span>
+                <div class="modal-title">新建单层标签</div>
+                
+                <form id="single-tag-form">
+                    <div class="form-group">
+                        <label for="single-tag-name">标签名称</label>
+                        <input type="text" id="single-tag-name" required="" placeholder="请输入标签名称">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>标签枚举值</label>
+                        <div id="single-tag-values" class="tag-values">
+                            <div class="tag-value-item">
+                                <input type="text" placeholder="请输入枚举值" required="">
+                                <button type="button" class="remove-value danger">删除</button>
+                            </div>
+                        </div>
+                        <button type="button" id="add-single-value">添加枚举值</button>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="secondary" id="cancel-single-tag">取消</button>
+                        <button type="submit">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 单层标签预览模态框 -->
+        <div id="single-tag-preview-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-single-preview-modal">×</span>
+                <div class="modal-title">标签预览</div>
+                
+                <div class="preview-container">
+                    <div class="preview-title" id="single-preview-title"></div>
+                    <ul class="preview-list" id="single-preview-values">
+                        <!-- 预览数据将通过JS动态添加 -->
+                    </ul>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="close-single-preview">关闭</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 多层标签模态框 -->
+        <div id="multi-tag-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-multi-tag-modal">×</span>
+                <div class="modal-title">新建多层标签</div>
+                
+                <form id="multi-tag-form">
+                    <div class="form-group">
+                        <label for="multi-tag-name">标签名称</label>
+                        <input type="text" id="multi-tag-name" required="" placeholder="请输入标签名称">
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="tabs-editor">
+                            <div class="tab-editor active" data-tab="markdown-editor">Markdown 编辑</div>
+                            <div class="tab-editor" data-tab="tree-view">树形预览</div>
+                        </div>
+                        
+                        <div id="markdown-editor" class="editor-content active">
+                            <p>使用 Markdown 格式编辑思维导图，每一级使用不同数量的 # 开头：</p>
+                            <textarea id="mindmap-markdown" class="mindmap-editor" placeholder="# 根节点（标签名称）
+## 一级节点1
+### 二级节点A
+### 二级节点B
+## 一级节点2
+### 二级节点C
+#### 三级节点X"></textarea>
+                            <button type="button" id="update-mindmap-btn">更新树形预览</button>
+                        </div>
+                        
+                        <div id="tree-view" class="editor-content">
+                            <div id="tree-container" class="tree-view">
+                                <!-- 树形结构将通过JS动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="secondary" id="cancel-multi-tag">取消</button>
+                        <button type="submit">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 多层标签预览模态框 -->
+        <div id="multi-tag-preview-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-multi-preview-modal">×</span>
+                <div class="modal-title">多层标签预览</div>
+                
+                <div class="preview-container">
+                    <div class="preview-title" id="multi-preview-title"></div>
+                    <div id="multi-preview-tree" class="tree-view">
+                        <!-- 树形预览将通过JS动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="close-multi-preview">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局数据 - 使用内存存储
+        let singleTags = [
+            {
+                id: "tag_example1",
+                name: "优先级",
+                values: ["高", "中", "低"],
+                createdAt: new Date("2025-03-01"),
+                type: "single"
+            },
+            {
+                id: "tag_example2",
+                name: "资产状态",
+                values: ["在用", "闲置", "报废", "维修中"],
+                createdAt: new Date("2025-03-05"),
+                type: "single"
+            }
+        ];
+        
+        let multiTags = [
+            {
+                id: "tag_multi1",
+                name: "资产分类",
+                markdown: "# 资产分类\n## IT设备\n### 电脑\n### 服务器\n## 办公设备\n### 打印机\n### 投影仪",
+                createdAt: new Date("2025-03-10"),
+                type: "multi"
+            }
+        ];
+        
+        let currentEditId = null;
+        let currentTagType = null;
+        
+        // 工具函数：生成唯一ID
+        function generateId() {
+            return 'tag_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // 格式化日期
+        function formatDate(date) {
+            return new Date(date).toLocaleString('zh-CN');
+        }
+        
+        // 计算Markdown层级数
+        function countMarkdownLevels(markdown) {
+            const lines = markdown.split('\n');
+            let maxLevel = 0;
+            
+            lines.forEach(line => {
+                if (line.startsWith('#')) {
+                    const level = line.match(/^#+/)[0].length;
+                    maxLevel = Math.max(maxLevel, level);
+                }
+            });
+            
+            return maxLevel;
+        }
+        
+        // 解析Markdown为树形结构
+        function parseMarkdownToTree(markdown) {
+            const lines = markdown.split('\n');
+            const root = { text: '', children: [] };
+            const stack = [root];
+            
+            lines.forEach(line => {
+                // 跳过空行
+                if (!line.trim()) return;
+                
+                // 寻找标题行
+                if (line.startsWith('#')) {
+                    const match = line.match(/^(#+)\s+(.+)$/);
+                    if (match) {
+                        const level = match[1].length;
+                        const text = match[2].trim();
+                        
+                        // 创建新节点
+                        const node = { text, children: [] };
+                        
+                        // 根据级别找到父节点
+                        while (stack.length > level) {
+                            stack.pop();
+                        }
+                        
+                        const parent = stack[stack.length - 1];
+                        parent.children.push(node);
+                        stack.push(node);
+                    }
+                }
+            });
+            
+            // 如果根节点有一个子节点，那就是实际的根节点
+            return root.children.length > 0 ? root.children[0] : { text: '空节点', children: [] };
+        }
+        
+        // 渲染树形结构
+        function renderTree(container, treeData, isCollapsible = true) {
+            container.innerHTML = '';
+            
+            function createTreeNode(node, isRoot = false) {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'tree-node';
+                if (isRoot) nodeEl.classList.add('root');
+                
+                const contentEl = document.createElement('div');
+                contentEl.className = 'tree-content';
+                
+                const toggleEl = document.createElement('span');
+                toggleEl.className = 'tree-toggle';
+                toggleEl.textContent = node.children && node.children.length > 0 ? '▼' : '';
+                
+                const labelEl = document.createElement('span');
+                labelEl.className = 'tree-label';
+                labelEl.textContent = node.text;
+                
+                contentEl.appendChild(toggleEl);
+                contentEl.appendChild(labelEl);
+                nodeEl.appendChild(contentEl);
+                
+                if (node.children && node.children.length > 0) {
+                    const childrenEl = document.createElement('div');
+                    childrenEl.className = 'tree-children';
+                    
+                    node.children.forEach(child => {
+                        childrenEl.appendChild(createTreeNode(child));
+                    });
+                    
+                    nodeEl.appendChild(childrenEl);
+                    
+                    if (isCollapsible) {
+                        toggleEl.addEventListener('click', () => {
+                            nodeEl.classList.toggle('collapsed');
+                            toggleEl.textContent = nodeEl.classList.contains('collapsed') ? '▶' : '▼';
+                        });
+                    }
+                }
+                
+                return nodeEl;
+            }
+            
+            container.appendChild(createTreeNode(treeData, true));
+        }
+        
+        // 切换标签页
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // 更新标签状态
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // 更新内容区域
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // 切换编辑器标签页
+        document.querySelectorAll('.tab-editor').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // 更新标签状态
+                document.querySelectorAll('.tab-editor').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // 更新内容区域
+                document.querySelectorAll('.editor-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                
+                // 如果切换到树形预览，更新树形结构
+                if (tabId === 'tree-view') {
+                    updateTree();
+                }
+            });
+        });
+        
+        // ===== 单层标签功能 =====
+        
+        // 显示单层标签表格
+        function renderSingleTagTable() {
+            const tableBody = document.querySelector('#single-tag-table tbody');
+            const emptyTip = document.getElementById('single-tags-empty');
+            
+            if (singleTags.length === 0) {
+                tableBody.innerHTML = '';
+                emptyTip.style.display = 'block';
+                document.getElementById('single-tag-table').style.display = 'none';
+                return;
+            }
+            
+            emptyTip.style.display = 'none';
+            document.getElementById('single-tag-table').style.display = 'table';
+            
+            tableBody.innerHTML = singleTags.map(tag => `
+                <tr>
+                    <td>${tag.id}</td>
+                    <td>${tag.name}</td>
+                    <td>${tag.values.length}</td>
+                    <td>${formatDate(tag.createdAt)}</td>
+                    <td>
+                        <button class="edit-single-tag" data-id="${tag.id}">编辑</button>
+                        <button class="preview-single-tag" data-id="${tag.id}">预览</button>
+                        <button class="delete-single-tag danger" data-id="${tag.id}">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // 为按钮添加事件
+            tableBody.querySelectorAll('.edit-single-tag').forEach(btn => {
+                btn.addEventListener('click', () => editSingleTag(btn.getAttribute('data-id')));
+            });
+            
+            tableBody.querySelectorAll('.preview-single-tag').forEach(btn => {
+                btn.addEventListener('click', () => previewSingleTag(btn.getAttribute('data-id')));
+            });
+            
+            tableBody.querySelectorAll('.delete-single-tag').forEach(btn => {
+                btn.addEventListener('click', () => deleteSingleTag(btn.getAttribute('data-id')));
+            });
+        }
+        
+        // 打开新建单层标签模态框
+        document.getElementById('add-single-tag').addEventListener('click', () => {
+            currentEditId = null;
+            currentTagType = 'single';
+            document.querySelector('#single-tag-modal .modal-title').textContent = '新建单层标签';
+            document.getElementById('single-tag-name').value = '';
+            
+            // 重置表单
+            const valuesContainer = document.getElementById('single-tag-values');
+            valuesContainer.innerHTML = `
+                <div class="tag-value-item">
+                    <input type="text" placeholder="请输入枚举值" required>
+                    <button type="button" class="remove-value danger">删除</button>
+                </div>
+            `;
+            addRemoveValueEventListeners();
+            
+            document.getElementById('single-tag-modal').style.display = 'block';
+        });
+        
+        // 添加枚举值
+        document.getElementById('add-single-value').addEventListener('click', () => {
+            const valuesContainer = document.getElementById('single-tag-values');
+            const valueItem = document.createElement('div');
+            valueItem.className = 'tag-value-item';
+            valueItem.innerHTML = `
+                <input type="text" placeholder="请输入枚举值" required>
+                <button type="button" class="remove-value danger">删除</button>
+            `;
+            valuesContainer.appendChild(valueItem);
+            
+            // 为新添加的删除按钮添加事件
+            valueItem.querySelector('.remove-value').addEventListener('click', function() {
+                valuesContainer.removeChild(valueItem);
+            });
+        });
+        
+        // 为删除枚举值按钮添加事件
+        function addRemoveValueEventListeners() {
+            document.querySelectorAll('#single-tag-values .remove-value').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const item = this.parentElement;
+                    const valuesContainer = document.getElementById('single-tag-values');
+                    
+                    // 确保至少有一个值
+                    if (valuesContainer.children.length > 1) {
+                        valuesContainer.removeChild(item);
+                    }
+                });
+            });
+        }
+        addRemoveValueEventListeners();
+        
+        // 保存单层标签
+        document.getElementById('single-tag-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('single-tag-name').value.trim();
+            if (!name) {
+                alert('标签名称不能为空！');
+                return;
+            }
+            
+            // 获取所有枚举值
+            const valueInputs = document.querySelectorAll('#single-tag-values input');
+            const values = Array.from(valueInputs).map(input => input.value.trim());
+            
+            // 验证枚举值
+            if (values.some(v => !v)) {
+                alert('枚举值不能为空！');
+                return;
+            }
+            
+            if (new Set(values).size !== values.length) {
+                alert('枚举值不能重复！');
+                return;
+            }
+            
+            if (currentEditId) {
+                // 编辑现有标签
+                const index = singleTags.findIndex(tag => tag.id === currentEditId);
+                if (index !== -1) {
+                    singleTags[index].name = name;
+                    singleTags[index].values = values;
+                }
+            } else {
+                // 创建新标签
+                const newTag = {
+                    id: generateId(),
+                    name: name,
+                    values: values,
+                    createdAt: new Date(),
+                    type: 'single'
+                };
+                singleTags.push(newTag);
+            }
+            
+            // 更新表格并关闭模态框
+            renderSingleTagTable();
+            document.getElementById('single-tag-modal').style.display = 'none';
+        });
+        
+        // 编辑单层标签
+        function editSingleTag(id) {
+            const tag = singleTags.find(tag => tag.id === id);
+            if (!tag) return;
+            
+            currentEditId = id;
+            currentTagType = 'single';
+            document.querySelector('#single-tag-modal .modal-title').textContent = '编辑单层标签';
+            document.getElementById('single-tag-name').value = tag.name;
+            
+            // 设置枚举值
+            const valuesContainer = document.getElementById('single-tag-values');
+            valuesContainer.innerHTML = tag.values.map(value => `
+                <div class="tag-value-item">
+                    <input type="text" placeholder="请输入枚举值" value="${value}" required>
+                    <button type="button" class="remove-value danger">删除</button>
+                </div>
+            `).join('');
+            
+            addRemoveValueEventListeners();
+            document.getElementById('single-tag-modal').style.display = 'block';
+        }
+        
+        // 预览单层标签
+        function previewSingleTag(id) {
+            const tag = singleTags.find(tag => tag.id === id);
+            if (!tag) return;
+            
+            document.getElementById('single-preview-title').textContent = tag.name;
+            const valuesList = document.getElementById('single-preview-values');
+            valuesList.innerHTML = tag.values.map(value => `<li class="preview-item">${value}</li>`).join('');
+            
+            document.getElementById('single-tag-preview-modal').style.display = 'block';
+        }
+        
+        // 删除单层标签
+        function deleteSingleTag(id) {
+            if (confirm('确定要删除此标签吗？删除后将无法恢复。')) {
+                singleTags = singleTags.filter(tag => tag.id !== id);
+                renderSingleTagTable();
+            }
+        }
+        
+        // 关闭单层标签模态框
+        document.getElementById('close-single-tag-modal').addEventListener('click', () => {
+            document.getElementById('single-tag-modal').style.display = 'none';
+        });
+        
+        document.getElementById('cancel-single-tag').addEventListener('click', () => {
+            document.getElementById('single-tag-modal').style.display = 'none';
+        });
+        
+        // 关闭单层标签预览模态框
+        document.getElementById('close-single-preview-modal').addEventListener('click', () => {
+            document.getElementById('single-tag-preview-modal').style.display = 'none';
+        });
+        
+        document.getElementById('close-single-preview').addEventListener('click', () => {
+            document.getElementById('single-tag-preview-modal').style.display = 'none';
+        });
+        
+        // ===== 多层标签功能 =====
+        
+        // 显示多层标签表格
+        function renderMultiTagTable() {
+            const tableBody = document.querySelector('#multi-tag-table tbody');
+            const emptyTip = document.getElementById('multi-tags-empty');
+            
+            if (multiTags.length === 0) {
+                tableBody.innerHTML = '';
+                emptyTip.style.display = 'block';
+                document.getElementById('multi-tag-table').style.display = 'none';
+                return;
+            }
+            
+            emptyTip.style.display = 'none';
+            document.getElementById('multi-tag-table').style.display = 'table';
+            
+            tableBody.innerHTML = multiTags.map(tag => {
+                // 计算层级数
+                const levels = countMarkdownLevels(tag.markdown);
+                
+                return `
+                <tr>
+                    <td>${tag.id}</td>
+                    <td>${tag.name}</td>
+                    <td>${levels ? levels - 1 : 0}</td>
+                    <td>${formatDate(tag.createdAt)}</td>
+                    <td>
+                        <button class="edit-multi-tag" data-id="${tag.id}">编辑</button>
+                        <button class="preview-multi-tag" data-id="${tag.id}">预览</button>
+                        <button class="delete-multi-tag danger" data-id="${tag.id}">删除</button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+            
+            // 为按钮添加事件
+            tableBody.querySelectorAll('.edit-multi-tag').forEach(btn => {
+                btn.addEventListener('click', () => editMultiTag(btn.getAttribute('data-id')));
+            });
+            
+            tableBody.querySelectorAll('.preview-multi-tag').forEach(btn => {
+                btn.addEventListener('click', () => previewMultiTag(btn.getAttribute('data-id')));
+            });
+            
+            tableBody.querySelectorAll('.delete-multi-tag').forEach(btn => {
+                btn.addEventListener('click', () => deleteMultiTag(btn.getAttribute('data-id')));
+            });
+        }
+        
+        // 打开新建多层标签模态框
+        document.getElementById('add-multi-tag').addEventListener('click', () => {
+            currentEditId = null;
+            currentTagType = 'multi';
+            document.querySelector('#multi-tag-modal .modal-title').textContent = '新建多层标签';
+            document.getElementById('multi-tag-name').value = '';
+            
+            // 设置默认Markdown
+            document.getElementById('mindmap-markdown').value = '# 新标签名称\n## 一级分类1\n### 二级项目A\n### 二级项目B\n## 一级分类2\n### 二级项目C';
+            
+            // 重置为编辑视图
+            document.querySelectorAll('.tab-editor').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.editor-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab-editor[data-tab="markdown-editor"]').classList.add('active');
+            document.getElementById('markdown-editor').classList.add('active');
+            
+            document.getElementById('multi-tag-modal').style.display = 'block';
+        });
+        
+        // 更新树形结构
+        function updateTree() {
+            const markdown = document.getElementById('mindmap-markdown').value;
+            const container = document.getElementById('tree-container');
+            
+            try {
+                const treeData = parseMarkdownToTree(markdown);
+                renderTree(container, treeData);
+            } catch (error) {
+                console.error('解析Markdown出错:', error);
+                alert('创建树形结构时出错，请检查Markdown格式是否正确');
+            }
+        }
+        
+        // 更新树形结构按钮
+        document.getElementById('update-mindmap-btn').addEventListener('click', () => {
+            // 切换到树形预览
+            document.querySelectorAll('.tab-editor').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.editor-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab-editor[data-tab="tree-view"]').classList.add('active');
+            document.getElementById('tree-view').classList.add('active');
+            
+            updateTree();
+        });
+        
+        // 保存多层标签
+        document.getElementById('multi-tag-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('multi-tag-name').value.trim();
+            if (!name) {
+                alert('标签名称不能为空！');
+                return;
+            }
+            
+            let markdown = document.getElementById('mindmap-markdown').value.trim();
+            if (!markdown) {
+                alert('思维导图内容不能为空！');
+                return;
+            }
+            
+            // 确保第一行是一级标题，并且内容与标签名称一致
+            const lines = markdown.split('\n');
+            if (lines[0].startsWith('# ')) {
+                lines[0] = `# ${name}`;
+            } else {
+                lines.unshift(`# ${name}`);
+            }
+            markdown = lines.join('\n');
+            
+            if (currentEditId) {
+                // 编辑现有标签
+                const index = multiTags.findIndex(tag => tag.id === currentEditId);
+                if (index !== -1) {
+                    multiTags[index].name = name;
+                    multiTags[index].markdown = markdown;
+                }
+            } else {
+                // 创建新标签
+                const newTag = {
+                    id: generateId(),
+                    name: name,
+                    markdown: markdown,
+                    createdAt: new Date(),
+                    type: 'multi'
+                };
+                multiTags.push(newTag);
+            }
+            
+            // 更新表格并关闭模态框
+            renderMultiTagTable();
+            document.getElementById('multi-tag-modal').style.display = 'none';
+        });
+        
+        // 编辑多层标签
+        function editMultiTag(id) {
+            const tag = multiTags.find(tag => tag.id === id);
+            if (!tag) return;
+            
+            currentEditId = id;
+            currentTagType = 'multi';
+            document.querySelector('#multi-tag-modal .modal-title').textContent = '编辑多层标签';
+            document.getElementById('multi-tag-name').value = tag.name;
+            document.getElementById('mindmap-markdown').value = tag.markdown;
+            
+            // 重置为编辑视图
+            document.querySelectorAll('.tab-editor').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.editor-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab-editor[data-tab="markdown-editor"]').classList.add('active');
+            document.getElementById('markdown-editor').classList.add('active');
+            
+            document.getElementById('multi-tag-modal').style.display = 'block';
+        }
+        
+        // 预览多层标签
+        function previewMultiTag(id) {
+            const tag = multiTags.find(tag => tag.id === id);
+            if (!tag) return;
+            
+            document.getElementById('multi-preview-title').textContent = tag.name;
+            
+            // 创建树形预览
+            try {
+                const container = document.getElementById('multi-preview-tree');
+                const treeData = parseMarkdownToTree(tag.markdown);
+                renderTree(container, treeData, false);
+                document.getElementById('multi-tag-preview-modal').style.display = 'block';
+            } catch (error) {
+                console.error('预览多层标签出错:', error);
+                alert('创建树形预览时出错，请检查Markdown格式是否正确');
+            }
+        }
+        
+        // 删除多层标签
+        function deleteMultiTag(id) {
+            if (confirm('确定要删除此标签吗？删除后将无法恢复。')) {
+                multiTags = multiTags.filter(tag => tag.id !== id);
+                renderMultiTagTable();
+            }
+        }
+        
+        // 关闭多层标签模态框
+        document.getElementById('close-multi-tag-modal').addEventListener('click', () => {
+            document.getElementById('multi-tag-modal').style.display = 'none';
+        });
+        
+        document.getElementById('cancel-multi-tag').addEventListener('click', () => {
+            document.getElementById('multi-tag-modal').style.display = 'none';
+        });
+        
+        // 关闭多层标签预览模态框
+        document.getElementById('close-multi-preview-modal').addEventListener('click', () => {
+            document.getElementById('multi-tag-preview-modal').style.display = 'none';
+        });
+        
+        document.getElementById('close-multi-preview').addEventListener('click', () => {
+            document.getElementById('multi-tag-preview-modal').style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭模态框
+        window.addEventListener('click', (e) => {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+        
+        // 初始化
+        renderSingleTagTable();
+        renderMultiTagTable();
+    </script>
+
+
+</body></html>

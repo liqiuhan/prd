@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBI 2.0 - 全新界面</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --text-color: #1f2937;
+            --bg-color: #f9fafb;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 0.5rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .preview-img {
+            width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .button {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .primary-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .primary-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .secondary-button {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .secondary-button:hover {
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ChatBI 2.0 全新界面</h1>
+        <p>我们重新设计了ChatBI的界面，使其更加简洁、直观和美观。新界面采用了现代聊天应用的设计理念，提供更流畅的用户体验。</p>
+        
+        <img src="https://via.placeholder.com/600x400?text=ChatBI+2.0+Preview" alt="ChatBI 2.0 预览" class="preview-img">
+        
+        <div class="buttons">
+            <a href="pages/modern-chatbi.html" class="button primary-button">体验新界面</a>
+            <a href="chatbi.html" class="button secondary-button">使用旧版</a>
+        </div>
+    </div>
+</body>
+</html> 

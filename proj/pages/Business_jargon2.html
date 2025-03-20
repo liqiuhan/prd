@@ -374,14 +374,6 @@
             font-weight: bold;
         }
         
-        .knowledge-table .business-cell {
-            width: 120px;
-        }
-        
-        .knowledge-table .role-cell {
-            width: 120px;
-        }
-        
         .knowledge-table .content-cell {
             width: auto;
         }
@@ -529,18 +521,6 @@
         .download-template-item:hover {
             background-color: #f1f1f1;
         }
-        
-        /* 添加多选下拉菜单样式 */
-        select[multiple] {
-            min-height: 80px;
-            padding: 5px;
-        }
-        
-        small {
-            display: block;
-            color: #666;
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body>
@@ -549,7 +529,7 @@
         
         <!-- 将标题改为普通文字，添加按钮放在右上角 -->
         <div class="header-actions">
-            <h2 class="page-title">业务黑话</h2>
+            <h2 class="page-title">知识列表</h2>
             <div style="display: flex; gap: 10px;">
                 <div class="download-template-container">
                     <button class="download-template-btn">下载模板</button>
@@ -580,8 +560,6 @@
                     <button class="bulk-action-btn download">批量下载</button>
                     <button class="bulk-action-btn upload">批量上传</button>
                     <button class="bulk-action-btn delete">批量删除</button>
-                    <button class="bulk-action-btn business" onclick="openBatchBusinessModal()">批量修改业务线</button>
-                    <button class="bulk-action-btn role" onclick="openBatchRoleModal()">批量修改角色</button>
                 </div>
                 <div class="selected-info" id="selected-info"></div>
             </div>
@@ -593,8 +571,6 @@
                         <th class="checkbox-cell"><input type="checkbox" id="select-all" onclick="toggleSelectAll()"></th>
                         <th class="type-cell">类型</th>
                         <th class="term-cell">术语</th>
-                        <th class="business-cell">适用业务线</th>
-                        <th class="role-cell">适用角色</th>
                         <th class="content-cell">内容</th>
                         <th class="actions-cell">操作</th>
                     </tr>
@@ -637,31 +613,6 @@
                             <input type="text" id="synonym-mapping" name="synonym-mapping" required placeholder="例如：商品交易总额">
                         </div>
                         
-                        <div class="form-group">
-                            <label for="synonym-business">适用业务线</label>
-                            <select id="synonym-business" name="synonym-business" multiple>
-                                <option value="全部业务线">全部业务线</option>
-                                <option value="电商">电商</option>
-                                <option value="金融">金融</option>
-                                <option value="文娱">文娱</option>
-                                <option value="物流">物流</option>
-                            </select>
-                            <small>按住Ctrl键可多选</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="synonym-role">适用角色</label>
-                            <select id="synonym-role" name="synonym-role" multiple>
-                                <option value="全部角色">全部角色</option>
-                                <option value="产品经理">产品经理</option>
-                                <option value="研发">研发</option>
-                                <option value="设计师">设计师</option>
-                                <option value="运营">运营</option>
-                                <option value="市场">市场</option>
-                            </select>
-                            <small>按住Ctrl键可多选</small>
-                        </div>
-                        
                         <button type="button" onclick="addSynonym()">提交</button>
                     </form>
                 </div>
@@ -682,31 +633,6 @@
                         <div class="form-group">
                             <label for="process-rule">处理规则</label>
                             <textarea id="process-rule" name="process-rule" placeholder="例如：遇到'闭环'一词时，需要明确询问用户是指哪个具体业务流程的闭环"></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="explanation-business">适用业务线</label>
-                            <select id="explanation-business" name="explanation-business" multiple>
-                                <option value="全部业务线">全部业务线</option>
-                                <option value="电商">电商</option>
-                                <option value="金融">金融</option>
-                                <option value="文娱">文娱</option>
-                                <option value="物流">物流</option>
-                            </select>
-                            <small>按住Ctrl键可多选</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="explanation-role">适用角色</label>
-                            <select id="explanation-role" name="explanation-role" multiple>
-                                <option value="全部角色">全部角色</option>
-                                <option value="产品经理">产品经理</option>
-                                <option value="研发">研发</option>
-                                <option value="设计师">设计师</option>
-                                <option value="运营">运营</option>
-                                <option value="市场">市场</option>
-                            </select>
-                            <small>按住Ctrl键可多选</small>
                         </div>
                         
                         <button type="button" onclick="addExplanation()">提交</button>
@@ -736,78 +662,10 @@
                             <textarea id="correct-answer" name="correct-answer" required placeholder="例如：实现业务目标的具体方法或工具包括：数据分析、用户调研、A/B测试、敏捷开发等方法论。"></textarea>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="rewrite-business">适用业务线</label>
-                            <select id="rewrite-business" name="rewrite-business" multiple>
-                                <option value="全部业务线">全部业务线</option>
-                                <option value="电商">电商</option>
-                                <option value="金融">金融</option>
-                                <option value="文娱">文娱</option>
-                                <option value="物流">物流</option>
-                            </select>
-                            <small>按住Ctrl键可多选</small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="rewrite-role">适用角色</label>
-                            <select id="rewrite-role" name="rewrite-role" multiple>
-                                <option value="全部角色">全部角色</option>
-                                <option value="产品经理">产品经理</option>
-                                <option value="研发">研发</option>
-                                <option value="设计师">设计师</option>
-                                <option value="运营">运营</option>
-                                <option value="市场">市场</option>
-                            </select>
-                            <small>按住Ctrl键可多选</small>
-                        </div>
-                        
                         <button type="button" onclick="addRewrite()">提交</button>
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 批量修改业务线模态框 -->
-    <div class="modal" id="batch-business-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeBatchBusinessModal()">&times;</span>
-            <h2>批量修改业务线</h2>
-            
-            <div class="form-group">
-                <label for="batch-business-select">选择业务线</label>
-                <select id="batch-business-select" multiple>
-                    <option value="全部业务线">全部业务线</option>
-                    <option value="电商">电商</option>
-                    <option value="金融">金融</option>
-                    <option value="文娱">文娱</option>
-                    <option value="物流">物流</option>
-                </select>
-            </div>
-            
-            <button type="button" onclick="applyBatchBusiness()">应用</button>
-        </div>
-    </div>
-    
-    <!-- 批量修改角色模态框 -->
-    <div class="modal" id="batch-role-modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeBatchRoleModal()">&times;</span>
-            <h2>批量修改角色</h2>
-            
-            <div class="form-group">
-                <label for="batch-role-select">选择角色</label>
-                <select id="batch-role-select" multiple>
-                    <option value="全部角色">全部角色</option>
-                    <option value="产品经理">产品经理</option>
-                    <option value="研发">研发</option>
-                    <option value="设计师">设计师</option>
-                    <option value="运营">运营</option>
-                    <option value="市场">市场</option>
-                </select>
-            </div>
-            
-            <button type="button" onclick="applyBatchRole()">应用</button>
         </div>
     </div>
 
@@ -838,26 +696,26 @@
             const tbody = document.getElementById('knowledge-items');
             
             // 同义词映射示例
-            addKnowledgeRow(tbody, 'synonym', 'GMV', '商品交易总额', '电商', '产品经理,运营');
-            addKnowledgeRow(tbody, 'synonym', 'UV', '访客数', '全部业务线', '产品经理,研发');
-            addKnowledgeRow(tbody, 'synonym', 'PV', '页面浏览量', '电商,金融', '全部角色');
-            addKnowledgeRow(tbody, 'synonym', 'ROI', '投资回报率', '金融', '市场,运营');
+            addKnowledgeRow(tbody, 'synonym', 'GMV', '商品交易总额');
+            addKnowledgeRow(tbody, 'synonym', 'UV', '访客数');
+            addKnowledgeRow(tbody, 'synonym', 'PV', '页面浏览量');
+            addKnowledgeRow(tbody, 'synonym', 'ROI', '投资回报率');
             
             // 名词解释和规则示例
-            addKnowledgeRow(tbody, 'explanation', '闭环', '指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。<br>规则：遇到"闭环"一词时，需要明确询问用户是指哪个具体业务流程的闭环', '全部业务线', '产品经理,研发');
-            addKnowledgeRow(tbody, 'explanation', '赋能', '指提供资源、工具或权力，使他人能够完成任务或实现目标。在企业环境中，常用于描述管理层为员工提供支持的行为。<br>规则：可进一步询问赋能的具体方式，避免空泛表述', '电商,文娱', '产品经理');
-            addKnowledgeRow(tbody, 'explanation', '抓手', '指实现目标的具体方法、途径或工具，是将战略落地的关键点。<br>规则：遇到"抓手"一词时，需要明确询问用户是指哪个具体业务的抓手', '金融', '全部角色');
-            addKnowledgeRow(tbody, 'explanation', '颗粒度', '指数据或任务的详细程度，颗粒度越细，表示描述或分析越详细。', '电商,物流', '研发,产品经理');
+            addKnowledgeRow(tbody, 'explanation', '闭环', '指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。<br>规则：遇到"闭环"一词时，需要明确询问用户是指哪个具体业务流程的闭环');
+            addKnowledgeRow(tbody, 'explanation', '赋能', '指提供资源、工具或权力，使他人能够完成任务或实现目标。在企业环境中，常用于描述管理层为员工提供支持的行为。<br>规则：可进一步询问赋能的具体方式，避免空泛表述');
+            addKnowledgeRow(tbody, 'explanation', '抓手', '指实现目标的具体方法、途径或工具，是将战略落地的关键点。<br>规则：遇到"抓手"一词时，需要明确询问用户是指哪个具体业务的抓手');
+            addKnowledgeRow(tbody, 'explanation', '颗粒度', '指数据或任务的详细程度，颗粒度越细，表示描述或分析越详细。');
             
             // 问题改写示例
-            addKnowledgeRow(tbody, 'rewrite', '查询问题', '原始问题：查一下抓手有哪些？<br>改写问题：有哪些实现业务目标的具体方法或工具？<br>标准答案：实现业务目标的具体方法或工具包括：数据分析、用户调研、A/B测试、敏捷开发等方法论。', '全部业务线', '全部角色');
-            addKnowledgeRow(tbody, 'rewrite', '业务指标查询', '原始问题：帮我看看昨天的UV和PV情况？<br>改写问题：昨天的访客数和页面浏览量数据是多少？<br>标准答案：昨天的访客数为XX，页面浏览量为XX，环比上周同期有XX%的增长。', '电商,金融', '产品经理,运营');
-            addKnowledgeRow(tbody, 'rewrite', '产品定位问题', '原始问题：我们产品的赛道是什么？<br>改写问题：我们产品所在的市场领域和主要竞争对手有哪些？<br>标准答案：我们产品主要在XX市场领域，主要竞争对手包括XX、XX等公司的类似产品。', '文娱', '产品经理,市场');
-            addKnowledgeRow(tbody, 'rewrite', '绩效评估问题', '原始问题：这个指标的权重怎么定？<br>改写问题：在绩效评估体系中，这个业务指标应该占多少比重才合适？<br>标准答案：根据公司的战略重点和业务特点，建议该指标在整体评估中占据XX%的权重。', '全部业务线', '产品经理');
+            addKnowledgeRow(tbody, 'rewrite', '查询问题', '原始问题：查一下抓手有哪些？<br>改写问题：有哪些实现业务目标的具体方法或工具？<br>标准答案：实现业务目标的具体方法或工具包括：数据分析、用户调研、A/B测试、敏捷开发等方法论。');
+            addKnowledgeRow(tbody, 'rewrite', '业务指标查询', '原始问题：帮我看看昨天的UV和PV情况？<br>改写问题：昨天的访客数和页面浏览量数据是多少？<br>标准答案：昨天的访客数为XX，页面浏览量为XX，环比上周同期有XX%的增长。');
+            addKnowledgeRow(tbody, 'rewrite', '产品定位问题', '原始问题：我们产品的赛道是什么？<br>改写问题：我们产品所在的市场领域和主要竞争对手有哪些？<br>标准答案：我们产品主要在XX市场领域，主要竞争对手包括XX、XX等公司的类似产品。');
+            addKnowledgeRow(tbody, 'rewrite', '绩效评估问题', '原始问题：这个指标的权重怎么定？<br>改写问题：在绩效评估体系中，这个业务指标应该占多少比重才合适？<br>标准答案：根据公司的战略重点和业务特点，建议该指标在整体评估中占据XX%的权重。');
         }
         
         // 添加知识行
-        function addKnowledgeRow(tbody, type, term, content, business = '全部业务线', role = '全部角色') {
+        function addKnowledgeRow(tbody, type, term, content) {
             const row = document.createElement('tr');
             row.className = `knowledge-row ${type}`;
             
@@ -878,8 +736,6 @@
                 <td class="checkbox-cell"><input type="checkbox" class="item-checkbox" onchange="toggleItemSelection(this)"></td>
                 <td class="type-cell"><span class="knowledge-type ${type}">${typeText}</span></td>
                 <td class="term-cell">${term}</td>
-                <td class="business-cell">${business}</td>
-                <td class="role-cell">${role}</td>
                 <td class="content-cell">${content}</td>
                 <td class="actions-cell">
                     <button class="action-btn edit-btn" onclick="editKnowledgeItem(this)">编辑</button>
@@ -967,25 +823,15 @@
         function addSynonym() {
             const term = document.getElementById('synonym-term').value.trim();
             const mapping = document.getElementById('synonym-mapping').value.trim();
-            const businessSelect = document.getElementById('synonym-business');
-            const roleSelect = document.getElementById('synonym-role');
             
             if (!term || !mapping) {
                 alert('请填写黑话术语和映射标准术语！');
                 return;
             }
             
-            // 获取选中的业务线
-            const selectedBusiness = Array.from(businessSelect.selectedOptions).map(option => option.value);
-            const business = selectedBusiness.length > 0 ? selectedBusiness.join(',') : '全部业务线';
-            
-            // 获取选中的角色
-            const selectedRole = Array.from(roleSelect.selectedOptions).map(option => option.value);
-            const role = selectedRole.length > 0 ? selectedRole.join(',') : '全部角色';
-            
             // 添加到表格中
             const tbody = document.getElementById('knowledge-items');
-            addKnowledgeRow(tbody, 'synonym', term, mapping, business, role);
+            addKnowledgeRow(tbody, 'synonym', term, mapping);
             
             // 更新知识项数组
             knowledgeItems = Array.from(document.querySelectorAll('.knowledge-row'));
@@ -1010,8 +856,6 @@
             const term = document.getElementById('explanation-term').value.trim();
             const explanation = document.getElementById('term-explanation').value.trim();
             const rule = document.getElementById('process-rule').value.trim();
-            const businessSelect = document.getElementById('explanation-business');
-            const roleSelect = document.getElementById('explanation-role');
             
             if (!term || !explanation) {
                 alert('请填写名词术语和术语解释！');
@@ -1023,17 +867,9 @@
                 content += `<br>规则：${rule}`;
             }
             
-            // 获取选中的业务线
-            const selectedBusiness = Array.from(businessSelect.selectedOptions).map(option => option.value);
-            const business = selectedBusiness.length > 0 ? selectedBusiness.join(',') : '全部业务线';
-            
-            // 获取选中的角色
-            const selectedRole = Array.from(roleSelect.selectedOptions).map(option => option.value);
-            const role = selectedRole.length > 0 ? selectedRole.join(',') : '全部角色';
-            
             // 添加到表格中
             const tbody = document.getElementById('knowledge-items');
-            addKnowledgeRow(tbody, 'explanation', term, content, business, role);
+            addKnowledgeRow(tbody, 'explanation', term, content);
             
             // 更新知识项数组
             knowledgeItems = Array.from(document.querySelectorAll('.knowledge-row'));
@@ -1059,8 +895,6 @@
             const originalQuestion = document.getElementById('original-question').value.trim();
             const correctedQuestion = document.getElementById('corrected-question').value.trim();
             const correctAnswer = document.getElementById('correct-answer').value.trim();
-            const businessSelect = document.getElementById('rewrite-business');
-            const roleSelect = document.getElementById('rewrite-role');
             
             if (!title || !originalQuestion || !correctedQuestion || !correctAnswer) {
                 alert('请填写所有必填字段！');
@@ -1069,17 +903,9 @@
             
             const content = `原始问题：${originalQuestion}<br>改写问题：${correctedQuestion}<br>标准答案：${correctAnswer}`;
             
-            // 获取选中的业务线
-            const selectedBusiness = Array.from(businessSelect.selectedOptions).map(option => option.value);
-            const business = selectedBusiness.length > 0 ? selectedBusiness.join(',') : '全部业务线';
-            
-            // 获取选中的角色
-            const selectedRole = Array.from(roleSelect.selectedOptions).map(option => option.value);
-            const role = selectedRole.length > 0 ? selectedRole.join(',') : '全部角色';
-            
             // 添加到表格中
             const tbody = document.getElementById('knowledge-items');
-            addKnowledgeRow(tbody, 'rewrite', title, content, business, role);
+            addKnowledgeRow(tbody, 'rewrite', title, content);
             
             // 更新知识项数组
             knowledgeItems = Array.from(document.querySelectorAll('.knowledge-row'));
@@ -1248,92 +1074,6 @@
             document.querySelector(`.knowledge-type-btn[onclick="switchKnowledgeForm('${formId}')"]`).classList.add('active');
         }
         
-        // 打开批量修改业务线模态框
-        function openBatchBusinessModal() {
-            if (selectedItems.size === 0) {
-                alert('请先选择要修改的项目！');
-                return;
-            }
-            
-            document.getElementById('batch-business-modal').style.display = 'flex';
-        }
-        
-        // 关闭批量修改业务线模态框
-        function closeBatchBusinessModal() {
-            document.getElementById('batch-business-modal').style.display = 'none';
-        }
-        
-        // 打开批量修改角色模态框
-        function openBatchRoleModal() {
-            if (selectedItems.size === 0) {
-                alert('请先选择要修改的项目！');
-                return;
-            }
-            
-            document.getElementById('batch-role-modal').style.display = 'flex';
-        }
-        
-        // 关闭批量修改角色模态框
-        function closeBatchRoleModal() {
-            document.getElementById('batch-role-modal').style.display = 'none';
-        }
-        
-        // 应用批量业务线修改
-        function applyBatchBusiness() {
-            const businessSelect = document.getElementById('batch-business-select');
-            const selectedBusiness = Array.from(businessSelect.selectedOptions).map(option => option.value);
-            
-            if (selectedBusiness.length === 0) {
-                alert('请选择至少一个业务线！');
-                return;
-            }
-            
-            const business = selectedBusiness.join(',');
-            
-            // 获取所有选中的行
-            const rows = document.querySelectorAll('.knowledge-row');
-            selectedItems.forEach(index => {
-                if (index < rows.length) {
-                    const row = rows[index];
-                    row.querySelector('.business-cell').textContent = business;
-                }
-            });
-            
-            // 关闭模态框
-            closeBatchBusinessModal();
-            
-            // 显示成功消息
-            alert(`已成功为${selectedItems.size}个项目更新业务线！`);
-        }
-        
-        // 应用批量角色修改
-        function applyBatchRole() {
-            const roleSelect = document.getElementById('batch-role-select');
-            const selectedRole = Array.from(roleSelect.selectedOptions).map(option => option.value);
-            
-            if (selectedRole.length === 0) {
-                alert('请选择至少一个角色！');
-                return;
-            }
-            
-            const role = selectedRole.join(',');
-            
-            // 获取所有选中的行
-            const rows = document.querySelectorAll('.knowledge-row');
-            selectedItems.forEach(index => {
-                if (index < rows.length) {
-                    const row = rows[index];
-                    row.querySelector('.role-cell').textContent = role;
-                }
-            });
-            
-            // 关闭模态框
-            closeBatchRoleModal();
-            
-            // 显示成功消息
-            alert(`已成功为${selectedItems.size}个项目更新角色！`);
-        }
-        
         // 下载模板功能
         function downloadTemplate(templateType) {
             // 创建不同类型的模板内容
@@ -1342,15 +1082,15 @@
             
             switch(templateType) {
                 case 'synonym':
-                    templateContent = '黑话术语,标准术语,适用业务线,适用角色\nGMV,商品交易总额,电商,产品经理/运营\nUV,访客数,全部业务线,产品经理/研发\nPV,页面浏览量,电商/金融,全部角色\nROI,投资回报率,金融,市场/运营';
+                    templateContent = '黑话术语,标准术语\nGMV,商品交易总额\nUV,访客数\nPV,页面浏览量\nROI,投资回报率';
                     fileName = '同义词映射模板.csv';
                     break;
                 case 'explanation':
-                    templateContent = '名词术语,术语解释,处理规则,适用业务线,适用角色\n闭环,指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。,遇到"闭环"一词时，需要明确询问用户是指哪个具体业务流程的闭环,全部业务线,产品经理/研发\n赋能,指提供资源、工具或权力，使他人能够完成任务或实现目标。在企业环境中，常用于描述管理层为员工提供支持的行为。,可进一步询问赋能的具体方式，避免空泛表述,电商/文娱,产品经理';
+                    templateContent = '名词术语,术语解释,处理规则\n闭环,指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。,遇到"闭环"一词时，需要明确询问用户是指哪个具体业务流程的闭环\n赋能,指提供资源、工具或权力，使他人能够完成任务或实现目标。在企业环境中，常用于描述管理层为员工提供支持的行为。,可进一步询问赋能的具体方式，避免空泛表述';
                     fileName = '名词解释模板.csv';
                     break;
                 case 'rewrite':
-                    templateContent = '标题/场景描述,原始问题,改写后问题,标准答案,适用业务线,适用角色\n查询问题,查一下抓手有哪些？,有哪些实现业务目标的具体方法或工具？,实现业务目标的具体方法或工具包括：数据分析、用户调研、A/B测试、敏捷开发等方法论。,全部业务线,全部角色\n业务指标查询,帮我看看昨天的UV和PV情况？,昨天的访客数和页面浏览量数据是多少？,昨天的访客数为XX，页面浏览量为XX，环比上周同期有XX%的增长。,电商/金融,产品经理/运营';
+                    templateContent = '标题/场景描述,原始问题,改写后问题,标准答案\n查询问题,查一下抓手有哪些？,有哪些实现业务目标的具体方法或工具？,实现业务目标的具体方法或工具包括：数据分析、用户调研、A/B测试、敏捷开发等方法论。\n业务指标查询,帮我看看昨天的UV和PV情况？,昨天的访客数和页面浏览量数据是多少？,昨天的访客数为XX，页面浏览量为XX，环比上周同期有XX%的增长。';
                     fileName = '问题改写模板.csv';
                     break;
                 default:

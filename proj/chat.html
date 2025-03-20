@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monica - AI聊天</title>
+    <link rel="stylesheet" href="styles/monica.css">
+    <link rel="stylesheet" href="styles/chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="chat-page">
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Monica</h1>
+            </div>
+            <div class="nav-links">
+                <div class="dropdown">
+                    <button class="dropbtn">产品</button>
+                    <div class="dropdown-content">
+                        <div class="dropdown-column">
+                            <h3>应用</h3>
+                            <a href="#">浏览器扩展</a>
+                            <a href="#">桌面应用</a>
+                            <a href="#">移动应用</a>
+                            <a href="#">Monica Code</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h3>AI模型</h3>
+                            <a href="#">Claude 3.7 Sonnet</a>
+                            <a href="#">Ask OpenAI o1</a>
+                            <a href="#">DeepSeek-R1</a>
+                            <a href="#">o3-mini</a>
+                            <a href="#">更多模型...</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h3>图像工具</h3>
+                            <a href="#">AI图像生成器</a>
+                            <a href="#">AI动画生成器</a>
+                            <a href="#">AI水印移除</a>
+                            <a href="#">更多工具...</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn">功能</button>
+                    <div class="dropdown-content">
+                        <a href="chat.html">聊天</a>
+                        <a href="#">图像生成</a>
+                        <a href="#">PDF工具</a>
+                        <a href="#">写作工具</a>
+                    </div>
+                </div>
+                <a href="#">价格</a>
+                <a href="#">学习中心</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="login-btn">登录</button>
+                <button class="signup-btn">Web App</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="chat-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn">
+                    <i class="fas fa-plus"></i> 新建聊天
+                </button>
+            </div>
+            <div class="chat-history">
+                <div class="history-item active">
+                    <div class="history-title">全能AI助手的功能介绍</div>
+                    <div class="history-date">今天 14:30</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">如何使用Monica进行图像生成</div>
+                    <div class="history-date">今天 12:15</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">PDF文档分析与摘要</div>
+                    <div class="history-date">昨天 18:45</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">Monica与其他AI助手的比较</div>
+                    <div class="history-date">昨天 10:20</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-title">如何优化我的文章写作</div>
+                    <div class="history-date">2023/2/20</div>
+                </div>
+            </div>
+            <div class="model-selector">
+                <div class="model-label">当前模型</div>
+                <div class="selected-model">
+                    <img src="https://via.placeholder.com/24" alt="GPT-4o">
+                    <span>GPT-4o</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-main">
+            <div class="chat-messages">
+                <div class="message-container system-message">
+                    <div class="message">
+                        <p>你好！我是Monica，你的全能AI助手。我可以帮助你回答问题、生成内容、分析数据等。请问有什么我可以帮助你的吗？</p>
+                    </div>
+                </div>
+                
+                <div class="message-container user-message">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/32" alt="用户头像">
+                    </div>
+                    <div class="message">
+                        <p>你好！请介绍一下你的功能。</p>
+                    </div>
+                </div>
+                
+                <div class="message-container ai-message">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/32" alt="Monica">
+                    </div>
+                    <div class="message">
+                        <p>当然！我是Monica，一个多功能的AI助手，配备了多种先进功能：</p>
+                        <p><strong>主要功能：</strong></p>
+                        <ul>
+                            <li><strong>AI聊天：</strong>通过多种先进的语言模型(GPT-4o、Claude 3.7、DeepSeek-R1等)进行对话</li>
+                            <li><strong>图像生成：</strong>使用DALL-E 3、Stable Diffusion等技术创建图像</li>
+                            <li><strong>PDF工具：</strong>与PDF文件交互，包括翻译、提取、总结等</li>
+                            <li><strong>写作辅助：</strong>内容创作、文本改写、语法检查等</li>
+                            <li><strong>在线搜索：</strong>实时网页搜索，获取最新信息</li>
+                            <li><strong>代码助手：</strong>辅助编写和优化代码</li>
+                        </ul>
+                        <p><strong>独特特性：</strong></p>
+                        <ul>
+                            <li>支持多种设备：浏览器扩展、桌面应用、移动应用</li>
+                            <li>语音输入与响应功能</li>
+                            <li>截图分析功能</li>
+                            <li>多语言支持</li>
+                        </ul>
+                        <p>有任何具体功能需要了解更多细节吗？</p>
+                    </div>
+                    <div class="message-actions">
+                        <button><i class="fas fa-copy"></i> 复制</button>
+                        <button><i class="fas fa-redo"></i> 重新生成</button>
+                    </div>
+                </div>
+                
+                <div class="message-container user-message">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/32" alt="用户头像">
+                    </div>
+                    <div class="message">
+                        <p>你能生成什么类型的图像？</p>
+                    </div>
+                </div>
+                
+                <div class="message-container ai-message">
+                    <div class="avatar">
+                        <img src="https://via.placeholder.com/32" alt="Monica">
+                    </div>
+                    <div class="message">
+                        <p>我可以通过多种AI模型生成各种类型的图像，包括：</p>
+                        <ul>
+                            <li><strong>写实图像：</strong>风景、肖像、产品等照片级真实图像</li>
+                            <li><strong>艺术创作：</strong>不同艺术风格的插画、绘画和设计</li>
+                            <li><strong>Logo设计：</strong>企业和品牌标识</li>
+                            <li><strong>动画和动态图像：</strong>简单的动画效果</li>
+                            <li><strong>卡通和漫画风格：</strong>各种卡通化图像</li>
+                            <li><strong>图像变体：</strong>基于已有图像创建变体</li>
+                        </ul>
+                        <p>要生成图像，只需描述你想要的内容，越详细越好。例如颜色、风格、构图等细节都有助于得到更符合期望的结果。</p>
+                        <p>想尝试生成一张图像吗？请描述你想要的图像内容。</p>
+                    </div>
+                    <div class="message-actions">
+                        <button><i class="fas fa-copy"></i> 复制</button>
+                        <button><i class="fas fa-redo"></i> 重新生成</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="toolbar">
+                    <button title="上传文件"><i class="fas fa-paperclip"></i></button>
+                    <button title="语音输入"><i class="fas fa-microphone"></i></button>
+                </div>
+                <div class="input-wrapper">
+                    <textarea placeholder="发送消息给Monica..." rows="1"></textarea>
+                    <button class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div class="model-options">
+                    <span>GPT-4o</span>
+                    <span class="divider">|</span>
+                    <button title="查看页面"><i class="fas fa-globe"></i></button>
+                    <button title="设置"><i class="fas fa-cog"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/monica.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+</html> 

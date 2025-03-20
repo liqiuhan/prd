@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monica - AI聊天助手</title>
+    <link rel="stylesheet" href="styles/sidebar-chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧工具栏 - 可折叠 -->
+        <div class="sidebar-tools" id="sidebar-tools">
+            <!-- 产品Logo -->
+            <div class="product-logo" id="product-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L4 6V18L12 22L20 18V6L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 8L16 10V16L12 18L8 16V10L12 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 6L12 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 10L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 22V18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">ChatBI</div>
+                <!-- 展开后的折叠按钮移到Logo区域内 -->
+                <div class="sidebar-toggle-expanded" id="sidebar-toggle-expanded">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+            </div>
+            
+            <div class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            
+            <div class="tool-item" data-tool="query">
+                <div class="tool-icon"><i class="fas fa-question-circle"></i></div>
+                <div class="tool-name">问数</div>
+            </div>
+            
+            <div class="tool-item" data-tool="analysis">
+                <div class="tool-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="tool-name">分析</div>
+            </div>
+            
+            <div class="tool-item" data-tool="alert">
+                <div class="tool-icon"><i class="fas fa-bell"></i></div>
+                <div class="tool-name">预警</div>
+            </div>
+            
+            <div class="tool-item" data-tool="ppt">
+                <div class="tool-icon"><i class="fas fa-file-powerpoint"></i></div>
+                <div class="tool-name">PPT</div>
+            </div>
+            
+            <div class="tool-item active" data-tool="history">
+                <div class="tool-icon"><i class="fas fa-history"></i></div>
+                <div class="tool-name">历史会话</div>
+            </div>
+            
+            <div class="tool-item" data-tool="admin">
+                <div class="tool-icon"><i class="fas fa-cog"></i></div>
+                <div class="tool-name">管理后台</div>
+            </div>
+            
+            <!-- 用户头像 -->
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxkZWZzPgogICAgICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZDEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICAgICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNWU2NGZmIiAvPgogICAgICAgICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0YjUxZjUiIC8+CiAgICAgICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDwvZGVmcz4KICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSJ1cmwoI2dyYWQxKSIvPgogICAgPGNpcmNsZSBjeD0iNTAiIGN5PSIzOCIgcj0iMTgiIGZpbGw9IndoaXRlIi8+CiAgICA8cGF0aCBkPSJNMjUgODVDMjUgNjggNDAuNSA2MCA1MCA2MGM5LjUgMCAyNSA4IDI1IDI1IiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="用户头像" />
+                </div>
+                <div class="user-name">张业策</div>
+            </div>
+        </div>
+
+        <!-- 中间历史列表区 - 可展开收缩 -->
+        <div class="history-panel" id="history-panel">
+            <div class="history-header">
+                <h3>历史会话</h3>
+                <div class="history-actions">
+                    <button class="new-chat-btn"><i class="fas fa-plus"></i> 新建会话</button>
+                    <button class="history-toggle" id="history-toggle"><i class="fas fa-chevron-left"></i></button>
+                </div>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" placeholder="搜索历史会话...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div class="history-list">
+                <div class="history-date">今天</div>
+                
+                <div class="chat-item active">
+                    <div class="chat-icon"><i class="fas fa-comment"></i></div>
+                    <div class="chat-content">
+                        <div class="chat-title">科学计算基础知识</div>
+                        <div class="chat-meta">12:30 - 3条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-icon"><i class="fas fa-comment"></i></div>
+                    <div class="chat-content">
+                        <div class="chat-title">二次元风格设计理念研究</div>
+                        <div class="chat-meta">10:15 - 8条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="history-date">昨天</div>
+                
+                <div class="chat-item">
+                    <div class="chat-icon"><i class="fas fa-comment"></i></div>
+                    <div class="chat-content">
+                        <div class="chat-title">用户体验最佳实践讨论</div>
+                        <div class="chat-meta">19:42 - 12条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-icon"><i class="fas fa-comment"></i></div>
+                    <div class="chat-content">
+                        <div class="chat-title">创意开发流程优化方案</div>
+                        <div class="chat-meta">15:18 - 5条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="history-date">过去7天</div>
+                
+                <div class="chat-item">
+                    <div class="chat-icon"><i class="fas fa-comment"></i></div>
+                    <div class="chat-content">
+                        <div class="chat-title">腾讯智能表格取消隐藏列方法</div>
+                        <div class="chat-meta">周一 - 4条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-icon"><i class="fas fa-comment"></i></div>
+                    <div class="chat-content">
+                        <div class="chat-title">2024年AI发展趋势分析</div>
+                        <div class="chat-meta">周日 - 9条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-icon"><i class="fas fa-comment"></i></div>
+                    <div class="chat-content">
+                        <div class="chat-title">COM加载项简介</div>
+                        <div class="chat-meta">周六 - 6条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-icon"><i class="fas fa-comment"></i></div>
+                    <div class="chat-content">
+                        <div class="chat-title">搜索前后对比苹果PPT模板</div>
+                        <div class="chat-meta">周五 - 2条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分页控件 -->
+            <div class="pagination">
+                <div class="pagination-nav" id="pagination-prev"><i class="fas fa-chevron-left"></i></div>
+                <div class="pagination-item active">1</div>
+                <div class="pagination-item">2</div>
+                <div class="pagination-item">3</div>
+                <div class="pagination-nav" id="pagination-next"><i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+
+        <!-- 右侧主要聊天区域 -->
+        <div class="chat-area" id="chat-area">
+            <div class="chat-messages">
+                <!-- 聊天消息将在这里显示 -->
+            </div>
+            
+            <div class="chat-input-area">
+                <!-- 角色提示 - 移动到问题推荐卡片上方 -->
+                <div class="role-tip">
+                    <p>我猜您是【业策】角色，将按该角色推荐问题</p>
+                    <div class="role-switch">
+                        <i class="fas fa-exchange-alt"></i> 切换角色
+                    </div>
+                </div>
+                
+                <!-- 推荐问题卡片 - 吸附在标签页上方 -->
+                <div class="recommended-questions">
+                    <div class="question-card">
+                        <div class="question-card-title">科技技术与行业发展</div>
+                        <div class="question-card-desc">业策如何评估新兴科技对行业发展的影响和变革潜力？</div>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-card-title">数据驱动决策</div>
+                        <div class="question-card-desc">作为业策，如何利用数据分析辅助企业战略决策？</div>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-card-title">数字化转型挑战</div>
+                        <div class="question-card-desc">企业数字化转型中常见的阻碍因素有哪些？如何克服？</div>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-card-title">人工智能应用实践</div>
+                        <div class="question-card-desc">业策如何引导企业落地AI应用并实现业务价值？</div>
+                    </div>
+                </div>
+                
+                <!-- 示例标签页 - 被推荐问题卡片吸附 -->
+                <div class="suggested-questions">
+                    <div class="question-chip">查数示例</div>
+                    <div class="question-chip">分析示例</div>
+                    <div class="question-chip">预警示例</div>
+                    <div class="question-chip">PPT示例</div>
+                </div>
+                
+                <div class="input-container">
+                    <textarea placeholder="输入您的问题..." autofocus></textarea>
+                    <div class="input-tools">
+                        <button title="附件"><i class="fas fa-paperclip"></i></button>
+                        <button title="代码"><i class="fas fa-code"></i></button>
+                        <button title="表情"><i class="fas fa-smile"></i></button>
+                        <button title="发送" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                
+                <!-- 高级功能按钮 - 保持在输入框下方 -->
+                <div class="advanced-features">
+                    <div class="feature-buttons">
+                        <button class="feature-btn web-search">
+                            <i class="fas fa-globe"></i> 联网检索
+                        </button>
+                        <button class="feature-btn deep-thinking">
+                            <i class="fas fa-brain"></i> 深度思考
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/sidebar-chat.js"></script>
+</body>
+</html> 

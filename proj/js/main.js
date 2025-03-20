@@ -191,17 +191,48 @@ const ChatBI = {
     // 子菜单项点击处理
     handleSubmenuItemClick: function(event) {
         const submenuItem = event.currentTarget;
+        const hasSubmenu = submenuItem.getAttribute('data-has-submenu') === 'true';
+        const submenuId = submenuItem.getAttribute('data-submenu');
+        const pageId = submenuItem.getAttribute('data-page');
+        const onclick = submenuItem.getAttribute('onclick');
         
-        // 移除所有子菜单项的激活状态
+        // 如果点击的子菜单项有自己的子菜单，则切换其显示状态
+        if (hasSubmenu && submenuId) {
+            const submenu = document.getElementById(submenuId);
+            const isShown = submenu.classList.contains('show');
+            
+            if (isShown) {
+                submenu.classList.remove('show');
+                submenuItem.classList.remove('active');
+            } else {
+                submenu.classList.add('show');
+                submenuItem.classList.add('active');
+            }
+            
+            // 如果有页面ID，加载对应页面
+            if (pageId && !isShown) {
+                this.loadPage(pageId);
+            }
+            
+            return;
+        }
+        
+        // 如果点击的子菜单项有onclick属性，不处理其他逻辑（让onclick处理）
+        if (onclick) {
+            return;
+        }
+        
+        // 移除所有子菜单项的激活状态（保留有子菜单的父项的激活状态）
         this.elements.submenuItems.forEach(item => {
-            item.classList.remove('active');
+            if (item.getAttribute('data-has-submenu') !== 'true') {
+                item.classList.remove('active');
+            }
         });
         
         // 设置点击项的激活状态
         submenuItem.classList.add('active');
         
         // 加载对应页面
-        const pageId = submenuItem.getAttribute('data-page');
         if (pageId) {
             this.loadPage(pageId);
         }
@@ -234,8 +265,16 @@ const ChatBI = {
             targetPage.classList.add('active');
             
             // 处理iframe高度设置
-            if (pageId === 'page-analysis-approach' || pageId === 'page-knowledge-strategy') {
-                const iframeId = pageId === 'page-analysis-approach' ? 'analysis-approach-frame' : 'knowledge-strategy-frame';
+            if (pageId === 'page-analysis-approach' || 
+                pageId === 'page-knowledge-strategy' || 
+                pageId === 'page-indicator-approval' ||
+                pageId === 'page-business-jargon') {
+                
+                const iframeId = pageId === 'page-analysis-approach' ? 'analysis-approach-frame' : 
+                                 pageId === 'page-knowledge-strategy' ? 'knowledge-strategy-frame' : 
+                                 pageId === 'page-indicator-approval' ? 'indicator-approval-frame' :
+                                 'business-jargon-frame';
+                                 
                 const iframe = document.getElementById(iframeId);
                 if (iframe) {
                     // 设置iframe高度为窗口高度减去一些边距
@@ -273,6 +312,8 @@ const ChatBI = {
             if (pageId !== 'page-analysis-approach' && 
                 pageId !== 'page-knowledge-strategy' &&
                 pageId !== 'page-knowledge-import' &&
+                pageId !== 'page-indicator-approval' &&
+                pageId !== 'page-business-jargon' &&
                 (targetPage.innerHTML.trim() === '' || 
                 (targetPage.innerHTML.indexOf('<!-- 页面内容将通过JavaScript动态加载 -->') !== -1 && 
                  pageId !== 'page-empty'))) {
@@ -341,87 +382,19 @@ document.addEventListener('DOMContentLoaded', function() {
     ChatBI.init();
 }); 
 
-// 业务黑话页面函数
-// 切换标签页
-function switchBusinessJargonTab(tabId) {
+// 标签管理页面的Tab切换功能
+function switchTagTab(tabId) {
     // 隐藏所有标签内容
-    document.querySelectorAll('#page-business-jargon .tab-content').forEach(content => {
+    document.querySelectorAll('#page-tag-management .tab-content').forEach(content => {
         content.classList.remove('active');
     });
     
-    // 取消所有标签的活动状态
-    document.querySelectorAll('#page-business-jargon .tab').forEach(tab => {
+    // 取消所有标签的激活状态
+    document.querySelectorAll('#page-tag-management .tab').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // 显示选中的标签内容
+    // 激活选中的标签和内容
     document.getElementById(tabId).classList.add('active');
-    
-    // 设置选中标签的活动状态
-    Array.from(document.querySelectorAll('#page-business-jargon .tab')).find(tab => 
-        tab.textContent.includes(tabId === 'knowledge-list' ? '知识列表' : '新建知识')
-    ).classList.add('active');
-}
-
-// 添加新知识
-function addKnowledge() {
-    const term = document.getElementById('term').value.trim();
-    const explanation = document.getElementById('explanation').value.trim();
-    const example = document.getElementById('example').value.trim();
-    
-    if (!term || !explanation) {
-        alert('请填写术语名称和解释说明！');
-        return;
-    }
-    
-    // 创建新的知识项
-    const knowledgeItem = document.createElement('div');
-    knowledgeItem.className = 'knowledge-item';
-    
-    const termElement = document.createElement('div');
-    termElement.className = 'knowledge-term';
-    termElement.textContent = term;
-    
-    const explanationElement = document.createElement('div');
-    explanationElement.className = 'knowledge-explanation';
-    explanationElement.textContent = explanation;
-    
-    knowledgeItem.appendChild(termElement);
-    knowledgeItem.appendChild(explanationElement);
-    
-    if (example) {
-        const exampleElement = document.createElement('div');
-        exampleElement.className = 'knowledge-example';
-        exampleElement.innerHTML = `<strong>示例：</strong>${example}`;
-        knowledgeItem.appendChild(exampleElement);
-    }
-    
-    // 添加到列表中
-    document.getElementById('knowledge-items').prepend(knowledgeItem);
-    
-    // 重置表单
-    document.getElementById('knowledge-form').reset();
-    
-    // 切换到知识列表标签
-    switchBusinessJargonTab('knowledge-list');
-    
-    // 显示成功消息
-    alert('新知识添加成功！');
-}
-
-// 搜索功能
-function searchKnowledge() {
-    const searchText = document.getElementById('search-input').value.toLowerCase();
-    const items = document.querySelectorAll('#knowledge-items .knowledge-item');
-    
-    items.forEach(item => {
-        const term = item.querySelector('.knowledge-term').textContent.toLowerCase();
-        const explanation = item.querySelector('.knowledge-explanation').textContent.toLowerCase();
-        
-        if (term.includes(searchText) || explanation.includes(searchText)) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
+    document.querySelector(`#page-tag-management .tab[onclick="switchTagTab('${tabId}')"]`).classList.add('active');
 } 

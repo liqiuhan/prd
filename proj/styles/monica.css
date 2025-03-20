@@ -1,0 +1,478 @@
+/* Monica.im复刻 - 全局样式 */
+:root {
+    --primary-color: #5e64ff;
+    --secondary-color: #f2f3ff;
+    --accent-color: #4b51f5;
+    --text-color: #333;
+    --text-light: #777;
+    --background-color: #fff;
+    --border-color: #eaeaea;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --hover-color: #f5f5f5;
+    --gradient-start: #5e64ff;
+    --gradient-end: #7c83ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* 导航栏样式 */
+header {
+    background-color: var(--background-color);
+    box-shadow: 0 2px 10px var(--shadow-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+}
+
+.logo h1 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-links a {
+    font-weight: 500;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.login-btn {
+    background: transparent;
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.login-btn:hover {
+    background-color: var(--hover-color);
+}
+
+.signup-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.signup-btn:hover {
+    background-color: var(--accent-color);
+}
+
+/* 下拉菜单 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background: transparent;
+    color: var(--text-color);
+    font-weight: 500;
+    padding: 0.5rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.dropbtn:after {
+    content: "▼";
+    font-size: 0.7rem;
+    margin-left: 0.5rem;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--background-color);
+    min-width: 600px;
+    box-shadow: 0 8px 16px 0 var(--shadow-color);
+    border-radius: 8px;
+    z-index: 1;
+    padding: 1.5rem;
+    left: -100px;
+    top: 40px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: flex;
+}
+
+.dropdown-column {
+    flex: 1;
+    padding: 0 1rem;
+}
+
+.dropdown-column h3 {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.dropdown-column a {
+    display: block;
+    padding: 0.5rem 0;
+    font-weight: 400;
+}
+
+/* 英雄区域 */
+.hero {
+    display: flex;
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+    align-items: center;
+    gap: 2rem;
+}
+
+.hero-content {
+    flex: 1;
+}
+
+.hero-image {
+    flex: 1;
+    text-align: center;
+}
+
+.hero-image img {
+    max-width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+.hero h2 {
+    font-size: 3rem;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.primary-btn:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.secondary-btn {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 1.1rem;
+    display: inline-block;
+    text-align: center;
+}
+
+.secondary-btn:hover {
+    background-color: #e5e6ff;
+    transform: translateY(-2px);
+}
+
+.ratings {
+    display: flex;
+    gap: 2rem;
+}
+
+.rating span {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.rating p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* 特性部分 */
+.features {
+    background-color: var(--secondary-color);
+    padding: 5rem 2rem;
+    text-align: center;
+}
+
+.features h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    line-height: 1.2;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px var(--shadow-color);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px var(--shadow-color);
+}
+
+.feature-card i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+}
+
+.feature-link {
+    color: var(--primary-color);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.feature-link i {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    transition: transform 0.3s;
+}
+
+.feature-link:hover i {
+    transform: translateX(5px);
+}
+
+/* 客户评价 */
+.testimonials {
+    max-width: 1200px;
+    margin: 5rem auto;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.testimonials h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.stat h3 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+/* FAQ部分 */
+.faq {
+    max-width: 800px;
+    margin: 5rem auto;
+    padding: 0 2rem;
+}
+
+.faq h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.question {
+    margin-bottom: 2rem;
+}
+
+.question h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.question p {
+    color: var(--text-light);
+}
+
+/* 页脚 */
+footer {
+    background-color: #f8f9fa;
+    padding: 5rem 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 3rem;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-column h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.footer-column a {
+    display: block;
+    margin-bottom: 0.8rem;
+    color: var(--text-light);
+}
+
+.footer-column p {
+    color: var(--text-light);
+    margin-bottom: 0.8rem;
+}
+
+/* 导航栏滚动效果 */
+.scrolled {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.98);
+}
+
+/* 响应式设计 */
+@media (max-width: 992px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .hero-content {
+        order: 2;
+    }
+    
+    .hero-image {
+        order: 1;
+    }
+    
+    .ratings {
+        justify-content: center;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+    
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-buttons {
+        flex-direction: column;
+    }
+    
+    .stats {
+        flex-direction: column;
+    }
+} 

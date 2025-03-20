@@ -186,6 +186,29 @@
     margin: 2px 0;
 }
 
+/* 子菜单项的子菜单 */
+.submenu .submenu {
+    padding-left: 15px;
+    margin-top: 2px;
+}
+
+.submenu-item[data-has-submenu="true"] {
+    position: relative;
+}
+
+.submenu-item[data-has-submenu="true"]::after {
+    content: '\f105';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 10px;
+    transition: transform 0.3s;
+}
+
+.submenu-item[data-has-submenu="true"].active::after {
+    transform: rotate(90deg);
+}
+
 .submenu-item:hover {
     color: var(--accent-color);
     background-color: var(--submenu-hover);

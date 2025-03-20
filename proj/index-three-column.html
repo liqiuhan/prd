@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monica - AI聊天助手</title>
+    <link rel="stylesheet" href="styles/new-chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧边栏 - 模型选择 -->
+        <div class="sidebar left-sidebar">
+            <div class="logo">
+                <img src="https://via.placeholder.com/32" alt="Monica Logo">
+            </div>
+            
+            <div class="model-list">
+                <div class="model-item active">
+                    <img src="https://via.placeholder.com/28" alt="Monica">
+                    <span>Monica</span>
+                </div>
+                <div class="model-item">
+                    <img src="https://via.placeholder.com/28" alt="DeepSeek V3">
+                    <span>DeepSeek V3</span>
+                </div>
+                <div class="model-item">
+                    <img src="https://via.placeholder.com/28" alt="DeepSeek R1">
+                    <span>DeepSeek R1</span>
+                </div>
+                <div class="model-item">
+                    <img src="https://via.placeholder.com/28" alt="GPT-4o">
+                    <span>GPT-4o</span>
+                </div>
+                <div class="model-item">
+                    <img src="https://via.placeholder.com/28" alt="GPT-4.5">
+                    <span>GPT-4.5</span>
+                </div>
+                <div class="more-models">
+                    更多 <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <div class="sidebar-section-title">最近</div>
+            
+            <div class="recent-chats">
+                <div class="recent-item">
+                    <div class="recent-title">科学计算器器二次创作建议</div>
+                    <div class="recent-meta">3052次</div>
+                </div>
+                <div class="recent-item active">
+                    <div class="recent-title">腾讯智能表格取消隐藏列方法</div>
+                    <div class="recent-meta">最近</div>
+                </div>
+                <div class="recent-item">
+                    <div class="recent-title">2024年AI发展趋势分析</div>
+                    <div class="recent-meta">最近</div>
+                </div>
+                <div class="recent-item">
+                    <div class="recent-title">欢迎消息</div>
+                    <div class="recent-meta">最近</div>
+                </div>
+                <div class="recent-item">
+                    <div class="recent-title">COM加载项简介</div>
+                    <div class="recent-meta">最近</div>
+                </div>
+                <div class="recent-item">
+                    <div class="recent-title">搜索前后对比苹果PPT模板</div>
+                    <div class="recent-meta">最近</div>
+                </div>
+                <div class="recent-item">
+                    <div class="recent-title">AI excel</div>
+                    <div class="recent-meta">最近</div>
+                </div>
+                <div class="recent-item">
+                    <div class="recent-title">群晖 DSM 7.2.2 更新与 HEVC...</div>
+                    <div class="recent-meta">最近</div>
+                </div>
+                <div class="recent-item">
+                    <div class="recent-title">群晖7.2.2 HEVC</div>
+                    <div class="recent-meta">最近</div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="footer-icon"><i class="fas fa-gift"></i></div>
+                <div class="footer-icon"><i class="fas fa-star"></i></div>
+                <div class="footer-icon"><i class="fas fa-cog"></i></div>
+                <div class="footer-icon"><i class="fas fa-question-circle"></i></div>
+            </div>
+        </div>
+
+        <!-- 中间内容区 - 聊天 -->
+        <div class="main-content">
+            <div class="welcome-section">
+                <h1>欢迎 👋</h1>
+                
+                <div class="tools-section">
+                    <div class="section-header">
+                        <h2>工具</h2>
+                        <a href="#" class="more-link">更多 ></a>
+                    </div>
+                    
+                    <div class="tools-grid">
+                        <div class="tool-item">
+                            <div class="tool-icon"><i class="fas fa-edit"></i></div>
+                            <div class="tool-name">写作</div>
+                        </div>
+                        <div class="tool-item">
+                            <div class="tool-icon"><i class="fas fa-language"></i></div>
+                            <div class="tool-name">语法检查</div>
+                        </div>
+                        <div class="tool-item">
+                            <div class="tool-icon"><i class="fas fa-globe"></i></div>
+                            <div class="tool-name">翻译</div>
+                        </div>
+                        <div class="tool-item">
+                            <div class="tool-icon"><i class="fas fa-robot"></i></div>
+                            <div class="tool-name">AI检测</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="image-section">
+                    <div class="section-header">
+                        <h2>图像</h2>
+                        <a href="#" class="more-link">更多 ></a>
+                    </div>
+                    
+                    <div class="image-tools-grid">
+                        <div class="image-tool-item">
+                            <div class="image-tool-content">
+                                <div class="image-tool-title">图片生成</div>
+                                <div class="image-tool-desc">支持10+专业模型</div>
+                            </div>
+                        </div>
+                        <div class="image-tool-item">
+                            <div class="image-tool-content">
+                                <div class="image-tool-title">视频生成</div>
+                                <div class="image-tool-desc">6种主流视频模型</div>
+                            </div>
+                        </div>
+                        <div class="image-tool-item">
+                            <div class="image-tool-content">
+                                <div class="image-tool-title">设计工具</div>
+                                <div class="image-tool-desc">Logo, 海报等更多</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-interface">
+                <div class="chat-header">
+                    <div class="suggested-questions">
+                        <div class="question-chip">科学计算基础知识</div>
+                        <div class="question-chip">二次元风格设计理念</div>
+                        <div class="question-chip">创意开发流程</div>
+                        <div class="question-chip">用户体验最佳实践</div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages">
+                    <div class="message system-message">
+                        <p>在所有平台均可使用 Monica</p>
+                        <p class="app-badge">🔹 APP 免费体验三天 Monica Pro</p>
+                    </div>
+                    
+                    <div class="message-time">今天 15:42</div>
+                    
+                    <div class="message ai-message">
+                        <div class="message-content">
+                            <p>问我任何问题...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-area">
+                    <div class="model-selector">
+                        <img src="https://via.placeholder.com/20" alt="Monica">
+                        <span>Monica</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    
+                    <div class="input-container">
+                        <textarea placeholder="问我任何问题..."></textarea>
+                        <div class="input-tools">
+                            <button title="附件"><i class="fas fa-paperclip"></i></button>
+                            <button title="话题卡片"><i class="fas fa-sticky-note"></i></button>
+                            <button title="代码"><i class="fas fa-code"></i></button>
+                            <button title="发送" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-footer">
+                        <div class="left-tools">
+                            <span>GPT-4o</span>
+                            <span class="divider">|</span>
+                            <button title="全网"><i class="fas fa-globe"></i></button>
+                        </div>
+                        <div class="right-tools">
+                            <button title="升级"><i class="fas fa-crown"></i> 升级</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧边栏 - 工具 -->
+        <div class="sidebar right-sidebar">
+            <div class="search-box">
+                <input type="text" placeholder="搜索智能体或聊天">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div class="tools-tabs">
+                <div class="tool-tab active">聊天</div>
+                <div class="tool-tab">网页</div>
+                <div class="tool-tab">文档</div>
+                <div class="tool-tab">思维导图</div>
+            </div>
+            
+            <div class="tool-section">
+                <div class="tool-section-header">
+                    <span>翻译</span>
+                    <button><i class="fas fa-plus"></i></button>
+                </div>
+                
+                <div class="tool-section-content">
+                    <div class="translate-tool">
+                        <textarea placeholder="输入要翻译的文本..."></textarea>
+                        <div class="translate-options">
+                            <div class="language-selector">
+                                <span>自动检测</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="direction-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="language-selector">
+                                <span>中文</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <button class="translate-btn">翻译</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <div class="tool-section-header">
+                    <span>写作</span>
+                    <button><i class="fas fa-plus"></i></button>
+                </div>
+                
+                <div class="tool-section-content">
+                    <div class="writing-tool">
+                        <div class="template-selector">
+                            <span>选择模板</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <textarea placeholder="输入写作主题或内容..."></textarea>
+                        <button class="writing-btn">生成</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <div class="tool-section-header">
+                    <span>图像</span>
+                    <button><i class="fas fa-plus"></i></button>
+                </div>
+                
+                <div class="tool-section-content">
+                    <div class="image-generate-tool">
+                        <div class="model-selector">
+                            <span>DALL·E 3</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <textarea placeholder="描述你想要生成的图像..."></textarea>
+                        <div class="image-options">
+                            <div class="option">
+                                <span>尺寸:</span>
+                                <select>
+                                    <option>1024x1024</option>
+                                    <option>1024x1792</option>
+                                    <option>1792x1024</option>
+                                </select>
+                            </div>
+                            <div class="option">
+                                <span>风格:</span>
+                                <select>
+                                    <option>逼真</option>
+                                    <option>动漫</option>
+                                    <option>素描</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="image-btn">生成</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/new-chat.js"></script>
+</body>
+</html> 
