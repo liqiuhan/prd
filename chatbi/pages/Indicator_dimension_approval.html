@@ -1,0 +1,2689 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>指标维度知识库标注系统</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 15px;
+            line-height: 1.4;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            overflow: auto;
+        }
+        header {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        h1 {
+            font-size: 20px;
+            color: #333;
+        }
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+        }
+        .search-box input {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            width: 220px;
+        }
+        button {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 13px;
+        }
+        button:hover {
+            background-color: #40a9ff;
+        }
+        button.secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        button.secondary:hover {
+            background-color: #e0e0e0;
+        }
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .excel-table th {
+            background-color: #f3f3f3;
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .excel-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            vertical-align: middle;
+        }
+        .excel-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .excel-table tr:hover {
+            background-color: #f0f7ff;
+        }
+        .editable {
+            background-color: rgba(24, 144, 255, 0.05);
+            cursor: pointer;
+        }
+        .editable:hover {
+            background-color: rgba(24, 144, 255, 0.1);
+        }
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .tag {
+            background-color: #e6f7ff;
+            color: #1890ff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: inline-block;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        .indicator-tag {
+            background-color: #f6ffed;
+            color: #52c41a;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: inline-block;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .indicator-tag:hover {
+            background-color: #b7eb8f;
+            transform: translateY(-1px);
+        }
+        .enum-tag {
+            background-color: #fff7e6;
+            color: #fa8c16;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: inline-block;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        .enum-tag.excluded {
+            background-color: #fff1f0;
+            color: #ff4d4f;
+            text-decoration: line-through;
+        }
+        .version-tag {
+            background-color: #f9f0ff;
+            color: #722ed1;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: inline-block;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+        .version-tag:hover {
+            background-color: #d3adf7;
+        }
+        .history-item {
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+        .history-item span {
+            display: inline-block;
+            margin-right: 4px;
+        }
+        .history-time {
+            color: #1890ff;
+        }
+        .history-user {
+            color: #52c41a;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #fff;
+            text-align: center;
+        }
+        .status-completed {
+            background-color: #52c41a;
+        }
+        .status-pending {
+            background-color: #faad14;
+        }
+        .status-not-started {
+            background-color: #ff4d4f;
+        }
+        .controls {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .filter-section {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-section select {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            gap: 5px;
+            margin-top: 15px;
+        }
+        .pagination button {
+            padding: 4px 10px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .pagination button.active {
+            background-color: #1890ff;
+            color: white;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #1890ff;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        .description-cell {
+            max-width: 200px; 
+            white-space: normal;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .edit-btn {
+            cursor: pointer;
+            color: #1890ff;
+            margin-left: 5px;
+            font-size: 12px;
+        }
+        .annotate-btn {
+            margin-top: 5px;
+            font-size: 12px;
+            padding: 3px 8px;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            text-align: center;
+            border-radius: 3px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 11px;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .breadcrumb {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .breadcrumb a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .back-btn:before {
+            content: "←";
+            margin-right: 5px;
+        }
+        .checkbox-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .checkbox-label input {
+            margin-right: 5px;
+        }
+        .version-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .version-menu {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+            padding: 5px 0;
+        }
+        .version-dropdown:hover .version-menu {
+            display: block;
+        }
+        .version-menu a {
+            color: black;
+            padding: 8px 12px;
+            text-decoration: none;
+            display: block;
+            font-size: 13px;
+        }
+        .version-menu a:hover {
+            background-color: #f1f1f1;
+        }
+        .enum-checkbox-container {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        .enum-checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .enum-checkbox-label input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .enum-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .enum-select-all {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+        }
+        .enum-select-all input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        .indicator-section {
+            margin-bottom: 15px;
+        }
+        .indicator-section-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .batch-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .select-all-container input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        @media (max-width: 768px) {
+            .header-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .excel-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .description-cell {
+                max-width: 120px;
+            }
+            .batch-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        /* 添加对枚举值别名的样式支持 */
+        .enum-value-block {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 10px;
+        }
+        
+        .enum-value-content {
+            flex: 1;
+            margin-left: 8px;
+        }
+        
+        .enum-value-name {
+            font-weight: 500;
+        }
+        
+        .enum-alias-container {
+            margin-top: 6px;
+        }
+        
+        .enum-alias-input {
+            display: flex;
+            margin-top: 4px;
+        }
+        
+        .enum-alias-tag {
+            background-color: #f0f0f0;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- 主页面 -->
+    <div id="main-page" class="container">
+        <header>
+            <h1>指标维度知识库标注系统</h1>
+            <div class="header-controls">
+                <div class="search-box">
+                    <input type="text" placeholder="搜索维度...">
+                </div>
+                <div class="version-dropdown">
+                    <button class="secondary">版本列表</button>
+                    <div class="version-menu">
+                        <a href="#" onclick="restoreVersion('v1.0.5')">v1.0.5 (当前版本)</a>
+                        <a href="#" onclick="restoreVersion('v1.0.4')">v1.0.4 (2025-03-18)</a>
+                        <a href="#" onclick="restoreVersion('v1.0.3')">v1.0.3 (2025-03-15)</a>
+                        <a href="#" onclick="restoreVersion('v1.0.2')">v1.0.2 (2025-03-10)</a>
+                        <a href="#" onclick="restoreVersion('v1.0.1')">v1.0.1 (2025-03-05)</a>
+                        <a href="#" onclick="restoreVersion('v1.0.0')">v1.0.0 (2025-03-01)</a>
+                    </div>
+                </div>
+                <button onclick="syncKnowledgeBase()">同步知识库</button>
+                <button class="secondary">导出</button>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="filter-section">
+                <select id="business-filter">
+                    <option value="">全部业务线</option>
+                    <option value="beike">贝壳城市</option>
+                    <option value="zz">整装</option>
+                    <option value="bl">北链</option>
+                    <option value="sl">上链</option>
+                    <option value="pz">品质</option>
+                    <option value="dc">大C</option>
+                </select>
+                <select id="status-filter">
+                    <option value="">全部状态</option>
+                    <option value="completed">已标注</option>
+                    <option value="pending">部分标注</option>
+                    <option value="not-started">未标注</option>
+                </select>
+                <button class="secondary">筛选</button>
+            </div>
+            <!-- 移除了"新增维度"按钮 -->
+        </div>
+
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>启用</th>
+                    <th>业务线</th>
+                    <th>维度英文名</th>
+                    <th>维度来源表</th>
+                    <th>维度中文名</th>
+                    <th width="180" style="font-weight: bold; color: #1890ff;">维度中文别名</th>
+                    <th width="180" style="font-weight: bold; color: #1890ff;">支持的枚举值</th>
+                    <th width="180" style="font-weight: bold; color: #1890ff;">维度描述</th>
+                    <th width="200" style="font-weight: bold; color: #1890ff;">支持指标</th>
+                    <th width="200">更新历史</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 区域 -->
+                <tr data-id="1">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>贝壳城市</td>
+                    <td>region</td>
+                    <td>sales</td>
+                    <td>区域</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">地理区域</span>
+                            <span class="tag">销售区域</span>
+                            <span class="tag">区域划分</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">华北</span>
+                            <span class="enum-tag">华东</span>
+                            <span class="enum-tag">华南</span>
+                            <span class="enum-tag excluded">华中</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '区域维度表示公司业务的地理区域划分，包括北区、南区、东区、西区等。是销售统计和绩效分析的重要分组维度。')">
+                        区域维度表示公司业务的地理区域划分，包括北区、南区、东区、西区等。是销售统计和绩效分析的重要分组维度。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('区域', '区域销售额')">
+                                区域销售额
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('区域', '区域客户数')">
+                                区域客户数
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('区域', '区域销售增长率')">
+                                区域销售增长率
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('区域')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-20</span>
+                            <span class="history-user">张三</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-18</span>
+                            <span class="history-user">李四</span>添加枚举值
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-15</span>
+                            <span class="history-user">王五</span>修改描述
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-completed">已标注</span></td>
+                </tr>
+
+                <!-- 业绩城市 -->
+                <tr data-id="2">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>贝壳城市</td>
+                    <td>perf_city</td>
+                    <td>performance</td>
+                    <td>业绩城市</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">城市业绩</span>
+                            <span class="tag">城市单位</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">北京</span>
+                            <span class="enum-tag">上海</span>
+                            <span class="enum-tag">广州</span>
+                            <span class="enum-tag">深圳</span>
+                            <span class="enum-tag excluded">西安</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '业绩城市是指进行业绩统计时的城市单位，包括一线城市、二线城市等不同级别的城市分类。是计算城市销售业绩的主要维度。')">
+                        业绩城市是指进行业绩统计时的城市单位，包括一线城市、二线城市等不同级别的城市分类。是计算城市销售业绩的主要维度。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('业绩城市', '城市业绩达成率')">
+                                城市业绩达成率
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('业绩城市', '城市销售排名')">
+                                城市销售排名
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('业绩城市')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-19</span>
+                            <span class="history-user">赵六</span>添加枚举值
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-17</span>
+                            <span class="history-user">张三</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-10</span>
+                            <span class="history-user">李四</span>修改描述
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-completed">已标注</span></td>
+                </tr>
+
+                <!-- 事业部 -->
+                <tr data-id="3">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>整装</td>
+                    <td>division</td>
+                    <td>org</td>
+                    <td>事业部</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">部门</span>
+                            <span class="tag">业务单元</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">住宅事业部</span>
+                            <span class="enum-tag">商业事业部</span>
+                            <span class="enum-tag">物业事业部</span>
+                            <span class="enum-tag excluded">装修事业部</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '事业部指公司内部的独立业务单元，包括住宅事业部、商业事业部、物业事业部等。是组织架构和业绩归属的重要维度。')">
+                        事业部指公司内部的独立业务单元，包括住宅事业部、商业事业部、物业事业部等。是组织架构和业绩归属的重要维度。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('事业部', '事业部营收')">
+                                事业部营收
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('事业部', '事业部利润')">
+                                事业部利润
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('事业部')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-21</span>
+                            <span class="history-user">王五</span>添加指标
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-18</span>
+                            <span class="history-user">张三</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-16</span>
+                            <span class="history-user">赵六</span>修改描述
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-completed">已标注</span></td>
+                </tr>
+
+                <!-- 大部 -->
+                <tr data-id="4">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>北链</td>
+                    <td>department</td>
+                    <td>org</td>
+                    <td>大部</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">部门</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">市场部</span>
+                            <span class="enum-tag">产品部</span>
+                            <span class="enum-tag">研发部</span>
+                            <span class="enum-tag excluded">人力资源部</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '大部是事业部下的次级组织单位，如市场部、产品部、研发部等。是组织架构的重要组成部分。')">
+                        大部是事业部下的次级组织单位，如市场部、产品部、研发部等。是组织架构的重要组成部分。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('大部', '部门人员数')">
+                                部门人员数
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('大部', '部门预算')">
+                                部门预算
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('大部')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-20</span>
+                            <span class="history-user">李四</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-17</span>
+                            <span class="history-user">王五</span>添加枚举值
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-14</span>
+                            <span class="history-user">张三</span>修改描述
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-pending">部分标注</span></td>
+                </tr>
+
+                <!-- 大区 -->
+                <tr data-id="5">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>上链</td>
+                    <td>area</td>
+                    <td>sales</td>
+                    <td>大区</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">销售大区</span>
+                            <span class="tag">区域中心</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">华北大区</span>
+                            <span class="enum-tag">华东大区</span>
+                            <span class="enum-tag">华南大区</span>
+                            <span class="enum-tag excluded">西南大区</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '大区是销售区域的高级划分，如华北大区、华东大区、华南大区等。是销售管理和业绩评估的重要区域划分单位。')">
+                        大区是销售区域的高级划分，如华北大区、华东大区、华南大区等。是销售管理和业绩评估的重要区域划分单位。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('大区', '大区销售额')">
+                                大区销售额
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('大区', '大区销售增长率')">
+                                大区销售增长率
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('大区')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-21</span>
+                            <span class="history-user">赵六</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-19</span>
+                            <span class="history-user">李四</span>添加枚举值
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-15</span>
+                            <span class="history-user">王五</span>添加指标
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-completed">已标注</span></td>
+                </tr>
+
+                <!-- CA -->
+                <tr data-id="6">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>品质</td>
+                    <td>ca</td>
+                    <td>employee</td>
+                    <td>CA</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">顾问助理</span>
+                            <span class="tag">客户顾问</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">高级CA</span>
+                            <span class="enum-tag">中级CA</span>
+                            <span class="enum-tag">初级CA</span>
+                            <span class="enum-tag excluded">实习CA</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '')">
+                        
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('CA', 'CA业绩')">
+                                CA业绩
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('CA', 'CA转化率')">
+                                CA转化率
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('CA')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-18</span>
+                            <span class="history-user">张三</span>添加别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-16</span>
+                            <span class="history-user">李四</span>添加枚举值
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-10</span>
+                            <span class="history-user">王五</span>创建维度
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-not-started">未标注</span></td>
+                </tr>
+
+                <!-- 门店 -->
+                <tr data-id="7">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>大C</td>
+                    <td>store</td>
+                    <td>store</td>
+                    <td>门店</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">销售门店</span>
+                            <span class="tag">营业网点</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">标准门店</span>
+                            <span class="enum-tag">旗舰门店</span>
+                            <span class="enum-tag">社区门店</span>
+                            <span class="enum-tag excluded">品牌门店</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '门店是公司的实体销售网点，分布在各个城市和区域。是零售业务的基本经营单位。')">
+                        门店是公司的实体销售网点，分布在各个城市和区域。是零售业务的基本经营单位。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('门店', '门店销售额')">
+                                门店销售额
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('门店', '门店客流量')">
+                                门店客流量
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('门店', '门店坪效')">
+                                门店坪效
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('门店')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-20</span>
+                            <span class="history-user">赵六</span>添加指标
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-18</span>
+                            <span class="history-user">王五</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-15</span>
+                            <span class="history-user">李四</span>添加枚举值
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-completed">已标注</span></td>
+                </tr>
+
+                <!-- 经纪人 -->
+                <tr data-id="8">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>贝壳城市</td>
+                    <td>broker</td>
+                    <td>employee</td>
+                    <td>经纪人</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">销售顾问</span>
+                            <span class="tag">置业顾问</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">资深经纪人</span>
+                            <span class="enum-tag">高级经纪人</span>
+                            <span class="enum-tag">普通经纪人</span>
+                            <span class="enum-tag excluded">实习经纪人</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '经纪人是指直接与客户对接，负责房产销售的一线销售人员。是销售业绩的直接创造者，也是业绩考核的重要对象。')">
+                        经纪人是指直接与客户对接，负责房产销售的一线销售人员。是销售业绩的直接创造者，也是业绩考核的重要对象。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('经纪人', '经纪人业绩')">
+                                经纪人业绩
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('经纪人', '经纪人提成')">
+                                经纪人提成
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('经纪人', '客户转化率')">
+                                客户转化率
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('经纪人')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-19</span>
+                            <span class="history-user">张三</span>添加指标
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-17</span>
+                            <span class="history-user">王五</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-14</span>
+                            <span class="history-user">赵六</span>添加枚举值
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-completed">已标注</span></td>
+                </tr>
+
+                <!-- 业务类型 -->
+                <tr data-id="9">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>整装</td>
+                    <td>business_type</td>
+                    <td>transaction</td>
+                    <td>业务类型</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">业务分类</span>
+                            <span class="tag">交易类型</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">新房销售</span>
+                            <span class="enum-tag">二手房交易</span>
+                            <span class="enum-tag">租赁业务</span>
+                            <span class="enum-tag excluded">装修业务</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '业务类型包括新房销售、二手房交易、租赁业务等不同类型的业务分类。是业务量和业务收入统计的重要分类维度。')">
+                        业务类型包括新房销售、二手房交易、租赁业务等不同类型的业务分类。是业务量和业务收入统计的重要分类维度。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('业务类型', '业务量')">
+                                业务量
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('业务类型', '业务收入')">
+                                业务收入
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('业务类型')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-21</span>
+                            <span class="history-user">李四</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-18</span>
+                            <span class="history-user">张三</span>添加枚举值
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-12</span>
+                            <span class="history-user">王五</span>修改描述
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-completed">已标注</span></td>
+                </tr>
+
+                <!-- 品牌 -->
+                <tr data-id="10">
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked="">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>北链</td>
+                    <td>brand</td>
+                    <td>brand</td>
+                    <td>品牌</td>
+                    <td class="editable" onclick="editAliases(this)">
+                        <div class="tag-container">
+                            <span class="tag">品牌名称</span>
+                            <span class="tag">商标</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editEnums(this)">
+                        <div class="tag-container">
+                            <span class="enum-tag">高端品牌</span>
+                            <span class="enum-tag">大众品牌</span>
+                            <span class="enum-tag">经济品牌</span>
+                            <span class="enum-tag excluded">合资品牌</span>
+                        </div>
+                    </td>
+                    <td class="description-cell editable" onclick="editDescription(this, '品牌维度指公司旗下的不同品牌，如高端品牌、大众品牌等。是市场营销和品牌价值评估的重要维度。')">
+                        品牌维度指公司旗下的不同品牌，如高端品牌、大众品牌等。是市场营销和品牌价值评估的重要维度。
+                    </td>
+                    <td>
+                        <div class="tag-container">
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('品牌', '品牌价值')">
+                                品牌价值
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('品牌', '品牌知名度')">
+                                品牌知名度
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                            <span class="indicator-tag tooltip" onclick="showIndicatorAnnotation('品牌', '品牌忠诚度')">
+                                品牌忠诚度
+                                <span class="tooltip-text">点击进行指标标注</span>
+                            </span>
+                        </div>
+                        <button class="secondary annotate-btn" onclick="showAllIndicators('品牌')">指标列表</button>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-20</span>
+                            <span class="history-user">王五</span>添加指标
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-16</span>
+                            <span class="history-user">赵六</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-12</span>
+                            <span class="history-user">张三</span>添加枚举值
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-completed">已标注</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <button>«</button>
+            <button class="active">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>»</button>
+        </div>
+    </div>
+
+    <!-- 指标列表页 - 已修改 -->
+    <div id="indicators-page" class="container" style="display: none;">
+        <div class="breadcrumb">
+            <a href="javascript:void(0)" class="back-btn" onclick="backToMainPage()">返回维度列表</a>
+            <span id="dimension-title">大区 - 指标列表</span>
+        </div>
+
+        <header>
+            <h1 id="indicators-header">大区 - 指标标注列表</h1>
+            <div class="header-controls">
+                <div class="version-dropdown">
+                    <button class="secondary">版本列表</button>
+                    <div class="version-menu">
+                        <a href="#" onclick="restoreIndicatorVersion('v1.0.5')">v1.0.5 (当前版本)</a>
+                        <a href="#" onclick="restoreIndicatorVersion('v1.0.4')">v1.0.4 (2025-03-18)</a>
+                        <a href="#" onclick="restoreIndicatorVersion('v1.0.3')">v1.0.3 (2025-03-15)</a>
+                        <a href="#" onclick="restoreIndicatorVersion('v1.0.2')">v1.0.2 (2025-03-10)</a>
+                        <a href="#" onclick="restoreIndicatorVersion('v1.0.1')">v1.0.1 (2025-03-05)</a>
+                    </div>
+                </div>
+                <button onclick="saveIndicatorChanges()">保存</button>
+            </div>
+        </header>
+        
+        <!-- 批量操作按钮 -->
+        <div class="batch-actions">
+            <div class="select-all-container">
+                <input type="checkbox" id="select-all-indicators" onchange="toggleAllIndicatorRows()">
+                <label for="select-all-indicators">全选</label>
+            </div>
+            <button onclick="batchEditAliases()">批量标注别名</button>
+            <button onclick="batchEditEnums()">批量选择枚举值</button>
+            <button class="secondary" onclick="batchEnable(true)">批量启用</button>
+            <button class="secondary" onclick="batchEnable(false)">批量停用</button>
+        </div>
+
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>选择</th>
+                    <th>业务线</th>
+                    <th>业务板块</th>
+                    <th>业务过程</th>
+                    <th>业务子过程</th>
+                    <th>指标名称</th>
+                    <th width="180">维度别名</th>
+                    <th width="180">支持的枚举值</th>
+                    <th>启用状态</th>
+                    <th width="200">更新历史</th>
+                </tr>
+            </thead>
+            <tbody id="indicators-list">
+                <!-- 指标列表将动态生成 -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 别名编辑弹出层 -->
+    <div id="alias-editor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 15px; border-radius: 4px; width: 90%; max-width: 400px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3>编辑维度中文别名</h3>
+                <span style="cursor: pointer; font-size: 18px;" onclick="hideAliasEditor()">×</span>
+            </div>
+            <div id="alias-container" style="margin-bottom: 15px;">
+                <!-- 现有别名会在这里显示 -->
+            </div>
+            <div style="display: flex; margin-bottom: 15px;">
+                <input type="text" id="new-alias" placeholder="添加新别名..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 3px; margin-right: 8px;">
+                <button onclick="addAlias()">添加</button>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="secondary" onclick="hideAliasEditor()">取消</button>
+                <button onclick="saveAliases()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 枚举值编辑弹出层 -->
+    <div id="enum-editor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 15px; border-radius: 4px; width: 90%; max-width: 450px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3>选择支持的枚举值</h3>
+                <span style="cursor: pointer; font-size: 18px;" onclick="hideEnumEditor()">×</span>
+            </div>
+            
+            <div class="enum-header">
+                <div>全选</div>
+                <label class="enum-select-all">
+                    <input type="checkbox" id="select-all-enums" onchange="toggleAllEnums()">
+                    <span>选择全部</span>
+                </label>
+            </div>
+            
+            <div class="enum-checkbox-container" id="enum-container">
+                <!-- 枚举值选择框将在这里动态生成 -->
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="secondary" onclick="hideEnumEditor()">取消</button>
+                <button onclick="saveEnums()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 描述编辑弹出层 -->
+    <div id="description-editor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 15px; border-radius: 4px; width: 90%; max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3>编辑维度描述</h3>
+                <span style="cursor: pointer; font-size: 18px;" onclick="hideDescriptionEditor()">×</span>
+            </div>
+            <textarea id="description-text" style="width: 100%; min-height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 3px; margin-bottom: 15px;"></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="secondary" onclick="hideDescriptionEditor()">取消</button>
+                <button onclick="saveDescription()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 单个指标标注弹窗 -->
+    <div id="indicator-annotation-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 15px; border-radius: 4px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>指标维度标注</h3>
+                <span style="cursor: pointer; font-size: 18px;" onclick="hideIndicatorAnnotationModal()">×</span>
+            </div>
+            <div>
+                <div style="margin-bottom: 10px;">
+                    <div style="font-weight: 600; margin-bottom: 5px;">维度 - 指标</div>
+                    <div style="padding: 8px; background-color: #f5f5f5; border-radius: 3px;" id="indicator-title">大区 - 大区销售额</div>
+                </div>
+
+                <div class="indicator-section">
+                    <div class="indicator-section-title">指标维度是否启用</div>
+                    <label class="switch" style="margin: 5px 0; display: block;">
+                        <input type="checkbox" id="indicator-enabled" checked="">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="indicator-section">
+                    <div class="indicator-section-title">维度中文别名（针对此指标）</div>
+                    <div id="indicator-alias-container" style="margin-bottom: 10px;">
+                        <div class="tag-container">
+                            <span class="tag">销售${dimension} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.remove()">×</span></span>
+                            <span class="tag">业绩${dimension} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.remove()">×</span></span>
+                        </div>
+                    </div>
+                    <div style="display: flex;">
+                        <input type="text" id="new-indicator-alias" placeholder="添加新别名..." style="flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 3px; margin-right: 8px;">
+                        <button class="secondary" onclick="addIndicatorAlias()">添加</button>
+                    </div>
+                </div>
+                
+                <div class="indicator-section">
+                    <div class="indicator-section-title">支持的枚举值</div>
+                    <div class="enum-header">
+                        <div>全选</div>
+                        <label class="enum-select-all">
+                            <input type="checkbox" id="indicator-select-all-enums" onchange="toggleAllIndicatorEnums()">
+                            <span>选择全部</span>
+                        </label>
+                    </div>
+                    <div class="enum-checkbox-container" id="indicator-enum-container">
+                        <!-- 枚举值多选框将动态生成 -->
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px;">
+                    <button class="secondary" onclick="hideIndicatorAnnotationModal()">取消</button>
+                    <button onclick="saveIndicatorAnnotation()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 指标别名编辑弹出层 -->
+    <div id="indicator-aliases-editor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 15px; border-radius: 4px; width: 90%; max-width: 400px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 id="indicator-aliases-title">编辑维度中文别名</h3>
+                <span style="cursor: pointer; font-size: 18px;" onclick="hideIndicatorAliasesEditor()">×</span>
+            </div>
+            <div id="indicator-aliases-container" style="margin-bottom: 15px;">
+                <!-- 现有别名会在这里显示 -->
+            </div>
+            <div style="display: flex; margin-bottom: 15px;">
+                <input type="text" id="new-indicator-list-alias" placeholder="添加新别名..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 3px; margin-right: 8px;">
+                <button onclick="addIndicatorListAlias()">添加</button>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="secondary" onclick="hideIndicatorAliasesEditor()">取消</button>
+                <button onclick="saveIndicatorListAliases()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 指标枚举值编辑弹出层 -->
+    <div id="indicator-enums-editor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 15px; border-radius: 4px; width: 90%; max-width: 450px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 id="indicator-enums-title">选择支持的枚举值</h3>
+                <span style="cursor: pointer; font-size: 18px;" onclick="hideIndicatorEnumsEditor()">×</span>
+            </div>
+            
+            <div class="enum-header">
+                <div>全选</div>
+                <label class="enum-select-all">
+                    <input type="checkbox" id="indicator-list-select-all-enums" onchange="toggleAllIndicatorListEnums()">
+                    <span>选择全部</span>
+                </label>
+            </div>
+            
+            <div class="enum-checkbox-container" id="indicator-enums-container">
+                <!-- 枚举值选择框将在这里动态生成 -->
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="secondary" onclick="hideIndicatorEnumsEditor()">取消</button>
+                <button onclick="saveIndicatorEnums()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量别名编辑弹窗 -->
+    <div id="batch-aliases-editor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 15px; border-radius: 4px; width: 90%; max-width: 400px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3>批量编辑维度中文别名</h3>
+                <span style="cursor: pointer; font-size: 18px;" onclick="hideBatchAliasesEditor()">×</span>
+            </div>
+            <div id="batch-aliases-container" style="margin-bottom: 15px;">
+                <!-- 现有别名会在这里显示 -->
+            </div>
+            <div style="display: flex; margin-bottom: 15px;">
+                <input type="text" id="new-batch-alias" placeholder="添加新别名..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 3px; margin-right: 8px;">
+                <button onclick="addBatchAlias()">添加</button>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="secondary" onclick="hideBatchAliasesEditor()">取消</button>
+                <button onclick="saveBatchAliases()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量枚举值编辑弹窗 -->
+    <div id="batch-enums-editor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 15px; border-radius: 4px; width: 90%; max-width: 450px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3>批量选择支持的枚举值</h3>
+                <span style="cursor: pointer; font-size: 18px;" onclick="hideBatchEnumsEditor()">×</span>
+            </div>
+            
+            <div class="enum-header">
+                <div>全选</div>
+                <label class="enum-select-all">
+                    <input type="checkbox" id="batch-select-all-enums" onchange="toggleAllBatchEnums()">
+                    <span>选择全部</span>
+                </label>
+            </div>
+            
+            <div class="enum-checkbox-container" id="batch-enums-container">
+                <!-- 枚举值选择框将在这里动态生成 -->
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="secondary" onclick="hideBatchEnumsEditor()">取消</button>
+                <button onclick="saveBatchEnums()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentEditCell = null;
+        let currentEditDescriptionCell = null;
+        let currentDimension = '';
+        let currentIndicator = '';
+        let currentAliasCell = null;
+        let currentEnumCell = null;
+        let currentIndicatorEnumCell = null;
+        let selectedIndicatorRows = [];
+        
+        // 修改后的编辑别名函数，保持不变
+        function editAliases(cell) {
+            // 保存当前编辑的单元格引用
+            currentEditCell = cell;
+            
+            // 获取当前别名
+            const aliasContainer = document.getElementById('alias-container');
+            aliasContainer.innerHTML = '';
+            
+            // 获取当前单元格中的标签
+            const tags = cell.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                const aliasText = tag.textContent.trim();
+                const aliasDiv = document.createElement('div');
+                aliasDiv.className = 'tag-container';
+                aliasDiv.style.margin = '5px 0';
+                aliasDiv.innerHTML = `
+                    <span class="tag">${aliasText} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.parentNode.remove()">×</span></span>
+                `;
+                aliasContainer.appendChild(aliasDiv);
+            });
+            
+            // 显示编辑弹窗
+            document.getElementById('alias-editor').style.display = 'flex';
+            document.getElementById('new-alias').focus();
+        }
+        
+        function hideAliasEditor() {
+            document.getElementById('alias-editor').style.display = 'none';
+            currentEditCell = null;
+        }
+        
+        function addAlias() {
+            const inputField = document.getElementById('new-alias');
+            const aliasText = inputField.value.trim();
+            
+            if (aliasText) {
+                const aliasContainer = document.getElementById('alias-container');
+                const aliasDiv = document.createElement('div');
+                aliasDiv.className = 'tag-container';
+                aliasDiv.style.margin = '5px 0';
+                aliasDiv.innerHTML = `
+                    <span class="tag">${aliasText} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.parentNode.remove()">×</span></span>
+                `;
+                aliasContainer.appendChild(aliasDiv);
+                inputField.value = '';
+                inputField.focus();
+            }
+        }
+        
+        function saveAliases() {
+            if (!currentEditCell) return;
+            
+            // 获取编辑后的别名
+            const aliases = [];
+            const tags = document.getElementById('alias-container').querySelectorAll('.tag');
+            tags.forEach(tag => {
+                aliases.push(tag.textContent.split('×')[0].trim());
+            });
+            
+            // 更新单元格内容
+            let tagsHTML = '';
+            aliases.forEach(alias => {
+                tagsHTML += `<span class="tag">${alias}</span>`;
+            });
+            
+            currentEditCell.innerHTML = `<div class="tag-container">${tagsHTML}</div>`;
+            
+            // 添加更新记录
+            const currentRow = currentEditCell.closest('tr');
+            const historyCell = currentRow.querySelector('td:nth-child(10)');
+            if (historyCell) {
+                addHistory(historyCell, '修改别名');
+            }
+            
+            // 关闭编辑弹窗
+            hideAliasEditor();
+            
+            // 更新状态
+            updateRowStatus(currentEditCell);
+        }
+        
+        // 修改后的 editEnums 函数，简化为单列复选框
+        function editEnums(cell) {
+            // 保存当前编辑的单元格引用
+            currentEnumCell = cell;
+            
+            // 获取当前行的维度名称
+            const row = cell.closest('tr');
+            const dimensionName = row.querySelector('td:nth-child(5)').textContent.trim();
+            
+            // 获取API中的枚举值列表
+            const allEnumValues = getAllEnumValues(dimensionName);
+            
+            // 获取当前包含和排除的枚举值
+            const includedEnums = [];
+            const excludedEnums = [];
+            
+            const tags = cell.querySelectorAll('.enum-tag');
+            tags.forEach(tag => {
+                if (tag.classList.contains('excluded')) {
+                    excludedEnums.push(tag.textContent.trim());
+                } else {
+                    includedEnums.push(tag.textContent.trim());
+                }
+            });
+            
+            // 创建复选框
+            const enumContainer = document.getElementById('enum-container');
+            enumContainer.innerHTML = '';
+            
+            // 设置全选复选框状态
+            document.getElementById('select-all-enums').checked = includedEnums.length === allEnumValues.length;
+            document.getElementById('select-all-enums').indeterminate = includedEnums.length > 0 && includedEnums.length < allEnumValues.length;
+            
+            allEnumValues.forEach(enumValue => {
+                const isIncluded = includedEnums.includes(enumValue);
+                const isExcluded = excludedEnums.includes(enumValue);
+                
+                const enumDiv = document.createElement('div');
+                enumDiv.className = 'enum-value-block';
+                enumDiv.innerHTML = `
+                    <label class="enum-checkbox-label">
+                        <input type="checkbox" value="${enumValue}" ${isIncluded ? 'checked' : ''} data-excluded="${isExcluded}">
+                        ${enumValue}${isExcluded ? ' <span style="color: #ff4d4f; text-decoration: line-through;">(排除)</span>' : ''}
+                    </label>
+                    <div style="margin: 5px 0 10px 20px;">
+                        <div style="display: flex; margin-bottom: 5px;">
+                            <input type="text" class="new-enum-alias" placeholder="添加枚举值别名..." style="flex: 1; padding: 4px; border: 1px solid #ddd; border-radius: 3px; margin-right: 8px; font-size: 12px;">
+                            <button class="secondary" style="padding: 2px 8px; font-size: 12px;" onclick="addEnumAlias(this, '${enumValue}')">添加</button>
+                        </div>
+                        <div class="enum-alias-container" data-enum="${enumValue}">
+                            <div class="tag-container">
+                                <!-- 别名将在这里动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                `;
+                enumContainer.appendChild(enumDiv);
+            });
+            
+            // 显示编辑弹窗
+            document.getElementById('enum-editor').style.display = 'flex';
+        }
+        
+        function hideEnumEditor() {
+            document.getElementById('enum-editor').style.display = 'none';
+            currentEnumCell = null;
+        }
+        
+        // 全选/取消全选枚举值
+        function toggleAllEnums() {
+            const selectAllCheckbox = document.getElementById('select-all-enums');
+            const checkboxes = document.getElementById('enum-container').querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                if (selectAllCheckbox.checked) {
+                    checkbox.dataset.excluded = "false";
+                    const label = checkbox.closest('.enum-checkbox-label');
+                    if (label) {
+                        label.innerHTML = label.innerHTML.replace(/ <span style="color: #ff4d4f; text-decoration: line-through;">\(排除\)<\/span>/, '');
+                    }
+                }
+            });
+        }
+        
+        // 修改后的 saveEnums 函数，简化为单列复选框
+        function saveEnums() {
+            if (!currentEnumCell) return;
+            
+            // 获取所有选中和未选中的枚举值
+            const includedEnums = [];
+            const excludedEnums = [];
+            const checkboxes = document.getElementById('enum-container').querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    includedEnums.push(checkbox.value);
+                } else if (checkbox.dataset.excluded === "true") {
+                    excludedEnums.push(checkbox.value);
+                }
+            });
+            
+            // 更新单元格内容
+            let tagsHTML = '';
+            
+            // 先添加包含的枚举值
+            includedEnums.forEach(enumVal => {
+                tagsHTML += `<span class="enum-tag">${enumVal}</span>`;
+            });
+            
+            // 然后添加排除的枚举值
+            excludedEnums.forEach(enumVal => {
+                tagsHTML += `<span class="enum-tag excluded">${enumVal}</span>`;
+            });
+            
+            currentEnumCell.innerHTML = `<div class="tag-container">${tagsHTML}</div>`;
+            
+            // 添加更新记录
+            const currentRow = currentEnumCell.closest('tr');
+            const historyCell = currentRow.querySelector('td:nth-child(10)');
+            if (historyCell) {
+                addHistory(historyCell, '修改枚举值');
+            }
+            
+            // 关闭编辑弹窗
+            hideEnumEditor();
+            
+            // 更新状态
+            updateRowStatus(currentEnumCell);
+        }
+        
+        function editDescription(cell, currentText) {
+            // 保存当前编辑的单元格引用
+            currentEditDescriptionCell = cell;
+            
+            // 设置文本区域的值
+            document.getElementById('description-text').value = currentText;
+            
+            // 显示编辑弹窗
+            document.getElementById('description-editor').style.display = 'flex';
+            document.getElementById('description-text').focus();
+        }
+        
+        function hideDescriptionEditor() {
+            document.getElementById('description-editor').style.display = 'none';
+            currentEditDescriptionCell = null;
+        }
+        
+        function saveDescription() {
+            if (!currentEditDescriptionCell) return;
+            
+            // 获取编辑后的描述
+            const description = document.getElementById('description-text').value;
+            
+            // 更新单元格内容
+            currentEditDescriptionCell.textContent = description;
+            
+            // 更新onclick属性
+            currentEditDescriptionCell.setAttribute('onclick', `editDescription(this, '${description.replace(/'/g, "\\'")}')`);
+            
+            // 添加更新记录
+            const currentRow = currentEditDescriptionCell.closest('tr');
+            const historyCell = currentRow.querySelector('td:nth-child(10)');
+            if (historyCell) {
+                addHistory(historyCell, '修改描述');
+            }
+            
+            // 关闭编辑弹窗
+            hideDescriptionEditor();
+            
+            // 更新状态
+            updateRowStatus(currentEditDescriptionCell);
+        }
+        
+        function updateRowStatus(cell) {
+            // 获取当前行
+            const row = cell.closest('tr');
+            
+            // 获取状态单元格
+            const statusCell = row.querySelector('td:nth-last-child(1)');
+            
+            // 检查维度别名是否填写
+            const aliasCell = row.querySelector('td:nth-child(5)');
+            const aliasCount = aliasCell.querySelectorAll('.tag').length;
+            
+            // 检查维度描述是否填写
+            const descriptionCell = row.querySelector('td:nth-child(9)');
+            const hasDescription = descriptionCell.textContent.trim().length > 0;
+            
+            // 更新状态
+            if (aliasCount > 0 && hasDescription) {
+                statusCell.innerHTML = '<span class="status-badge status-completed">已标注</span>';
+            } else if (aliasCount > 0 || hasDescription) {
+                statusCell.innerHTML = '<span class="status-badge status-pending">部分标注</span>';
+            } else {
+                statusCell.innerHTML = '<span class="status-badge status-not-started">未标注</span>';
+            }
+        }
+        
+        function addHistory(historyCell, action) {
+            // 获取当前时间
+            const now = new Date();
+            const dateString = now.toISOString().split('T')[0];
+            
+            // 获取当前用户（模拟）
+            const users = ['张三', '李四', '王五', '赵六'];
+            const currentUser = users[Math.floor(Math.random() * users.length)];
+            
+            // 创建新的历史记录
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span class="history-time">${dateString}</span>
+                <span class="history-user">${currentUser}</span>${action}
+            `;
+            
+            // 插入到历史记录的最前面
+            if (historyCell.firstChild) {
+                historyCell.insertBefore(historyItem, historyCell.firstChild);
+                
+                // 保留最新的七条记录
+                const historyItems = historyCell.querySelectorAll('.history-item');
+                if (historyItems.length > 7) {
+                    historyCell.removeChild(historyItems[historyItems.length - 1]);
+                }
+            } else {
+                historyCell.appendChild(historyItem);
+            }
+        }
+        
+        // 修改后的单个指标标注弹窗，添加单列复选框
+        function showIndicatorAnnotation(dimension, indicator) {
+            currentDimension = dimension;
+            currentIndicator = indicator;
+            
+            // 设置当前指标名称
+            document.getElementById('indicator-title').textContent = `${dimension} - ${indicator}`;
+            
+            // 初始化别名
+            const aliasContainer = document.getElementById('indicator-alias-container');
+            aliasContainer.innerHTML = `
+                <div class="tag-container">
+                    <span class="tag">销售${dimension} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.remove()">×</span></span>
+                    <span class="tag">业绩${dimension} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.remove()">×</span></span>
+                </div>
+            `;
+            
+            // 获取API中的枚举值列表
+            const allEnumValues = getAllEnumValues(dimension);
+            
+            // 创建复选框
+            const enumContainer = document.getElementById('indicator-enum-container');
+            enumContainer.innerHTML = '';
+            
+            // 默认包含前两个枚举值，排除第三个枚举值
+            const includedDefault = allEnumValues.slice(0, 2);
+            const excludedDefault = allEnumValues.slice(2, 3);
+            
+            // 设置全选复选框状态
+            document.getElementById('indicator-select-all-enums').checked = includedDefault.length === allEnumValues.length;
+            document.getElementById('indicator-select-all-enums').indeterminate = includedDefault.length > 0 && includedDefault.length < allEnumValues.length;
+            
+            allEnumValues.forEach(enumValue => {
+                const isIncluded = includedDefault.includes(enumValue);
+                const isExcluded = excludedDefault.includes(enumValue);
+                
+                const label = document.createElement('label');
+                label.className = 'enum-checkbox-label';
+                label.innerHTML = `
+                    <input type="checkbox" value="${enumValue}" ${isIncluded ? 'checked' : ''} data-excluded="${isExcluded}">
+                    ${enumValue}${isExcluded ? ' <span style="color: #ff4d4f; text-decoration: line-through;">(排除)</span>' : ''}
+                `;
+                enumContainer.appendChild(label);
+            });
+            
+            // 显示指标标注弹窗
+            document.getElementById('indicator-annotation-modal').style.display = 'flex';
+        }
+        
+        function hideIndicatorAnnotationModal() {
+            document.getElementById('indicator-annotation-modal').style.display = 'none';
+        }
+        
+        // 全选/取消全选指标枚举值
+        function toggleAllIndicatorEnums() {
+            const selectAllCheckbox = document.getElementById('indicator-select-all-enums');
+            const checkboxes = document.getElementById('indicator-enum-container').querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                if (selectAllCheckbox.checked) {
+                    checkbox.dataset.excluded = "false";
+                    checkbox.parentNode.innerHTML = checkbox.parentNode.innerHTML.replace(/ <span style="color: #ff4d4f; text-decoration: line-through;">\(排除\)<\/span>/, '');
+                }
+            });
+        }
+        
+        function addIndicatorAlias() {
+            const inputField = document.getElementById('new-indicator-alias');
+            const aliasText = inputField.value.trim();
+            
+            if (aliasText) {
+                const aliasContainer = document.getElementById('indicator-alias-container').querySelector('.tag-container');
+                const newTag = document.createElement('span');
+                newTag.className = 'tag';
+                newTag.innerHTML = `${aliasText} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.remove()">×</span>`;
+                
+                aliasContainer.appendChild(newTag);
+                inputField.value = '';
+                inputField.focus();
+            }
+        }
+        
+        // 修改后的保存指标标注函数，简化为单列复选框
+        function saveIndicatorAnnotation() {
+            // 获取选中的枚举值
+            const includedEnums = [];
+            const excludedEnums = [];
+            const enumAliases = {};
+            
+            const checkboxes = document.getElementById('indicator-enum-container').querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                const enumValue = checkbox.value;
+                
+                if (checkbox.checked) {
+                    includedEnums.push(enumValue);
+                    
+                    // 获取该枚举值的别名
+                    const aliasContainer = checkbox.closest('.enum-value-block').querySelector(`.enum-alias-container[data-enum="${enumValue}"]`);
+                    const aliases = [];
+                    aliasContainer.querySelectorAll('.enum-alias-tag').forEach(tag => {
+                        aliases.push(tag.textContent.split('×')[0].trim());
+                    });
+                    
+                    if (aliases.length > 0) {
+                        enumAliases[enumValue] = aliases;
+                    }
+                } else if (checkbox.dataset.excluded === "true") {
+                    excludedEnums.push(enumValue);
+                }
+            });
+            
+            // 构建提示消息
+            let message = `已保存指标 ${currentDimension} - ${currentIndicator} 的标注\n`;
+            message += `启用状态: ${document.getElementById('indicator-enabled').checked ? '启用' : '禁用'}\n`;
+            
+            // 获取别名
+            const aliases = [];
+            const tags = document.getElementById('indicator-alias-container').querySelectorAll('.tag');
+            tags.forEach(tag => {
+                aliases.push(tag.textContent.split('×')[0].trim());
+            });
+            message += `别名: ${aliases.join(', ')}\n`;
+            
+            // 添加枚举值信息
+            message += `包含的枚举值: ${includedEnums.join(', ')}\n`;
+            message += `排除的枚举值: ${excludedEnums.join(', ')}\n`;
+            
+            // 添加枚举值别名信息
+            if (Object.keys(enumAliases).length > 0) {
+                message += `枚举值别名:\n`;
+                for (const [enumValue, aliases] of Object.entries(enumAliases)) {
+                    message += `  ${enumValue}: ${aliases.join(', ')}\n`;
+                }
+            }
+            
+            alert(message);
+            hideIndicatorAnnotationModal();
+        }
+        
+        // 修改后的 showAllIndicators 函数，添加新列和批量操作功能
+        function showAllIndicators(dimension) {
+            currentDimension = dimension;
+            
+            // 设置页面标题
+            document.getElementById('dimension-title').textContent = `${dimension} - 指标列表`;
+            document.getElementById('indicators-header').textContent = `${dimension} - 指标标注列表`;
+            
+            // 根据维度获取对应的指标列表
+            const indicatorsList = getIndicatorsByDimension(dimension);
+            
+            // 获取对应的枚举值
+            const includedEnums = getEnumsByDimension(dimension);
+            const excludedEnums = getExcludedEnumsByDimension(dimension);
+            
+            // 生成指标表格内容
+            const tableBody = document.getElementById('indicators-list');
+            tableBody.innerHTML = '';
+            
+            indicatorsList.forEach((indicator, index) => {
+                // 为每个指标生成随机的业务属性
+                const businessLine = getRandomBusinessLine();
+                const businessSection = getRandomBusinessSection(businessLine);
+                const businessProcess = getRandomBusinessProcess(businessSection);
+                const businessSubProcess = getRandomBusinessSubProcess(businessProcess);
+                
+                const row = document.createElement('tr');
+                row.dataset.index = index;
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="indicator-row-checkbox" onchange="updateSelectedIndicators(this)">
+                    </td>
+                    <td>${businessLine}</td>
+                    <td>${businessSection}</td>
+                    <td>${businessProcess}</td>
+                    <td>${businessSubProcess}</td>
+                    <td>${indicator}</td>
+                    <td class="editable" onclick="editIndicatorAliases(this, '${dimension}', '${indicator}')">
+                        <div class="tag-container">
+                            <span class="tag">销售${dimension}</span>
+                            <span class="tag">业绩${dimension}</span>
+                        </div>
+                    </td>
+                    <td class="editable" onclick="editIndicatorEnums(this, '${dimension}', '${indicator}')">
+                        <div class="tag-container">
+                            ${includedEnums.map(enumVal => `<span class="enum-tag">${enumVal}</span>`).join('')}
+                            ${excludedEnums.map(enumVal => `<span class="enum-tag excluded">${enumVal}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-20</span>
+                            <span class="history-user">张三</span>修改别名
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-18</span>
+                            <span class="history-user">李四</span>添加枚举值
+                        </div>
+                        <div class="history-item">
+                            <span class="history-time">2025-03-15</span>
+                            <span class="history-user">王五</span>创建指标
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // 重置选中的指标行
+            selectedIndicatorRows = [];
+            document.getElementById('select-all-indicators').checked = false;
+            
+            // 切换到指标列表页
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('indicators-page').style.display = 'block';
+        }
+        
+        function backToMainPage() {
+            document.getElementById('indicators-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'block';
+        }
+        
+        function editIndicatorAliases(cell, dimension, indicator) {
+            currentAliasCell = cell;
+            currentDimension = dimension;
+            currentIndicator = indicator;
+            
+            // 设置标题
+            document.getElementById('indicator-aliases-title').textContent = `${dimension} - ${indicator} 维度别名`;
+            
+            // 获取当前别名
+            const aliasContainer = document.getElementById('indicator-aliases-container');
+            aliasContainer.innerHTML = '';
+            
+            // 获取当前单元格中的标签
+            const tags = cell.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                const aliasText = tag.textContent.trim();
+                const aliasDiv = document.createElement('div');
+                aliasDiv.className = 'tag-container';
+                aliasDiv.style.margin = '5px 0';
+                aliasDiv.innerHTML = `
+                    <span class="tag">${aliasText} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.parentNode.remove()">×</span></span>
+                `;
+                aliasContainer.appendChild(aliasDiv);
+            });
+            
+            // 显示编辑弹窗
+            document.getElementById('indicator-aliases-editor').style.display = 'flex';
+            document.getElementById('new-indicator-list-alias').focus();
+        }
+        
+        function hideIndicatorAliasesEditor() {
+            document.getElementById('indicator-aliases-editor').style.display = 'none';
+            currentAliasCell = null;
+        }
+        
+        function addIndicatorListAlias() {
+            const inputField = document.getElementById('new-indicator-list-alias');
+            const aliasText = inputField.value.trim();
+            
+            if (aliasText) {
+                const aliasContainer = document.getElementById('indicator-aliases-container');
+                const aliasDiv = document.createElement('div');
+                aliasDiv.className = 'tag-container';
+                aliasDiv.style.margin = '5px 0';
+                aliasDiv.innerHTML = `
+                    <span class="tag">${aliasText} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.parentNode.remove()">×</span></span>
+                `;
+                aliasContainer.appendChild(aliasDiv);
+                inputField.value = '';
+                inputField.focus();
+            }
+        }
+        
+        function saveIndicatorListAliases() {
+            if (!currentAliasCell) return;
+            
+            // 获取编辑后的别名
+            const aliases = [];
+            const tags = document.getElementById('indicator-aliases-container').querySelectorAll('.tag');
+            tags.forEach(tag => {
+                aliases.push(tag.textContent.split('×')[0].trim());
+            });
+            
+            // 更新单元格内容
+            let tagsHTML = '';
+            aliases.forEach(alias => {
+                tagsHTML += `<span class="tag">${alias}</span>`;
+            });
+            
+            currentAliasCell.innerHTML = `<div class="tag-container">${tagsHTML}</div>`;
+            
+            // 添加更新记录
+            const currentRow = currentAliasCell.closest('tr');
+            const historyCell = currentRow.querySelector('td:nth-child(10)');
+            if (historyCell) {
+                addIndicatorHistory(historyCell, '修改别名');
+            }
+            
+            // 关闭编辑弹窗
+            hideIndicatorAliasesEditor();
+        }
+        
+        // 修改后的指标枚举值编辑功能，简化为单列复选框
+        function editIndicatorEnums(cell, dimension, indicator) {
+            currentIndicatorEnumCell = cell;
+            currentDimension = dimension;
+            currentIndicator = indicator;
+            
+            // 设置标题
+            document.getElementById('indicator-enums-title').textContent = `${dimension} - ${indicator} 支持的枚举值`;
+            
+            // 获取API中的枚举值列表
+            const allEnumValues = getAllEnumValues(dimension);
+            
+            // 获取当前包含和排除的枚举值
+            const includedEnums = [];
+            const excludedEnums = [];
+            
+            const tags = cell.querySelectorAll('.enum-tag');
+            tags.forEach(tag => {
+                if (tag.classList.contains('excluded')) {
+                    excludedEnums.push(tag.textContent.trim());
+                } else {
+                    includedEnums.push(tag.textContent.trim());
+                }
+            });
+            
+            // 创建复选框
+            const enumContainer = document.getElementById('indicator-enums-container');
+            enumContainer.innerHTML = '';
+            
+            // 设置全选复选框状态
+            document.getElementById('indicator-list-select-all-enums').checked = includedEnums.length === allEnumValues.length;
+            document.getElementById('indicator-list-select-all-enums').indeterminate = includedEnums.length > 0 && includedEnums.length < allEnumValues.length;
+            
+            allEnumValues.forEach(enumValue => {
+                const isIncluded = includedEnums.includes(enumValue);
+                const isExcluded = excludedEnums.includes(enumValue);
+                
+                const label = document.createElement('label');
+                label.className = 'enum-checkbox-label';
+                label.innerHTML = `
+                    <input type="checkbox" value="${enumValue}" ${isIncluded ? 'checked' : ''} data-excluded="${isExcluded}">
+                    ${enumValue}${isExcluded ? ' <span style="color: #ff4d4f; text-decoration: line-through;">(排除)</span>' : ''}
+                `;
+                enumContainer.appendChild(label);
+            });
+            
+            // 显示编辑弹窗
+            document.getElementById('indicator-enums-editor').style.display = 'flex';
+        }
+        
+        function hideIndicatorEnumsEditor() {
+            document.getElementById('indicator-enums-editor').style.display = 'none';
+            currentIndicatorEnumCell = null;
+        }
+        
+        // 全选/取消全选指标列表枚举值
+        function toggleAllIndicatorListEnums() {
+            const selectAllCheckbox = document.getElementById('indicator-list-select-all-enums');
+            const checkboxes = document.getElementById('indicator-enums-container').querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                if (selectAllCheckbox.checked) {
+                    checkbox.dataset.excluded = "false";
+                    checkbox.parentNode.innerHTML = checkbox.parentNode.innerHTML.replace(/ <span style="color: #ff4d4f; text-decoration: line-through;">\(排除\)<\/span>/, '');
+                }
+            });
+        }
+        
+        // 修改后的保存指标枚举值函数，简化为单列复选框
+        function saveIndicatorEnums() {
+            if (!currentIndicatorEnumCell) return;
+            
+            // 获取所有选中和未选中的枚举值
+            const includedEnums = [];
+            const excludedEnums = [];
+            const checkboxes = document.getElementById('indicator-enums-container').querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    includedEnums.push(checkbox.value);
+                } else if (checkbox.dataset.excluded === "true") {
+                    excludedEnums.push(checkbox.value);
+                }
+            });
+            
+            // 更新单元格内容
+            let tagsHTML = '';
+            
+            // 先添加包含的枚举值
+            includedEnums.forEach(enumVal => {
+                tagsHTML += `<span class="enum-tag">${enumVal}</span>`;
+            });
+            
+            // 然后添加排除的枚举值
+            excludedEnums.forEach(enumVal => {
+                tagsHTML += `<span class="enum-tag excluded">${enumVal}</span>`;
+            });
+            
+            currentIndicatorEnumCell.innerHTML = `<div class="tag-container">${tagsHTML}</div>`;
+            
+            // 添加更新记录
+            const currentRow = currentIndicatorEnumCell.closest('tr');
+            const historyCell = currentRow.querySelector('td:nth-child(10)');
+            if (historyCell) {
+                addIndicatorHistory(historyCell, '修改枚举值');
+            }
+            
+            // 关闭编辑弹窗
+            hideIndicatorEnumsEditor();
+        }
+        
+        function addIndicatorHistory(historyCell, action) {
+            // 获取当前时间
+            const now = new Date();
+            const dateString = now.toISOString().split('T')[0];
+            
+            // 获取当前用户（模拟）
+            const users = ['张三', '李四', '王五', '赵六'];
+            const currentUser = users[Math.floor(Math.random() * users.length)];
+            
+            // 创建新的历史记录
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span class="history-time">${dateString}</span>
+                <span class="history-user">${currentUser}</span>${action}
+            `;
+            
+            // 插入到历史记录的最前面
+            if (historyCell.firstChild) {
+                historyCell.insertBefore(historyItem, historyCell.firstChild);
+                
+                // 保留最新的七条记录
+                const historyItems = historyCell.querySelectorAll('.history-item');
+                if (historyItems.length > 7) {
+                    historyCell.removeChild(historyItems[historyItems.length - 1]);
+                }
+            } else {
+                historyCell.appendChild(historyItem);
+            }
+        }
+        
+        function syncKnowledgeBase() {
+            alert("正在同步知识库，请稍候...");
+            setTimeout(() => {
+                alert("知识库同步成功！当前版本: v1.0.5");
+            }, 1000);
+        }
+        
+        // 新增的保存指标变更函数
+        function saveIndicatorChanges() {
+            alert(`正在保存 ${currentDimension} 指标的变更...`);
+            setTimeout(() => {
+                alert(`${currentDimension} 指标变更保存成功！当前版本: v1.0.5`);
+            }, 1000);
+        }
+        
+        function restoreVersion(version) {
+            if (confirm(`确定要恢复到 ${version} 版本吗？当前未保存的修改将会丢失。`)) {
+                alert(`已恢复到 ${version} 版本！`);
+            }
+        }
+        
+        function restoreIndicatorVersion(version) {
+            if (confirm(`确定要恢复 ${currentDimension} 指标到 ${version} 版本吗？当前未保存的修改将会丢失。`)) {
+                alert(`已恢复 ${currentDimension} 指标到 ${version} 版本！`);
+            }
+        }
+
+        // 模拟从API获取所有枚举值的函数
+        function getAllEnumValues(dimension) {
+            // 这里只是模拟从API获取枚举值，实际项目中应该从后端API获取
+            const dimensionEnums = {
+                '区域': ['华北', '华东', '华南', '华中', '西南', '西北', '东北'],
+                '业绩城市': ['北京', '上海', '广州', '深圳', '杭州', '成都', '武汉', '南京'],
+                '事业部': ['住宅事业部', '商业事业部', '物业事业部', '装修事业部', '金融事业部'],
+                '大部': ['市场部', '产品部', '研发部', '销售部', '人力资源部', '财务部'],
+                '大区': ['华北大区', '华东大区', '华南大区', '华中大区', '西南大区', '西北大区'],
+                'CA': ['高级CA', '中级CA', '初级CA', '实习CA'],
+                '门店': ['标准门店', '旗舰门店', '社区门店', '品牌门店', '合伙门店'],
+                '经纪人': ['资深经纪人', '高级经纪人', '普通经纪人', '实习经纪人'],
+                '业务类型': ['新房销售', '二手房交易', '租赁业务', '装修业务', '金融服务'],
+                '品牌': ['高端品牌', '大众品牌', '经济品牌', '合资品牌', '独立品牌']
+            };
+            
+            return dimensionEnums[dimension] || [];
+        }
+        
+        // 根据维度获取对应的指标列表
+        function getIndicatorsByDimension(dimension) {
+            const dimensionIndicators = {
+                '区域': ['区域销售额', '区域客户数', '区域销售增长率'],
+                '业绩城市': ['城市业绩达成率', '城市销售排名'],
+                '事业部': ['事业部营收', '事业部利润'],
+                '大部': ['部门人员数', '部门预算'],
+                '大区': ['大区销售额', '大区销售增长率'],
+                'CA': ['CA业绩', 'CA转化率'],
+                '门店': ['门店销售额', '门店客流量', '门店坪效'],
+                '经纪人': ['经纪人业绩', '经纪人提成', '客户转化率'],
+                '业务类型': ['业务量', '业务收入'],
+                '品牌': ['品牌价值', '品牌知名度', '品牌忠诚度']
+            };
+            
+            return dimensionIndicators[dimension] || [];
+        }
+        
+        // 根据维度获取对应的包含枚举值
+        function getEnumsByDimension(dimension) {
+            const dimensionEnums = {
+                '区域': ['华北', '华东', '华南'],
+                '业绩城市': ['北京', '上海', '广州', '深圳'],
+                '事业部': ['住宅事业部', '商业事业部', '物业事业部'],
+                '大部': ['市场部', '产品部', '研发部'],
+                '大区': ['华北大区', '华东大区', '华南大区'],
+                'CA': ['高级CA', '中级CA', '初级CA'],
+                '门店': ['标准门店', '旗舰门店', '社区门店'],
+                '经纪人': ['资深经纪人', '高级经纪人', '普通经纪人'],
+                '业务类型': ['新房销售', '二手房交易', '租赁业务'],
+                '品牌': ['高端品牌', '大众品牌', '经济品牌']
+            };
+            
+            return dimensionEnums[dimension] || [];
+        }
+        
+        // 根据维度获取对应的排除枚举值
+        function getExcludedEnumsByDimension(dimension) {
+            const dimensionExcludedEnums = {
+                '区域': ['华中'],
+                '业绩城市': ['西安'],
+                '事业部': ['装修事业部'],
+                '大部': ['人力资源部'],
+                '大区': ['西南大区'],
+                'CA': ['实习CA'],
+                '门店': ['品牌门店'],
+                '经纪人': ['实习经纪人'],
+                '业务类型': ['装修业务'],
+                '品牌': ['合资品牌']
+            };
+            
+            return dimensionExcludedEnums[dimension] || [];
+        }
+        
+        // 新增批量操作相关函数
+        
+        // 全选/取消全选指标行
+        function toggleAllIndicatorRows() {
+            const selectAllCheckbox = document.getElementById('select-all-indicators');
+            const checkboxes = document.querySelectorAll('.indicator-row-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                
+                // 更新选中的行列表
+                const row = checkbox.closest('tr');
+                const rowIndex = row.dataset.index;
+                
+                if (selectAllCheckbox.checked) {
+                    if (!selectedIndicatorRows.includes(rowIndex)) {
+                        selectedIndicatorRows.push(rowIndex);
+                    }
+                } else {
+                    selectedIndicatorRows = selectedIndicatorRows.filter(idx => idx !== rowIndex);
+                }
+            });
+        }
+        
+        // 更新选中的指标行
+        function updateSelectedIndicators(checkbox) {
+            const row = checkbox.closest('tr');
+            const rowIndex = row.dataset.index;
+            
+            if (checkbox.checked) {
+                if (!selectedIndicatorRows.includes(rowIndex)) {
+                    selectedIndicatorRows.push(rowIndex);
+                }
+            } else {
+                selectedIndicatorRows = selectedIndicatorRows.filter(idx => idx !== rowIndex);
+            }
+            
+            // 更新全选复选框状态
+            const allCheckboxes = document.querySelectorAll('.indicator-row-checkbox');
+            const checkedCount = document.querySelectorAll('.indicator-row-checkbox:checked').length;
+            
+            const selectAllCheckbox = document.getElementById('select-all-indicators');
+            selectAllCheckbox.checked = checkedCount === allCheckboxes.length;
+            selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < allCheckboxes.length;
+        }
+        
+        // 批量标注别名
+        function batchEditAliases() {
+            if (selectedIndicatorRows.length === 0) {
+                alert('请先选择要批量标注的指标');
+                return;
+            }
+            
+            // 获取第一个选中行的别名作为初始值
+            const firstRow = document.querySelector(`tr[data-index="${selectedIndicatorRows[0]}"]`);
+            const aliasCell = firstRow.querySelector('td:nth-child(7)');
+            const tags = aliasCell.querySelectorAll('.tag');
+            
+            // 初始化别名容器
+            const batchAliasesContainer = document.getElementById('batch-aliases-container');
+            batchAliasesContainer.innerHTML = '';
+            
+            tags.forEach(tag => {
+                const aliasText = tag.textContent.trim();
+                const aliasDiv = document.createElement('div');
+                aliasDiv.className = 'tag-container';
+                aliasDiv.style.margin = '5px 0';
+                aliasDiv.innerHTML = `
+                    <span class="tag">${aliasText} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.parentNode.remove()">×</span></span>
+                `;
+                batchAliasesContainer.appendChild(aliasDiv);
+            });
+            
+            // 显示批量编辑弹窗
+            document.getElementById('batch-aliases-editor').style.display = 'flex';
+            document.getElementById('new-batch-alias').focus();
+        }
+        
+        function hideBatchAliasesEditor() {
+            document.getElementById('batch-aliases-editor').style.display = 'none';
+        }
+        
+        function addBatchAlias() {
+            const inputField = document.getElementById('new-batch-alias');
+            const aliasText = inputField.value.trim();
+            
+            if (aliasText) {
+                const aliasContainer = document.getElementById('batch-aliases-container');
+                const aliasDiv = document.createElement('div');
+                aliasDiv.className = 'tag-container';
+                aliasDiv.style.margin = '5px 0';
+                aliasDiv.innerHTML = `
+                    <span class="tag">${aliasText} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.parentNode.remove()">×</span></span>
+                `;
+                aliasContainer.appendChild(aliasDiv);
+                inputField.value = '';
+                inputField.focus();
+            }
+        }
+        
+        function saveBatchAliases() {
+            if (selectedIndicatorRows.length === 0) return;
+            
+            // 获取编辑后的别名
+            const aliases = [];
+            const tags = document.getElementById('batch-aliases-container').querySelectorAll('.tag');
+            tags.forEach(tag => {
+                aliases.push(tag.textContent.split('×')[0].trim());
+            });
+            
+            // 更新所有选中行的别名
+            let tagsHTML = '';
+            aliases.forEach(alias => {
+                tagsHTML += `<span class="tag">${alias}</span>`;
+            });
+            
+            selectedIndicatorRows.forEach(rowIndex => {
+                const row = document.querySelector(`tr[data-index="${rowIndex}"]`);
+                const aliasCell = row.querySelector('td:nth-child(7)');
+                aliasCell.innerHTML = `<div class="tag-container">${tagsHTML}</div>`;
+                
+                // 添加更新记录
+                const historyCell = row.querySelector('td:nth-child(10)');
+                if (historyCell) {
+                    addIndicatorHistory(historyCell, '批量修改别名');
+                }
+            });
+            
+            // 关闭编辑弹窗
+            hideBatchAliasesEditor();
+            alert(`已成功为 ${selectedIndicatorRows.length} 个指标批量标注别名`);
+        }
+        
+        // 批量选择枚举值
+        function batchEditEnums() {
+            if (selectedIndicatorRows.length === 0) {
+                alert('请先选择要批量标注的指标');
+                return;
+            }
+            
+            // 获取维度的所有枚举值
+            const allEnumValues = getAllEnumValues(currentDimension);
+            
+            // 获取第一个选中行的枚举值作为初始值
+            const firstRow = document.querySelector(`tr[data-index="${selectedIndicatorRows[0]}"]`);
+            const enumCell = firstRow.querySelector('td:nth-child(8)');
+            
+            const includedEnums = [];
+            const excludedEnums = [];
+            
+            enumCell.querySelectorAll('.enum-tag').forEach(tag => {
+                if (tag.classList.contains('excluded')) {
+                    excludedEnums.push(tag.textContent.trim());
+                } else {
+                    includedEnums.push(tag.textContent.trim());
+                }
+            });
+            
+            // 创建复选框
+            const enumContainer = document.getElementById('batch-enums-container');
+            enumContainer.innerHTML = '';
+            
+            // 设置全选复选框状态
+            document.getElementById('batch-select-all-enums').checked = includedEnums.length === allEnumValues.length;
+            document.getElementById('batch-select-all-enums').indeterminate = includedEnums.length > 0 && includedEnums.length < allEnumValues.length;
+            
+            allEnumValues.forEach(enumValue => {
+                const isIncluded = includedEnums.includes(enumValue);
+                const isExcluded = excludedEnums.includes(enumValue);
+                
+                const label = document.createElement('label');
+                label.className = 'enum-checkbox-label';
+                label.innerHTML = `
+                    <input type="checkbox" value="${enumValue}" ${isIncluded ? 'checked' : ''} data-excluded="${isExcluded}">
+                    ${enumValue}${isExcluded ? ' <span style="color: #ff4d4f; text-decoration: line-through;">(排除)</span>' : ''}
+                `;
+                enumContainer.appendChild(label);
+            });
+            
+            // 显示批量编辑弹窗
+            document.getElementById('batch-enums-editor').style.display = 'flex';
+        }
+        
+        function hideBatchEnumsEditor() {
+            document.getElementById('batch-enums-editor').style.display = 'none';
+        }
+        
+        function toggleAllBatchEnums() {
+            const selectAllCheckbox = document.getElementById('batch-select-all-enums');
+            const checkboxes = document.getElementById('batch-enums-container').querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                if (selectAllCheckbox.checked) {
+                    checkbox.dataset.excluded = "false";
+                    checkbox.parentNode.innerHTML = checkbox.parentNode.innerHTML.replace(/ <span style="color: #ff4d4f; text-decoration: line-through;">\(排除\)<\/span>/, '');
+                }
+            });
+        }
+        
+        function saveBatchEnums() {
+            if (selectedIndicatorRows.length === 0) return;
+            
+            // 获取所有选中和未选中的枚举值
+            const includedEnums = [];
+            const excludedEnums = [];
+            const checkboxes = document.getElementById('batch-enums-container').querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    includedEnums.push(checkbox.value);
+                } else if (checkbox.dataset.excluded === "true") {
+                    excludedEnums.push(checkbox.value);
+                }
+            });
+            
+            // 准备枚举值HTML
+            let tagsHTML = '';
+            
+            // 先添加包含的枚举值
+            includedEnums.forEach(enumVal => {
+                tagsHTML += `<span class="enum-tag">${enumVal}</span>`;
+            });
+            
+            // 然后添加排除的枚举值
+            excludedEnums.forEach(enumVal => {
+                tagsHTML += `<span class="enum-tag excluded">${enumVal}</span>`;
+            });
+            
+            // 更新所有选中行的枚举值
+            selectedIndicatorRows.forEach(rowIndex => {
+                const row = document.querySelector(`tr[data-index="${rowIndex}"]`);
+                const enumCell = row.querySelector('td:nth-child(8)');
+                enumCell.innerHTML = `<div class="tag-container">${tagsHTML}</div>`;
+                
+                // 添加更新记录
+                const historyCell = row.querySelector('td:nth-child(10)');
+                if (historyCell) {
+                    addIndicatorHistory(historyCell, '批量修改枚举值');
+                }
+            });
+            
+            // 关闭编辑弹窗
+            hideBatchEnumsEditor();
+            alert(`已成功为 ${selectedIndicatorRows.length} 个指标批量设置枚举值`);
+        }
+        
+        // 批量启用/停用
+        function batchEnable(enable) {
+            if (selectedIndicatorRows.length === 0) {
+                alert('请先选择要批量操作的指标');
+                return;
+            }
+            
+            selectedIndicatorRows.forEach(rowIndex => {
+                const row = document.querySelector(`tr[data-index="${rowIndex}"]`);
+                const switchInput = row.querySelector('td:nth-child(9) input[type="checkbox"]');
+                switchInput.checked = enable;
+                
+                // 添加更新记录
+                const historyCell = row.querySelector('td:nth-child(10)');
+                if (historyCell) {
+                    addIndicatorHistory(historyCell, enable ? '批量启用' : '批量停用');
+                }
+            });
+            
+            alert(`已成功${enable ? '启用' : '停用'} ${selectedIndicatorRows.length} 个指标`);
+        }
+        
+        // 添加别名输入框的回车键事件处理
+        document.getElementById('new-alias').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addAlias();
+            }
+        });
+        
+        // 添加指标别名输入框的回车键事件处理
+        document.getElementById('new-indicator-alias').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addIndicatorAlias();
+            }
+        });
+        
+        // 添加指标列表别名输入框的回车键事件处理
+        document.getElementById('new-indicator-list-alias').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addIndicatorListAlias();
+            }
+        });
+        
+        // 添加批量别名输入框的回车键事件处理
+        document.getElementById('new-batch-alias')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addBatchAlias();
+            }
+        });
+        
+        // 模拟获取随机业务线
+        function getRandomBusinessLine() {
+            const businessLines = ['贝壳城市', '整装', '北链', '上链', '品质', '大C'];
+            return businessLines[Math.floor(Math.random() * businessLines.length)];
+        }
+        
+        // 模拟获取随机业务板块
+        function getRandomBusinessSection(businessLine) {
+            const sections = {
+                '贝壳城市': ['房产交易', '房源管理', '客户管理', '渠道合作'],
+                '整装': ['设计管理', '施工管理', '材料管理', '验收管理'],
+                '北链': ['链上资产', '链上交易', '链上数据', '链上开发'],
+                '上链': ['链接服务', '链接营销', '链接生态', '链接管理'],
+                '品质': ['质量监控', '标准制定', '评估体系', '改进管理'],
+                '大C': ['客户体验', '客户关系', '客户分析', '客户服务']
+            };
+            
+            const sectionList = sections[businessLine] || ['默认板块1', '默认板块2'];
+            return sectionList[Math.floor(Math.random() * sectionList.length)];
+        }
+        
+        // 模拟获取随机业务过程
+        function getRandomBusinessProcess(businessSection) {
+            const processes = {
+                '房产交易': ['线索获取', '客户洽谈', '合同签署', '交付结算'],
+                '设计管理': ['需求调研', '方案设计', '图纸审核', '客户确认'],
+                '链上资产': ['资产登记', '资产评估', '资产交易', '资产管理'],
+                '链接服务': ['服务规划', '服务实施', '服务评价', '服务优化'],
+                '质量监控': ['质量检查', '问题记录', '跟踪整改', '复检验收'],
+                '客户体验': ['体验规划', '体验实施', '体验监测', '体验优化']
+            };
+            
+            const processList = processes[businessSection] || ['默认过程1', '默认过程2'];
+            return processList[Math.floor(Math.random() * processList.length)];
+        }
+        
+        // 模拟获取随机业务子过程
+        function getRandomBusinessSubProcess(businessProcess) {
+            const subProcesses = {
+                '线索获取': ['渠道线索', '自主线索', '推荐线索', '转介线索'],
+                '需求调研': ['客户访谈', '现场测量', '需求分析', '预算协商'],
+                '资产登记': ['信息采集', '资料审核', '上链登记', '状态确认'],
+                '服务规划': ['需求分析', '方案制定', '资源配置', '进度规划'],
+                '质量检查': ['定期巡检', '专项检查', '抽样检测', '客户反馈'],
+                '体验规划': ['数据分析', '方案设计', '预算分配', '任务分配']
+            };
+            
+            const subProcessList = subProcesses[businessProcess] || ['默认子过程1', '默认子过程2'];
+            return subProcessList[Math.floor(Math.random() * subProcessList.length)];
+        }
+        
+        // 添加枚举值别名
+        function addEnumAlias(button, enumValue) {
+            const inputContainer = button.parentNode;
+            const input = inputContainer.querySelector('.new-enum-alias');
+            const aliasText = input.value.trim();
+            
+            if (aliasText) {
+                // 找到对应的枚举值别名容器
+                const enumValueBlock = button.closest('.enum-value-block');
+                const aliasContainer = enumValueBlock.querySelector(`.enum-alias-container[data-enum="${enumValue}"]`);
+                const tagContainer = aliasContainer.querySelector('.tag-container');
+                
+                const aliasTag = document.createElement('span');
+                aliasTag.className = 'enum-alias-tag';
+                aliasTag.innerHTML = `${aliasText} <span style="margin-left:4px;cursor:pointer" onclick="this.parentNode.remove()">×</span>`;
+                
+                tagContainer.appendChild(aliasTag);
+                input.value = '';
+                input.focus();
+            }
+        }
+    </script>
+
+
+</body></html>

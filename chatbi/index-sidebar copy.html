@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBI - 数据AI助理</title>
+    <link rel="stylesheet" href="styles/sidebar-chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 确保历史折叠按钮可见 */
+        #history-toggle, .history-toggle {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 9999 !important;
+            position: relative !important;
+        }
+        
+        /* 历史面板折叠状态 - 此样式已过时，保留为兼容性考虑 */
+        .history-panel.collapsed {
+            width: 0 !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            overflow: hidden !important;
+            border-right: none !important;
+        }
+        
+        /* 历史面板展开状态 */
+        .history-panel {
+            width: 280px;
+            transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+            border-right: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+        
+        /* 控制ChatBI图标大小 */
+        .logo-icon img {
+            max-width: 24px;
+            height: auto;
+            display: block;
+        }
+        
+        /* Logo区域在展开时的样式 */
+        .sidebar-tools.expanded .product-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 15px 10px;
+            position: relative;
+        }
+        
+        .sidebar-tools.expanded .logo-icon {
+            margin-right: 10px;
+        }
+        
+        .sidebar-tools.expanded .logo-text {
+            display: block;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        
+        .sidebar-tools.expanded .sidebar-toggle-expanded {
+            position: absolute;
+            right: 10px;
+        }
+        
+        /* 侧边栏折叠状态下，使Logo居中 */
+        .sidebar-tools:not(.expanded) .product-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .sidebar-tools:not(.expanded) .logo-icon {
+            margin-right: 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .sidebar-tools:not(.expanded) .logo-text {
+            display: none;
+        }
+        
+        /* 确保用户头像大小与ChatBI图标一致 */
+        .user-avatar img {
+            width: 24px !important;
+            height: 24px !important;
+            object-fit: cover;
+        }
+        
+        /* 用户信息区域在展开时的样式 */
+        .sidebar-tools.expanded .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 15px 10px;
+        }
+        
+        .sidebar-tools.expanded .user-name {
+            display: block;
+            margin-left: 10px;
+        }
+        
+        .sidebar-tools:not(.expanded) .user-name {
+            display: none;
+            font-size: 10px;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        /* 强制保证搜索框按钮组可见 */
+        .search-actions {
+            position: absolute !important;
+            right: 10px !important;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 9999 !important;
+        }
+        
+        /* 移除输入区域与工具栏之间的分隔线 */
+        .input-container textarea {
+            border-bottom: none !important;
+            box-shadow: none !important;
+        }
+        
+        .input-model-selection {
+            border-top: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* 侧边栏展开/折叠样式 */
+        .sidebar-tools {
+            transition: width 0.3s ease;
+            width: 70px;
+            overflow: hidden;
+        }
+        
+        .sidebar-tools.expanded {
+            width: 180px;
+        }
+        
+        /* 确保搜索框内的输入字段不会占用太多空间 */
+        .search-box input {
+            max-width: 65% !important;
+        }
+        
+        /* 在小屏幕设备上进一步限制输入框宽度 */
+        @media (max-width: 768px) {
+            .search-box input {
+                max-width: 45% !important;
+            }
+        }
+        
+        /* 侧边栏工具项悬停和点击样式 */
+        .tool-item {
+            position: relative;
+            transition: all 0.3s ease;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+            padding: 10px 0;
+            cursor: pointer !important; /* 添加手型光标 */
+        }
+        
+        .tool-item:hover .tool-icon,
+        .tool-item.active .tool-icon {
+            background-color: #e0e0e0;
+            border-radius: 50%;
+        }
+        
+        .tool-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            transition: all 0.3s ease;
+        }
+        
+        /* 覆盖sidebar-chat.css中的tool-item.active样式 */
+        .tool-item.active {
+            background-color: transparent !important;
+            position: relative;
+        }
+        
+        .tool-name {
+            display: block !important;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        /* 添加展开时的工具项样式 */
+        .sidebar-tools.expanded .tool-item {
+            flex-direction: row;
+            justify-content: flex-start;
+            text-align: left;
+            padding: 10px 15px;
+            align-items: center;
+        }
+        
+        .sidebar-tools.expanded .tool-name {
+            margin-top: 0;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        
+        /* 折叠和展开时不同的文字 */
+        .sidebar-tools:not(.expanded) .tool-name-expanded {
+            display: none !important;
+        }
+        
+        .sidebar-tools.expanded .tool-name-collapsed {
+            display: none !important;
+        }
+        
+        /* 历史列表添加滚动条样式 */
+        .history-list {
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #c1c1c1 transparent;
+        }
+        
+        /* 自定义滚动条样式 - Webkit浏览器 */
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .history-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .history-list::-webkit-scrollbar-thumb {
+            background-color: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background-color: #a8a8a8;
+        }
+        
+        /* 底部加载指示器样式 */
+        .history-list-loader {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ddd;
+            border-top-color: #5e64ff;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 确保侧边栏工具图标在折叠状态下居中显示 */
+        .sidebar-tools:not(.expanded) .tool-item {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        /* 确保历史折叠按钮始终朝左，避免图标变化 */
+        #history-toggle .fas, .history-toggle .fas {
+            transform: none !important;
+            transition: none !important;
+        }
+        
+        /* 历史面板相关样式 - 重写 */
+        .history-panel {
+            width: 280px;
+            transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+            border-right: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+        
+        .history-panel.collapsed {
+            width: 0;
+            opacity: 0;
+            visibility: hidden;
+            border-right: none;
+        }
+        
+        /* 历史面板折叠按钮样式 - 重写 */
+        .history-toggle-btn {
+            background-color: #f2f2f2;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .history-toggle-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .history-toggle-btn i {
+            color: #666;
+            pointer-events: none; /* 确保图标不会捕获事件 */
+        }
+        
+        /* 侧边栏工具项补充样式 */
+        .tool-item {
+            cursor: pointer !important; /* 添加手型光标 */
+        }
+        
+        .tool-item.active .tool-name,
+        .tool-item.active .tool-name-collapsed,
+        .tool-item.active .tool-name-expanded {
+            color: #5e64ff !important; /* 活跃状态下的文字颜色 */
+            font-weight: 500 !important; /* 活跃状态下加粗 */
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- 左侧工具栏 - 可折叠 -->
+        <div class="sidebar-tools" id="sidebar-tools">
+            <!-- 产品Logo -->
+            <div class="product-logo" id="product-logo">
+                <div class="logo-icon">
+                    <img src="chatbiicon.png" alt="ChatBI Logo">
+                </div>
+                <div class="logo-text">ChatBI</div>
+            </div>
+            
+            <div class="tool-item" data-tool="query">
+                <div class="tool-icon"><img src="chat.png" alt="问数" style="width: 20px; height: 20px;"></div>
+                <div class="tool-name tool-name-collapsed">新建</div>
+                <div class="tool-name tool-name-expanded">新建会话</div>
+            </div>
+            
+            <div class="tool-item" data-tool="subscribe">
+                <div class="tool-icon"><i class="fas fa-bell"></i></div>
+                <div class="tool-name tool-name-collapsed">订阅</div>
+                <div class="tool-name tool-name-expanded">订阅推送</div>
+            </div>
+            
+            <div class="tool-item" data-tool="follow">
+                <div class="tool-icon"><i class="fas fa-star"></i></div>
+                <div class="tool-name tool-name-collapsed">指标</div>
+                <div class="tool-name tool-name-expanded">关注指标</div>
+            </div>
+            
+            <div class="tool-item" data-tool="ppt">
+                <div class="tool-icon"><i class="fas fa-file-powerpoint"></i></div>
+                <div class="tool-name tool-name-collapsed">PPT</div>
+                <div class="tool-name tool-name-expanded">新建PPT</div>
+            </div>
+            
+            <div class="tool-item active" data-tool="history">
+                <div class="tool-icon"><i class="fas fa-history"></i></div>
+                <div class="tool-name tool-name-collapsed">历史</div>
+                <div class="tool-name tool-name-expanded">历史会话</div>
+            </div>
+            
+            <div class="tool-item" data-tool="admin">
+                <div class="tool-icon"><i class="fas fa-cog"></i></div>
+                <div class="tool-name tool-name-collapsed">其他</div>
+                <div class="tool-name tool-name-expanded">管理后台</div>
+            </div>
+            
+            <!-- 用户头像 - 更改为girl.svg -->
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <img src="girl.svg" alt="用户头像" />
+                </div>
+                <div class="user-name">张业策</div>
+            </div>
+        </div>
+
+        <!-- 中间历史列表区 - 可展开收缩 -->
+        <div class="history-panel" id="history-panel">
+            <div class="search-container">
+                <div class="search-box">
+                    <button class="search-icon"><i class="fas fa-search"></i></button>
+                    <input type="text" placeholder="搜索..." style="padding-left: 35px;">
+                </div>
+                <div class="search-actions">
+                    <button class="new-chat-btn" title="新建会话" style="background-color: #f2f2f2; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-plus"></i></button>
+                    <button class="history-toggle-btn" id="history-toggle-btn" title="折叠历史面板"><i class="fas fa-chevron-left"></i></button>
+                </div>
+            </div>
+            
+            <div class="history-list">
+                <div class="history-date">今天</div>
+                
+                <div class="chat-item active">
+                    <div class="chat-content">
+                        <div class="chat-title">科学计算基础知识</div>
+                        <div class="chat-meta">12:30 - 3条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">二次元风格设计理念研究</div>
+                        <div class="chat-meta">10:15 - 8条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">数据可视化方案评估</div>
+                        <div class="chat-meta">09:45 - 5条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="history-date">昨天</div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">用户体验最佳实践讨论</div>
+                        <div class="chat-meta">19:42 - 12条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">创意开发流程优化方案</div>
+                        <div class="chat-meta">15:18 - 5条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">市场趋势研究报告</div>
+                        <div class="chat-meta">14:22 - 7条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">网站流量分析与优化</div>
+                        <div class="chat-meta">11:05 - 9条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="history-date">过去7天</div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">腾讯智能表格取消隐藏列方法</div>
+                        <div class="chat-meta">周一 - 4条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">2024年AI发展趋势分析</div>
+                        <div class="chat-meta">周日 - 9条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">COM加载项简介</div>
+                        <div class="chat-meta">周六 - 6条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">搜索前后对比苹果PPT模板</div>
+                        <div class="chat-meta">周五 - 2条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">财务数据挖掘技巧</div>
+                        <div class="chat-meta">周四 - 8条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">产品原型设计评审</div>
+                        <div class="chat-meta">周三 - 11条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-content">
+                        <div class="chat-title">团队协作工具对比</div>
+                        <div class="chat-meta">周二 - 5条消息</div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <!-- 底部加载指示器 -->
+                <div class="history-list-loader">
+                    <span class="spinner"></span>正在加载更多...
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧主要聊天区域 -->
+        <div class="chat-area" id="chat-area">
+            <div class="chat-messages">
+                <!-- 聊天消息将在这里显示 -->
+            </div>
+            
+            <div class="chat-input-area">
+                <!-- 示例标签页和角色提示放在同一行 -->
+                <div class="tabs-row">
+                    <!-- 推荐问题区域 -->
+                    <div class="suggested-questions-container">
+                        <!-- 推荐问题样式 -->
+                        <style>
+                            .suggested-questions-container {
+                                width: 100%;
+                                margin-bottom: 15px;
+                            }
+                            
+                            .recommended-questions {
+                                display: none; /* 默认隐藏所有推荐问题 */
+                            }
+                            
+                            .recommended-questions.active {
+                                display: block; /* 显示当前激活的推荐问题 */
+                            }
+                            
+                            .question-row {
+                                display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 10px;
+                                flex-wrap: wrap;
+                            }
+                            
+                            .question-card {
+                                background-color: #fff;
+                                border: 1px solid #e0e0e0;
+                                border-radius: 8px;
+                                padding: 12px 15px;
+                                width: calc(33.33% - 10px);
+                                box-sizing: border-box;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                margin-bottom: 10px;
+                            }
+                            
+                            .question-card:hover {
+                                border-color: #d0d0d0;
+                                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+                            }
+                            
+                            .question-title {
+                                font-weight: 600;
+                                font-size: 14px;
+                                color: #333;
+                                margin-bottom: 5px;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                            }
+                            
+                            .question-detail {
+                                font-size: 12px;
+                                color: #666;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                            }
+                            
+                            @media (max-width: 768px) {
+                                .question-card {
+                                    width: calc(50% - 10px);
+                                }
+                            }
+                        </style>
+                        
+                        <!-- 查数类型推荐问题 -->
+                        <div class="recommended-questions active" data-type="query">
+                            <div class="question-row">
+                                <div class="question-card">
+                                    <div class="question-title">月度销售额统计</div>
+                                    <div class="question-detail">统计2023年各月份销售额及同比增长情况</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">用户活跃度分析</div>
+                                    <div class="question-detail">查询近30天日活用户数据及留存率</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">产品库存查询</div>
+                                    <div class="question-detail">各仓库产品当前库存量及库存周转率</div>
+                                </div>
+                            </div>
+                            <div class="question-row">
+                                <div class="question-card">
+                                    <div class="question-title">客户满意度调查</div>
+                                    <div class="question-detail">最近一季度客户满意度评分及问题反馈汇总</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">销售渠道分布</div>
+                                    <div class="question-detail">各销售渠道的订单量及转化率对比</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">地区销售统计</div>
+                                    <div class="question-detail">按省份统计销售额及市场占有率</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 分析类型推荐问题 -->
+                        <div class="recommended-questions" data-type="analysis">
+                            <div class="question-row">
+                                <div class="question-card">
+                                    <div class="question-title">用户行为路径分析</div>
+                                    <div class="question-detail">分析用户从首次访问到转化的行为路径</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">产品性能评估</div>
+                                    <div class="question-detail">各产品线的销售业绩与市场表现对比分析</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">营销活动ROI分析</div>
+                                    <div class="question-detail">各营销渠道投资回报率及效果评估</div>
+                                </div>
+                            </div>
+                            <div class="question-row">
+                                <div class="question-card">
+                                    <div class="question-title">竞品对比分析</div>
+                                    <div class="question-detail">与主要竞争对手的产品特性及市场表现对比</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">用户画像分析</div>
+                                    <div class="question-detail">基于用户行为和偏好的多维度用户画像</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">预测性销售分析</div>
+                                    <div class="question-detail">基于历史数据预测未来3个月销售趋势</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PPT类型推荐问题 -->
+                        <div class="recommended-questions" data-type="ppt">
+                            <div class="question-row">
+                                <div class="question-card">
+                                    <div class="question-title">季度业绩报告PPT</div>
+                                    <div class="question-detail">生成包含销售数据和业绩亮点的季度报告</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">市场策略汇报</div>
+                                    <div class="question-detail">创建市场分析和未来策略规划的演示文稿</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">产品发布会PPT</div>
+                                    <div class="question-detail">新产品特性与优势展示的精美幻灯片</div>
+                                </div>
+                            </div>
+                            <div class="question-row">
+                                <div class="question-card">
+                                    <div class="question-title">投资者路演材料</div>
+                                    <div class="question-detail">面向投资者的公司概况和财务表现演示</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">培训课程PPT</div>
+                                    <div class="question-detail">员工培训或客户教育的互动式幻灯片</div>
+                                </div>
+                                <div class="question-card">
+                                    <div class="question-title">年度战略规划</div>
+                                    <div class="question-detail">公司未来一年发展目标和行动计划展示</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 示例标签页 -->
+                    <div class="suggested-questions">
+                        <div class="question-chip" data-type="query" style="background-color: #fff; border: 1px solid #e0e0e0; transition: all 0.2s ease;"><i class="fas fa-database"></i>查数</div>
+                        <div class="question-chip" data-type="analysis" style="background-color: #fff; border: 1px solid #e0e0e0; transition: all 0.2s ease;"><i class="fas fa-chart-line"></i>分析</div>
+
+                        <div class="question-chip" data-type="ppt" style="background-color: #fff; border: 1px solid #e0e0e0; transition: all 0.2s ease;"><i class="fas fa-file-powerpoint"></i>生成PPT</div>
+                    </div>
+                    <style>
+                        .question-chip:hover {
+                            background-color: #f5f5f5 !important;
+                            cursor: pointer;
+                            border-color: #d0d0d0 !important;
+                        }
+                        .question-chip:active {
+                            background-color: #ebebeb !important;
+                        }
+                        .question-chip.active {
+                            background-color: #f5f5f5 !important;
+                            border-color: #d0d0d0 !important;
+                        }
+                    </style>
+                </div>
+                
+                <div class="input-container" style="position: relative; transition: all 0.3s ease; border-radius: 8px; border: 1px solid #e0e0e0; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);">
+                    <textarea placeholder="向我任何问题..." autofocus style="border-bottom: none;"></textarea>
+                    <!-- 模型选择区域移到输入框内部 -->
+                    <div class="input-model-selection" style="border-top: none; padding-bottom: 10px;">
+                        <div class="model-option">
+                            <input type="checkbox" id="gpt4o" checked />
+                            <label for="gpt4o" style="display: flex; align-items: center; justify-content: center; background-color: #f0f1ff; border-radius: 16px; padding: 5px 8px; border: 1px solid #5e64ff; min-width: 70px; height: 32px; box-shadow: none; transition: all 0.2s ease;">
+                                <span class="model-icon" style="margin-right: 5px;"><i class="fas fa-lightbulb" style="color: #666;"></i></span>
+                                <span>推理</span>
+                            </label>
+                            <style>
+                                #gpt4o + label:hover {
+                                    background-color: #eaeaea !important;
+                                    cursor: pointer;
+                                    border-color: #c8c8c8 !important;
+                                }
+                                #gpt4o:checked + label {
+                                    background-color: #f0f1ff !important;
+                                    border-color: #5e64ff !important;
+                                }
+                            </style>
+                        </div>
+                        <div class="model-option">
+                            <input type="checkbox" id="all-knowledge" />
+                            <label for="all-knowledge" title="全网" style="display: flex; align-items: center; justify-content: center; background-color: #f5f5f5; border-radius: 50%; width: 32px; height: 32px; border: 1px solid #ddd; box-shadow: none; transition: all 0.2s ease;">
+                                <i class="fas fa-globe" style="color: #666; font-size: 16px; line-height: 1;"></i>
+                            </label>
+                            <style>
+                                #all-knowledge + label:hover {
+                                    background-color: #eaeaea !important;
+                                    cursor: pointer;
+                                    border-color: #c8c8c8 !important;
+                                }
+                                #all-knowledge:checked + label {
+                                    background-color: #f0f1ff !important;
+                                    border-color: #5e64ff !important;
+                                }
+                            </style>
+                        </div>
+                        <!-- 角色提示移到这里 -->
+                        <div class="role-tip" style="border: none; box-shadow: none;">
+                            <p style="margin: 0; padding: 5px 0; font-size: 14px;">我猜您是【业策】角色</p>
+                            <div class="role-switch" style="border: none; background: transparent;">
+                                <i class="fas fa-exchange-alt"></i> 切换角色
+                            </div>
+                        </div>
+                        <!-- 添加语音按钮和上传文件按钮，并调整发送按钮尺寸 -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button title="上传文件" class="chat-icon-btn" style="display: flex; align-items: center; justify-content: center; background-color: #f5f5f5; border-radius: 50%; width: 32px; height: 32px; border: 1px solid #ddd; box-shadow: none; transition: all 0.2s ease;">
+                                <i class="fas fa-paperclip" style="color: #666;"></i>
+                            </button>
+                            <button title="语音输入" class="chat-icon-btn" style="display: flex; align-items: center; justify-content: center; background-color: #f5f5f5; border-radius: 50%; width: 32px; height: 32px; border: 1px solid #ddd; box-shadow: none; transition: all 0.2s ease;">
+                                <i class="fas fa-microphone" style="color: #666;"></i>
+                            </button>
+                            <button title="发送" class="chat-icon-btn send-btn" style="display: flex; align-items: center; justify-content: center; background-color: #f5f5f5; border-radius: 50%; width: 32px; height: 32px; border: 1px solid #ddd; box-shadow: none; transition: all 0.2s ease;">
+                                <i class="fas fa-arrow-up" style="color: #666;"></i>
+                            </button>
+                            <style>
+                                .chat-icon-btn:hover {
+                                    background-color: #eaeaea !important;
+                                    cursor: pointer;
+                                }
+                                .chat-icon-btn:active {
+                                    background-color: #dadada !important;
+                                }
+                            </style>
+                        </div>
+                    </div>
+                    <!-- 添加整体输入区悬停样式 -->
+                    <style>
+                        .input-container:hover {
+                            border-color: #5e64ff !important;
+                            box-shadow: 0 2px 8px rgba(94, 100, 255, 0.15) !important;
+                        }
+                        
+                        /* 确保输入区底部有足够边距 */
+                        .input-model-selection {
+                            padding-bottom: 10px !important;
+                        }
+                    </style>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+    侧边栏展开/折叠逻辑说明：
+    1. 左侧边栏默认为折叠状态，显示图标和简短文字
+    2. 点击左侧图标可展开侧边栏，此时文字变为展开时显示的完整文本
+    3. 展开状态下，文字显示在图标右侧；折叠状态下，文字显示在图标下方
+    4. 展开时，菜单项文本按要求变更：
+       - 新建 → 新建会话
+       - 订阅 → 订阅推送
+       - 指标 → 关注指标
+       - PPT → 新建PPT
+       - 历史 → 历史会话
+       - 其他 → 管理后台
+    5. 点击展开状态下Logo区域的折叠按钮可收起侧边栏
+    -->
+
+    <script src="js/sidebar-chat.js"></script>
+    <!-- 添加侧边栏与历史面板的交互脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            /* ----- 侧边栏展开/折叠功能 ----- */
+            const sidebarTools = document.getElementById('sidebar-tools');
+            
+            // 初始状态
+            let isSidebarExpanded = false;
+            
+            // 切换侧边栏展开/折叠状态
+            function toggleSidebar() {
+                isSidebarExpanded = !isSidebarExpanded;
+                if (isSidebarExpanded) {
+                    sidebarTools.classList.add('expanded');
+                } else {
+                    sidebarTools.classList.remove('expanded');
+                }
+            }
+            
+            // 移除之前所有工具图标的点击事件（通过克隆重建方式）
+            document.querySelectorAll('.tool-icon').forEach(icon => {
+                const newIcon = icon.cloneNode(true);
+                icon.parentNode.replaceChild(newIcon, icon);
+            });
+            
+            // 只为Logo添加点击展开侧边栏的功能
+            const logoIcon = document.querySelector('.product-logo');
+            logoIcon.addEventListener('click', function() {
+                toggleSidebar();
+            });
+            
+            // 点击左侧边栏的历史按钮展开历史会话区域
+            const historyToolItem = document.querySelector('.tool-item[data-tool="history"]');
+            
+            // 为历史工具项的整个区域添加点击事件
+            historyToolItem.addEventListener('click', function(e) {
+                // 如果历史面板处于折叠状态，则展开它
+                if (historyPanel.classList.contains('collapsed')) {
+                    historyPanel.classList.remove('collapsed');
+                    historyPanel.style.width = '280px';
+                    historyPanel.style.visibility = 'visible';
+                    historyPanel.style.opacity = '1';
+                    console.log('通过点击历史按钮展开历史面板');
+                }
+                
+                // 激活该工具项
+                document.querySelectorAll('.tool-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                historyToolItem.classList.add('active');
+            });
+            
+            // 历史工具图标的点击事件（确保不展开侧边栏）
+            const historyToolIcon = historyToolItem.querySelector('.tool-icon');
+            historyToolIcon.addEventListener('click', function(e) {
+                // 阻止事件冒泡
+                e.stopPropagation();
+                
+                // 只展开历史面板，不展开侧边栏
+                if (historyPanel.classList.contains('collapsed')) {
+                    historyPanel.classList.remove('collapsed');
+                    historyPanel.style.width = '280px';
+                    historyPanel.style.visibility = 'visible';
+                    historyPanel.style.opacity = '1';
+                }
+                
+                // 激活历史工具项
+                document.querySelectorAll('.tool-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                historyToolItem.classList.add('active');
+            });
+            
+            /* ----- 历史面板折叠功能 ----- */
+            const historyPanel = document.getElementById('history-panel');
+            const historyToggleBtn = document.getElementById('history-toggle-btn');
+            
+            // 添加调试信息
+            console.log('历史面板元素:', historyPanel);
+            console.log('历史面板折叠按钮:', historyToggleBtn);
+            
+            // 为历史面板折叠按钮添加点击事件
+            historyToggleBtn.addEventListener('click', function() {
+                console.log('历史面板折叠按钮被点击');
+                historyPanel.classList.toggle('collapsed');
+                console.log('历史面板折叠状态:', historyPanel.classList.contains('collapsed'));
+                
+                // 额外调试 - 添加内联样式确保状态变化
+                if (historyPanel.classList.contains('collapsed')) {
+                    console.log('应用折叠样式');
+                    historyPanel.style.width = '0';
+                    historyPanel.style.visibility = 'hidden';
+                    historyPanel.style.opacity = '0';
+                } else {
+                    console.log('应用折叠样式');
+                    historyPanel.style.width = '280px';
+                    historyPanel.style.visibility = 'visible';
+                    historyPanel.style.opacity = '1';
+                }
+            });
+            
+            // 为标签页按钮添加点击事件
+            const questionChips = document.querySelectorAll('.question-chip');
+            
+            // 为每个芯片添加点击事件
+            questionChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    // 获取当前点击的类型
+                    const type = this.getAttribute('data-type');
+                    
+                    // 清除所有芯片的激活状态
+                    questionChips.forEach(c => {
+                        c.style.backgroundColor = '#fff';
+                        c.style.borderColor = '#e0e0e0';
+                        c.classList.remove('active');
+                    });
+                    
+                    // 设置当前芯片的激活状态
+                    this.style.backgroundColor = '#f5f5f5';
+                    this.style.borderColor = '#d0d0d0';
+                    this.classList.add('active');
+                    
+                    // 切换推荐问题显示
+                    const recommendedQuestions = document.querySelectorAll('.recommended-questions');
+                    recommendedQuestions.forEach(q => {
+                        q.classList.remove('active');
+                        if (q.getAttribute('data-type') === type) {
+                            q.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // 为推荐问题卡片添加点击事件
+            const questionCards = document.querySelectorAll('.question-card');
+            questionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.question-title').textContent;
+                    const detail = this.querySelector('.question-detail').textContent;
+                    const textarea = document.querySelector('.input-container textarea');
+                    textarea.value = detail;
+                    textarea.focus();
+                });
+            });
+            
+            // 添加历史列表滚动到底部加载更多功能
+            const historyList = document.querySelector('.history-list');
+            const historyLoader = document.querySelector('.history-list-loader');
+            
+            // 隐藏加载指示器，直到需要时显示
+            historyLoader.style.display = 'none';
+            
+            historyList.addEventListener('scroll', function() {
+                // 当滚动到底部时显示加载指示器
+                if (historyList.scrollHeight - historyList.scrollTop <= historyList.clientHeight + 50) {
+                    historyLoader.style.display = 'flex';
+                    
+                    // 模拟加载更多数据
+                    setTimeout(function() {
+                        // 隐藏加载指示器
+                        historyLoader.style.display = 'none';
+                        
+                        // 在实际应用中，这里应该是通过API获取更多历史记录
+                        // 现在只是模拟添加更多项目
+                        console.log('加载更多历史会话...');
+                    }, 1500);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

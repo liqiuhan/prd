@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBI - 产品能力配置</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/settings.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">ChatBI</div>
+            <div class="sidebar-actions">
+                <button class="toggle-btn" id="toggle-sidebar" aria-label="折叠侧边栏">
+                    <i class="fas fa-angle-left" id="toggle-icon"></i>
+                </button>
+            </div>
+        </div>
+        <nav class="menu-items" id="sidebar-menu">
+            <!-- 业务助理 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-1" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-1">
+                <i class="fas fa-robot"></i>
+                <span>业务助理</span>
+            </div>
+            <div class="submenu" id="submenu-1">
+                <div class="submenu-item" data-page="page-empty" role="button">助理管理</div>
+                <div class="submenu-item" data-page="page-empty" role="button">能力管理</div>
+            </div>
+            
+            <!-- 预警配置 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty" role="button">
+                <i class="fas fa-bell"></i>
+                <span>预警配置</span>
+            </div>
+            
+            <!-- 分析能力 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-3" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-3">
+                <i class="fas fa-chart-bar"></i>
+                <span>分析能力</span>
+            </div>
+            <div class="submenu" id="submenu-3">
+                <div class="submenu-item" data-page="page-empty" role="button">奇妙等式</div>
+                <div class="submenu-item" data-page="page-empty" role="button">归因分析</div>
+                <div class="submenu-item" data-page="page-empty" role="button">业务分析</div>
+            </div>
+            
+            <!-- 分析思路 -->
+            <div class="menu-item active" data-has-submenu="false" data-page="page-analysis-approach" role="button">
+                <i class="fas fa-lightbulb"></i>
+                <span>分析思路</span>
+            </div>
+            
+            <!-- 知识库 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-5" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-5">
+                <i class="fas fa-book"></i>
+                <span>知识库</span>
+            </div>
+            <div class="submenu" id="submenu-5">
+                <div class="submenu-item" data-page="page-knowledge-strategy" role="button">知识&amp;策略</div>
+                <div class="submenu-item" data-page="page-business-jargon" role="button">业务黑话</div>
+                <div class="submenu-item" data-page="page-personal-jargon" role="button">个人黑话</div>
+                <div class="submenu-item" data-page="page-tag-management" role="button">标签管理</div>
+                <div class="submenu-item" data-page="page-org-structure" role="button">组织架构管理</div>
+            </div>
+            
+            <!-- 指标准入 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-6" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-6">
+                <i class="fas fa-tablet-alt"></i>
+                <span>指标准入</span>
+            </div>
+            <div class="submenu" id="submenu-6">
+                <div class="submenu-item" data-page="page-indicator-approval" role="button">指标准入</div>
+                <div class="submenu-item" data-page="page-Indicator_dimension_approval" role="button">维度准入</div>
+            </div>
+            
+            <!-- 指标圈选 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-indicator" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-indicator">
+                <i class="fas fa-users"></i>
+                <span>指标圈选</span>
+            </div>
+            <div class="submenu" id="submenu-indicator">
+                <div class="submenu-item" data-page="page-indicator-choose" role="button">角色圈选</div>
+                <div class="submenu-item" data-page="page-indicator-choose2" role="button">个人圈选</div>
+            </div>
+            
+            <!-- 问答监控 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-query-monitor" role="button">
+                <i class="fas fa-headset"></i>
+                <span>问答监控</span>
+            </div>
+            
+            <!-- 调度能力 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-empty" role="button">
+                <i class="fas fa-tasks"></i>
+                <span>调度能力</span>
+            </div>
+            
+            <!-- 我的审批 - 新增 -->
+            <div class="menu-item" data-has-submenu="true" data-submenu="submenu-approval" data-page="page-empty" role="button" aria-expanded="false" aria-controls="submenu-approval">
+                <i class="fas fa-clipboard-check"></i>
+                <span>我的审批</span>
+            </div>
+            <div class="submenu" id="submenu-approval">
+                <div class="submenu-item" data-page="page-indicator-access" role="button">准入申请</div>
+            </div>
+            
+            <!-- 分隔线 -->
+            <div class="menu-divider"></div>
+            
+            <!-- 系统设置 - 新增 -->
+            <div class="menu-item" data-has-submenu="false" data-page="page-settings" role="button">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </div>
+        </nav>
+    </div>
+    
+    <main class="main-content" id="main-content">
+        <!-- 空白页面模板 -->
+        <div class="content-page" id="page-empty">
+            <div class="empty-placeholder">
+                <i class="fas fa-tools"></i>
+                <p>该功能页面正在建设中...</p>
+            </div>
+        </div>
+        
+        <!-- 知识&策略页面 -->
+        <div class="content-page" id="page-knowledge-strategy">
+            <iframe id="knowledge-strategy-frame" src="pages/Knowledge_Strategy.html"></iframe>
+            </div>
+
+        <!-- 知识导入页面 -->
+        <div class="content-page" id="page-knowledge-import">
+            <iframe id="knowledge-import-frame" src="pages/Knowledge_import.html"></iframe>
+        </div>
+
+        <!-- 分析思路页面 -->
+        <div class="content-page active" id="page-analysis-approach">
+            <iframe id="analysis-approach-frame" src="pages/page-analysis-approach.html"></iframe>
+        </div>
+        
+        <!-- 指标准入页面 -->
+        <div class="content-page" id="page-indicator-approval">
+            <iframe id="indicator-approval-frame" src="pages/Indicator_approval.html"></iframe>
+        </div>
+        
+        <!-- 维度准入页面 -->
+        <div class="content-page" id="page-Indicator_dimension_approval">
+            <iframe id="indicator-dimension-approval-frame" src="pages/Indicator_dimension_approval.html"></iframe>
+        </div>
+        
+        <!-- 业务黑话页面 -->
+        <div class="content-page" id="page-business-jargon">
+            <iframe id="business-jargon-frame" src="pages/Business_jargon.html"></iframe>
+        </div>
+        
+        <!-- 标签管理页面 -->
+        <div class="content-page" id="page-tag-management">
+            <iframe id="tag-management-frame" src="pages/Knowledge_tag.html"></iframe>
+        </div>
+        
+        <!-- 组织架构管理页面 -->
+        <div class="content-page" id="page-org-structure">
+            <iframe id="org-structure-frame" src="pages/Knowledge_org.html"></iframe>
+        </div>
+        
+        <!-- 个人黑话页面 - 新增 -->
+        <div class="content-page" id="page-personal-jargon">
+            <iframe id="personal-jargon-frame" src="pages/Business_jargon2.html"></iframe>
+        </div>
+        
+        <!-- 准入申请页面 - 新增 -->
+        <div class="content-page" id="page-indicator-access">
+            <iframe id="indicator-access-frame" src="pages/Indicator_access.html"></iframe>
+        </div>
+        
+        <!-- 角色圈选页面 - 新增 -->
+        <div class="content-page" id="page-indicator-choose">
+            <iframe id="indicator-choose-frame" src="pages/Indicator_choose.html"></iframe>
+        </div>
+        
+        <!-- 个人圈选页面 - 新增 -->
+        <div class="content-page" id="page-indicator-choose2">
+            <iframe id="indicator-choose2-frame" src="pages/indicator_choose2.html"></iframe>
+        </div>
+        
+        <!-- 问答监控页面 -->
+        <div class="content-page" id="page-query-monitor">
+            <iframe id="query-monitor-frame" src="pages/query_monitor.html"></iframe>
+        </div>
+        
+        <!-- 系统设置页面 -->
+        <div class="content-page" id="page-settings">
+            <!-- 系统设置页面 -->
+            <div class="page-header">
+                <h1 class="page-title">系统设置</h1>
+            </div>
+            
+            <!-- 外观设置 -->
+            <div class="setting-section">
+                <h2><i class="fas fa-palette"></i>外观设置</h2>
+                
+                <div class="setting-item">
+                    <div class="setting-item-label">
+                        <div class="setting-item-title">主题模式</div>
+                        <div class="setting-item-desc">选择界面的显示模式</div>
+                    </div>
+                    <div>
+                        <div class="theme-selector">
+                            <div class="theme-option theme-light" data-theme="light" title="明亮模式">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="theme-option theme-dark" data-theme="dark" title="深色模式">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div class="theme-option theme-auto" data-theme="auto" title="跟随系统">
+                                <i class="fas fa-sun"></i>
+                                <i class="fas fa-moon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script>
+        // 文档加载完成后绑定业务黑话子菜单事件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保ChatBI初始化完成后再绑定事件
+            setTimeout(function() {
+                // 更新子菜单项集合，包括新添加的子菜单项
+                ChatBI.elements.submenuItems = document.querySelectorAll('.submenu-item');
+                
+                // 重新绑定子菜单项点击事件
+                ChatBI.elements.submenuItems.forEach(item => {
+                    // 先移除所有已有的事件监听，防止重复绑定
+                    item.removeEventListener('click', ChatBI.handleSubmenuItemClick);
+                    // 添加新的事件监听
+                    item.addEventListener('click', ChatBI.handleSubmenuItemClick.bind(ChatBI));
+                });
+            }, 500); // 给一点延迟确保ChatBI已初始化
+        });
+        
+        // 组织架构树的展开/折叠功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const orgNodes = document.querySelectorAll('.org-node');
+            
+            orgNodes.forEach(node => {
+                node.addEventListener('click', function() {
+                    const parentLi = this.parentElement;
+                    const toggleIcon = this.querySelector('.toggle-icon');
+                    
+                    if (parentLi.classList.contains('expanded')) {
+                        parentLi.classList.remove('expanded');
+                        toggleIcon.classList.remove('fa-chevron-down');
+                        toggleIcon.classList.add('fa-chevron-right');
+                    } else {
+                        parentLi.classList.add('expanded');
+                        toggleIcon.classList.remove('fa-chevron-right');
+                        toggleIcon.classList.add('fa-chevron-down');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

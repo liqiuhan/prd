@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>步骤4下一步处理</title>
+    <script>
+        // 当页面加载完成时执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 查找并给newGoToStep5Btn按钮添加点击事件
+            var nextButton = document.getElementById('newGoToStep5Btn');
+            if (nextButton) {
+                nextButton.addEventListener('click', function() {
+                    console.log('点击了新的下一步按钮');
+                    
+                    // 找到步骤4和步骤5的内容
+                    var step4Content = document.getElementById('step4Content');
+                    var step5Content = document.getElementById('step5Content');
+                    
+                    if (step4Content && step5Content) {
+                        // 隐藏步骤4内容，显示步骤5内容
+                        step4Content.style.display = 'none';
+                        step5Content.style.display = 'block';
+                        
+                        // 更新步骤指示器（如果存在）
+                        var stepItems = document.querySelectorAll('.step-item');
+                        if (stepItems.length > 4) {
+                            stepItems[3].classList.remove('active');
+                            stepItems[3].classList.add('completed');
+                            stepItems[4].classList.add('active');
+                        }
+                        
+                        // 尝试更新思维导图（如果存在）
+                        try {
+                            var previewMindmapContainer = document.getElementById('previewMindmapContainer');
+                            if (previewMindmapContainer && typeof renderMindmap === 'function') {
+                                setTimeout(function() {
+                                    renderMindmap(previewMindmapContainer, false);
+                                }, 50);
+                            }
+                        } catch(e) {
+                            console.error('无法渲染思维导图:', e);
+                        }
+                        
+                        console.log('成功跳转到步骤5');
+                    } else {
+                        console.error('找不到步骤内容元素');
+                    }
+                });
+                console.log('成功为newGoToStep5Btn添加了点击事件');
+            } else {
+                console.error('找不到newGoToStep5Btn按钮');
+            }
+        });
+    </script>
+</head>
+<body>
+    <!-- 这个文件只包含JavaScript，没有内容 -->
+</body>
+</html> 

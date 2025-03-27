@@ -1,0 +1,1623 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组织架构管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #2196F3;
+            --primary-light: #E3F2FD;
+            --primary-dark: #1976D2;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --danger-color: #F44336;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --bg-color: #F5F7FA;
+            --card-color: #FFFFFF;
+            --border-color: #E0E0E0;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary-color);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s, transform 0.1s;
+            white-space: nowrap;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-secondary {
+            background: #E0E0E0;
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover {
+            background: #D0D0D0;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background: #43A047;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background: #E53935;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .org-structure-list {
+            margin-bottom: 20px;
+        }
+        
+        .structure-item {
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.3s, transform 0.1s;
+        }
+        
+        .structure-item:hover {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .structure-name {
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .structure-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .structure-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .page-item {
+            margin: 0 5px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        
+        .page-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .page-item.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* 新建组织架构流程相关样式 */
+        .steps {
+            display: flex;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 1;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background: #E0E0E0;
+            border: 1px solid var(--border-color);
+            display: inline-block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s;
+        }
+        
+        .step.active .step-number,
+        .step.completed .step-number {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .step-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+        
+        .step.active .step-title,
+        .step.completed .step-title {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .step-content {
+            display: none;
+            margin-bottom: 30px;
+        }
+        
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+        
+        .step-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        /* 组织架构树形样式 */
+        .tree-view {
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            background: #FAFAFA;
+        }
+        
+        .tree-node {
+            margin-bottom: 10px;
+        }
+        
+        .tree-node-header {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .tree-node-header:hover {
+            background: var(--primary-light);
+        }
+        
+        .toggle-icon {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+            text-align: center;
+            line-height: 18px;
+            transition: transform 0.2s;
+            color: var(--primary-color);
+        }
+        
+        .tree-node.expanded > .tree-node-header .toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        .tree-node-content {
+            margin-left: 26px;
+            padding-left: 12px;
+            border-left: 2px dashed #BBDEFB;
+            display: none;
+        }
+        
+        .tree-node.expanded > .tree-node-content {
+            display: block;
+            animation: fadeIn 0.3s forwards;
+        }
+        
+        .node-info {
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #E0E0E0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .node-info div {
+            margin-bottom: 6px;
+        }
+        
+        .manager-list {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .manager-item {
+            padding: 6px 10px;
+            background: var(--primary-light);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #BBDEFB;
+        }
+        
+        .manager-item .remove-btn {
+            margin-left: 8px;
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* 字段映射样式 */
+        .level-config {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .level-title {
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .level-actions-top {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .level-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+            background: #f5f5f5;
+            color: var(--text-secondary);
+        }
+        
+        .level-action-btn:hover {
+            background: #e0e0e0;
+            color: var(--text-primary);
+        }
+        
+        .level-action-btn.delete-level {
+            color: var(--danger-color);
+        }
+        
+        .level-action-btn.delete-level:hover {
+            background: #ffebee;
+        }
+        
+        .mapping-row {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        
+        .mapping-row > span {
+            width: 140px;
+            color: var(--text-secondary);
+        }
+        
+        .mapping-row > select {
+            flex: 1;
+        }
+        
+        .level-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .manager-config {
+            background: #F5F5F5;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .manager-config-title {
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .manager-config-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .remove-manager-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            color: var(--danger-color);
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+        }
+        
+        .remove-manager-btn:hover {
+            background: #FFEBEE;
+            transform: scale(1.1);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 600px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .close-btn {
+            cursor: pointer;
+            font-size: 22px;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+        
+        .close-btn:hover {
+            color: var(--danger-color);
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .preview-table th, .preview-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .preview-table th {
+            background-color: #F5F5F5;
+            font-weight: 500;
+        }
+        
+        .preview-table tr:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: white;
+            background: var(--primary-color);
+            margin-left: 8px;
+        }
+        
+        .badge-count {
+            background: var(--primary-color);
+        }
+        
+        .disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+            .structure-item, .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .structure-actions, .search-bar {
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .steps {
+                flex-direction: column;
+            }
+            
+            .steps::before {
+                display: none;
+            }
+            
+            .step {
+                margin-bottom: 10px;
+                text-align: left;
+                display: flex;
+                align-items: center;
+            }
+            
+            .step-number {
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+            
+            .mapping-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .mapping-row > span {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 组织架构管理页面 -->
+    <div class="container" id="manage-page">
+        <header>
+            <h1>组织架构管理系统</h1>
+        </header>
+        
+        <div class="content">
+            <div class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="搜索组织架构名称">
+                    <button class="btn">搜索</button>
+                </div>
+                <button class="btn" id="create-btn">新建组织架构</button>
+            </div>
+            
+            <div class="org-structure-list">
+                <div class="structure-item">
+                    <div class="structure-info">
+                        <div class="structure-name">研发部门组织架构</div>
+                        <div class="structure-desc">创建时间: 2025-03-15 | 层级数: 4</div>
+                    </div>
+                    <div class="structure-actions">
+                        <button class="btn btn-secondary view-btn">查看</button>
+                        <button class="btn btn-secondary edit-btn">修改</button>
+                        <button class="btn btn-danger delete-btn">删除</button>
+                    </div>
+                </div>
+                
+                <div class="structure-item">
+                    <div class="structure-info">
+                        <div class="structure-name">销售部门组织架构</div>
+                        <div class="structure-desc">创建时间: 2025-03-10 | 层级数: 3</div>
+                    </div>
+                    <div class="structure-actions">
+                        <button class="btn btn-secondary view-btn">查看</button>
+                        <button class="btn btn-secondary edit-btn">修改</button>
+                        <button class="btn btn-danger delete-btn">删除</button>
+                    </div>
+                </div>
+                
+                <div class="structure-item">
+                    <div class="structure-info">
+                        <div class="structure-name">人力资源组织架构</div>
+                        <div class="structure-desc">创建时间: 2025-03-05 | 层级数: 3</div>
+                    </div>
+                    <div class="structure-actions">
+                        <button class="btn btn-secondary view-btn">查看</button>
+                        <button class="btn btn-secondary edit-btn">修改</button>
+                        <button class="btn btn-danger delete-btn">删除</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pagination">
+                <div class="page-item">«</div>
+                <div class="page-item active">1</div>
+                <div class="page-item">2</div>
+                <div class="page-item">»</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新建组织架构页面 -->
+    <div class="container" id="create-page" style="display: none;">
+        <header>
+            <h1>新建组织架构</h1>
+            <button class="btn btn-secondary" id="back-to-manage">返回管理页面</button>
+        </header>
+        
+        <div class="content">
+            <!-- 步骤导航 -->
+            <div class="steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">导入数据</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">基本信息</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">配置组织层级</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-title">预览确认</div>
+                </div>
+            </div>
+            
+            <!-- 步骤1: 导入数据 -->
+            <div class="step-content active" id="step-1">
+                <h2>导入Hive表数据</h2>
+                <div class="form-group">
+                    <label for="hive-database">Hive数据库</label>
+                    <input type="text" id="hive-database" placeholder="请输入Hive数据库名称">
+                </div>
+                
+                <div class="form-group">
+                    <label for="hive-table">Hive表名</label>
+                    <input type="text" id="hive-table" placeholder="请输入Hive表名">
+                </div>
+                
+                <div class="step-buttons">
+                    <button class="btn btn-secondary" id="back-step-1" disabled="">上一步</button>
+                    <button class="btn" id="preview-data-btn">预览数据并继续</button>
+                </div>
+            </div>
+            
+            <!-- 步骤2: 基本信息 -->
+            <div class="step-content" id="step-2">
+                <h2>设置组织架构基本信息</h2>
+                <div class="form-group">
+                    <label for="structure-name">组织架构名称</label>
+                    <input type="text" id="structure-name" placeholder="请输入组织架构名称">
+                </div>
+                
+                <div class="form-group">
+                    <label for="structure-desc">组织架构描述</label>
+                    <textarea id="structure-desc" rows="4" placeholder="请输入组织架构描述"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="level-count">组织层级数量</label>
+                    <select id="level-count">
+                        <option value="2">2级</option>
+                        <option value="3">3级</option>
+                        <option value="4">4级</option>
+                        <option value="5">5级</option>
+                        <option value="6">6级</option>
+                    </select>
+                </div>
+                
+                <div class="step-buttons">
+                    <button class="btn btn-secondary" id="back-step-2">上一步</button>
+                    <button class="btn" id="next-step-2">下一步</button>
+                </div>
+            </div>
+            
+            <!-- 步骤3: 配置组织层级 -->
+            <div class="step-content" id="step-3">
+                <h2>配置组织层级</h2>
+                
+                <!-- 顶层组织配置 -->
+                <div class="level-config">
+                    <div class="level-title">顶层组织</div>
+                    <div class="node-info">
+                        <div><strong>组织名称:</strong> 全部</div>
+                        <div><strong>组织编码:</strong> 000001</div>
+                    </div>
+                </div>
+                
+                <!-- 一级组织配置 -->
+                <div class="level-config" id="level-1">
+                    <div class="level-title">
+                        一级组织
+                        <div class="level-actions-top">
+                            <div class="level-action-btn delete-level disabled" title="删除层级"><i>×</i></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mapping-row">
+                        <span>组织ID字段:</span>
+                        <select id="level1-id-field">
+                            <option value="">请选择字段</option>
+                            <option value="dept_id">dept_id</option>
+                            <option value="organization_id">organization_id</option>
+                            <option value="business_unit_id">business_unit_id</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mapping-row">
+                        <span>组织名称字段:</span>
+                        <select id="level1-name-field">
+                            <option value="">请选择字段</option>
+                            <option value="dept_name">dept_name</option>
+                            <option value="organization_name">organization_name</option>
+                            <option value="business_unit_name">business_unit_name</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 负责人配置 -->
+                    <div class="manager-config">
+                        <div class="manager-config-title">
+                            负责人配置
+                            <button class="btn btn-sm" id="add-level1-manager">添加负责人</button>
+                        </div>
+                        
+                        <!-- 负责人1 -->
+                        <div class="manager-config-item">
+                            <div class="remove-manager-btn" title="删除负责人">×</div>
+                            <div class="mapping-row">
+                                <span>负责人ID字段:</span>
+                                <select>
+                                    <option value="">请选择字段</option>
+                                    <option value="manager_id">manager_id</option>
+                                    <option value="leader_id">leader_id</option>
+                                    <option value="director_id">director_id</option>
+                                </select>
+                            </div>
+                            <div class="mapping-row">
+                                <span>负责人姓名字段:</span>
+                                <select>
+                                    <option value="">请选择字段</option>
+                                    <option value="manager_name">manager_name</option>
+                                    <option value="leader_name">leader_name</option>
+                                    <option value="director_name">director_name</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- 负责人2 -->
+                        <div class="manager-config-item">
+                            <div class="remove-manager-btn" title="删除负责人">×</div>
+                            <div class="mapping-row">
+                                <span>负责人ID字段:</span>
+                                <select>
+                                    <option value="">请选择字段</option>
+                                    <option value="vice_manager_id">vice_manager_id</option>
+                                    <option value="deputy_leader_id">deputy_leader_id</option>
+                                    <option value="assistant_director_id">assistant_director_id</option>
+                                </select>
+                            </div>
+                            <div class="mapping-row">
+                                <span>负责人姓名字段:</span>
+                                <select>
+                                    <option value="">请选择字段</option>
+                                    <option value="vice_manager_name">vice_manager_name</option>
+                                    <option value="deputy_leader_name">deputy_leader_name</option>
+                                    <option value="assistant_director_name">assistant_director_name</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 二级组织配置 -->
+                <div class="level-config" id="level-2">
+                    <div class="level-title">
+                        二级组织
+                        <div class="level-actions-top">
+                            <div class="level-action-btn delete-level" title="删除层级"><i>×</i></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mapping-row">
+                        <span>组织ID字段:</span>
+                        <select id="level2-id-field">
+                            <option value="">请选择字段</option>
+                            <option value="sub_dept_id">sub_dept_id</option>
+                            <option value="team_id">team_id</option>
+                            <option value="section_id">section_id</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mapping-row">
+                        <span>组织名称字段:</span>
+                        <select id="level2-name-field">
+                            <option value="">请选择字段</option>
+                            <option value="sub_dept_name">sub_dept_name</option>
+                            <option value="team_name">team_name</option>
+                            <option value="section_name">section_name</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 负责人配置 -->
+                    <div class="manager-config">
+                        <div class="manager-config-title">
+                            负责人配置
+                            <button class="btn btn-sm" id="add-level2-manager">添加负责人</button>
+                        </div>
+                        
+                        <!-- 负责人1 -->
+                        <div class="manager-config-item">
+                            <div class="remove-manager-btn" title="删除负责人">×</div>
+                            <div class="mapping-row">
+                                <span>负责人ID字段:</span>
+                                <select>
+                                    <option value="">请选择字段</option>
+                                    <option value="team_leader_id">team_leader_id</option>
+                                    <option value="supervisor_id">supervisor_id</option>
+                                    <option value="head_id">head_id</option>
+                                </select>
+                            </div>
+                            <div class="mapping-row">
+                                <span>负责人姓名字段:</span>
+                                <select>
+                                    <option value="">请选择字段</option>
+                                    <option value="team_leader_name">team_leader_name</option>
+                                    <option value="supervisor_name">supervisor_name</option>
+                                    <option value="head_name">head_name</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 三级组织配置 -->
+                <div class="level-config" id="level-3">
+                    <div class="level-title">
+                        三级组织
+                        <div class="level-actions-top">
+                            <div class="level-action-btn delete-level" title="删除层级"><i>×</i></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mapping-row">
+                        <span>组织ID字段:</span>
+                        <select id="level3-id-field">
+                            <option value="">请选择字段</option>
+                            <option value="group_id">group_id</option>
+                            <option value="unit_id">unit_id</option>
+                            <option value="division_id">division_id</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mapping-row">
+                        <span>组织名称字段:</span>
+                        <select id="level3-name-field">
+                            <option value="">请选择字段</option>
+                            <option value="group_name">group_name</option>
+                            <option value="unit_name">unit_name</option>
+                            <option value="division_name">division_name</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 负责人配置 -->
+                    <div class="manager-config">
+                        <div class="manager-config-title">
+                            负责人配置
+                            <button class="btn btn-sm" id="add-level3-manager">添加负责人</button>
+                        </div>
+                        
+                        <!-- 负责人1 -->
+                        <div class="manager-config-item">
+                            <div class="remove-manager-btn" title="删除负责人">×</div>
+                            <div class="mapping-row">
+                                <span>负责人ID字段:</span>
+                                <select>
+                                    <option value="">请选择字段</option>
+                                    <option value="group_leader_id">group_leader_id</option>
+                                    <option value="unit_manager_id">unit_manager_id</option>
+                                    <option value="division_head_id">division_head_id</option>
+                                </select>
+                            </div>
+                            <div class="mapping-row">
+                                <span>负责人姓名字段:</span>
+                                <select>
+                                    <option value="">请选择字段</option>
+                                    <option value="group_leader_name">group_leader_name</option>
+                                    <option value="unit_manager_name">unit_manager_name</option>
+                                    <option value="division_head_name">division_head_name</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 添加更多层级按钮 -->
+                <div class="level-actions">
+                    <button class="btn" id="add-level-btn">添加下一层级</button>
+                </div>
+                
+                <div class="step-buttons">
+                    <button class="btn btn-secondary" id="back-step-3">上一步</button>
+                    <button class="btn" id="next-step-3">下一步</button>
+                </div>
+            </div>
+            
+            <!-- 步骤4: 预览确认 -->
+            <div class="step-content" id="step-4">
+                <h2>预览组织架构</h2>
+                
+                <div class="form-group">
+                    <div class="node-info">
+                        <div><strong>组织架构名称:</strong> <span id="preview-name">研发部门组织架构</span></div>
+                        <div><strong>描述:</strong> <span id="preview-desc">研发部门的组织架构，包含3个层级</span></div>
+                        <div><strong>层级数:</strong> <span id="preview-levels">3</span></div>
+                    </div>
+                </div>
+                
+                <div class="tree-view">
+                    <div class="tree-node expanded">
+                        <div class="tree-node-header">
+                            <span class="toggle-icon">▶</span>
+                            <span>全部 (000001)</span>
+                        </div>
+                        <div class="tree-node-content">
+                            <!-- 一级组织示例 -->
+                            <div class="tree-node expanded">
+                                <div class="tree-node-header">
+                                    <span class="toggle-icon">▶</span>
+                                    <span>研发中心 (RD001)</span>
+                                </div>
+                                <div class="tree-node-content">
+                                    <div class="node-info">
+                                        <div><strong>组织ID:</strong> RD001</div>
+                                        <div><strong>负责人:</strong></div>
+                                        <div class="manager-list">
+                                            <div class="manager-item">张三 (Z001)</div>
+                                            <div class="manager-item">李四 (L001)</div>
+                                            <div class="manager-item">王五 (W001)</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 二级组织示例 -->
+                                    <div class="tree-node expanded">
+                                        <div class="tree-node-header">
+                                            <span class="toggle-icon">▶</span>
+                                            <span>前端开发部 (FE001)</span>
+                                        </div>
+                                        <div class="tree-node-content">
+                                            <div class="node-info">
+                                                <div><strong>组织ID:</strong> FE001</div>
+                                                <div><strong>负责人:</strong></div>
+                                                <div class="manager-list">
+                                                    <div class="manager-item">赵六 (Z002)</div>
+                                                    <div class="manager-item">孙七 (S001)</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- 三级组织示例 -->
+                                            <div class="tree-node">
+                                                <div class="tree-node-header">
+                                                    <span class="toggle-icon">▶</span>
+                                                    <span>Web前端组 (WEB001)</span>
+                                                </div>
+                                                <div class="tree-node-content">
+                                                    <!-- 三级组织内容 -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tree-node">
+                                        <div class="tree-node-header">
+                                            <span class="toggle-icon">▶</span>
+                                            <span>后端开发部 (BE001)</span>
+                                        </div>
+                                        <div class="tree-node-content">
+                                            <!-- 隐藏内容 -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tree-node">
+                                <div class="tree-node-header">
+                                    <span class="toggle-icon">▶</span>
+                                    <span>产品中心 (PD001)</span>
+                                </div>
+                                <div class="tree-node-content">
+                                    <!-- 隐藏内容 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-buttons">
+                    <button class="btn btn-secondary" id="back-step-4">上一步</button>
+                    <button class="btn btn-success" id="confirm-create">确认创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 预览数据模态框 -->
+    <div class="modal" id="preview-data-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">预览Hive表数据</h3>
+                <span class="close-btn">×</span>
+            </div>
+            <div class="modal-body">
+                <p>表名: <strong id="preview-table-name">employee_organization</strong></p>
+                <p>共 <strong id="preview-record-count">126</strong> 条记录，显示前 5 条:</p>
+                
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>dept_id</th>
+                            <th>dept_name</th>
+                            <th>sub_dept_id</th>
+                            <th>sub_dept_name</th>
+                            <th>manager_id</th>
+                            <th>manager_name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>RD001</td>
+                            <td>研发中心</td>
+                            <td>FE001</td>
+                            <td>前端开发部</td>
+                            <td>Z001</td>
+                            <td>张三</td>
+                        </tr>
+                        <tr>
+                            <td>RD001</td>
+                            <td>研发中心</td>
+                            <td>BE001</td>
+                            <td>后端开发部</td>
+                            <td>Z001</td>
+                            <td>张三</td>
+                        </tr>
+                        <tr>
+                            <td>RD001</td>
+                            <td>研发中心</td>
+                            <td>QA001</td>
+                            <td>测试部</td>
+                            <td>Z001</td>
+                            <td>张三</td>
+                        </tr>
+                        <tr>
+                            <td>PD001</td>
+                            <td>产品中心</td>
+                            <td>UI001</td>
+                            <td>UI设计部</td>
+                            <td>L002</td>
+                            <td>李明</td>
+                        </tr>
+                        <tr>
+                            <td>PD001</td>
+                            <td>产品中心</td>
+                            <td>PM001</td>
+                            <td>产品经理部</td>
+                            <td>L002</td>
+                            <td>李明</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="margin-top: 15px; text-align: right;">
+                <button class="btn" id="confirm-data">确认使用此数据</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 查看组织架构弹窗 -->
+    <div class="modal" id="view-structure-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">查看组织架构: 研发部门</h3>
+                <span class="close-btn">×</span>
+            </div>
+            <div class="tree-view">
+                <div class="tree-node expanded">
+                    <div class="tree-node-header">
+                        <span class="toggle-icon">▶</span>
+                        <span>全部 (000001)</span>
+                    </div>
+                    <div class="tree-node-content">
+                        <!-- 一级组织 -->
+                        <div class="tree-node expanded">
+                            <div class="tree-node-header">
+                                <span class="toggle-icon">▶</span>
+                                <span>研发中心 (RD001)</span>
+                            </div>
+                            <div class="tree-node-content">
+                                <div class="node-info">
+                                    <div><strong>组织ID:</strong> RD001</div>
+                                    <div><strong>负责人:</strong></div>
+                                    <div class="manager-list">
+                                        <div class="manager-item">张三 (Z001)</div>
+                                        <div class="manager-item">李四 (L001)</div>
+                                        <div class="manager-item">王五 (W001)</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 二级组织 -->
+                                <div class="tree-node expanded">
+                                    <div class="tree-node-header">
+                                        <span class="toggle-icon">▶</span>
+                                        <span>前端开发部 (FE001)</span>
+                                    </div>
+                                    <div class="tree-node-content">
+                                        <div class="node-info">
+                                            <div><strong>组织ID:</strong> FE001</div>
+                                            <div><strong>负责人:</strong></div>
+                                            <div class="manager-list">
+                                                <div class="manager-item">赵六 (Z002)</div>
+                                                <div class="manager-item">孙七 (S001)</div>
+                                                <div class="manager-item">周八 (Z003)</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 三级组织 -->
+                                        <div class="tree-node">
+                                            <div class="tree-node-header">
+                                                <span class="toggle-icon">▶</span>
+                                                <span>Web前端组 (WEB001)</span>
+                                            </div>
+                                            <div class="tree-node-content">
+                                                <!-- 三级组织内容 -->
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="tree-node">
+                                            <div class="tree-node-header">
+                                                <span class="toggle-icon">▶</span>
+                                                <span>移动前端组 (MOB001)</span>
+                                            </div>
+                                            <div class="tree-node-content">
+                                                <!-- 三级组织内容 -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="tree-node">
+                                    <div class="tree-node-header">
+                                        <span class="toggle-icon">▶</span>
+                                        <span>后端开发部 (BE001)</span>
+                                    </div>
+                                    <div class="tree-node-content">
+                                        <!-- 二级组织内容 -->
+                                    </div>
+                                </div>
+                                
+                                <div class="tree-node">
+                                    <div class="tree-node-header">
+                                        <span class="toggle-icon">▶</span>
+                                        <span>测试部 (QA001)</span>
+                                    </div>
+                                    <div class="tree-node-content">
+                                        <!-- 二级组织内容 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tree-node">
+                            <div class="tree-node-header">
+                                <span class="toggle-icon">▶</span>
+                                <span>产品中心 (PD001)</span>
+                            </div>
+                            <div class="tree-node-content">
+                                <!-- 一级组织内容 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="btn btn-secondary close-modal-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面导航
+        document.getElementById('create-btn').addEventListener('click', function() {
+            document.getElementById('manage-page').style.display = 'none';
+            document.getElementById('create-page').style.display = 'block';
+        });
+        
+        document.getElementById('back-to-manage').addEventListener('click', function() {
+            document.getElementById('create-page').style.display = 'none';
+            document.getElementById('manage-page').style.display = 'block';
+        });
+        
+        // 步骤导航
+        function goToStep(stepNumber) {
+            // 更新步骤样式
+            document.querySelectorAll('.step').forEach(step => {
+                const stepNum = parseInt(step.getAttribute('data-step'));
+                step.classList.remove('active', 'completed');
+                if (stepNum < stepNumber) {
+                    step.classList.add('completed');
+                } else if (stepNum === stepNumber) {
+                    step.classList.add('active');
+                }
+            });
+            
+            // 显示对应步骤内容
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('step-' + stepNumber).classList.add('active');
+        }
+        
+        // 步骤1按钮
+        document.getElementById('preview-data-btn').addEventListener('click', function() {
+            document.getElementById('preview-data-modal').style.display = 'flex';
+        });
+        
+        document.getElementById('confirm-data').addEventListener('click', function() {
+            document.getElementById('preview-data-modal').style.display = 'none';
+            goToStep(2);
+        });
+        
+        // 步骤2按钮
+        document.getElementById('back-step-2').addEventListener('click', function() {
+            goToStep(1);
+        });
+        
+        document.getElementById('next-step-2').addEventListener('click', function() {
+            goToStep(3);
+        });
+        
+        // 步骤3按钮
+        document.getElementById('back-step-3').addEventListener('click', function() {
+            goToStep(2);
+        });
+        
+        document.getElementById('next-step-3').addEventListener('click', function() {
+            goToStep(4);
+        });
+        
+        // 步骤4按钮
+        document.getElementById('back-step-4').addEventListener('click', function() {
+            goToStep(3);
+        });
+        
+        document.getElementById('confirm-create').addEventListener('click', function() {
+            alert('组织架构创建成功!');
+            document.getElementById('create-page').style.display = 'none';
+            document.getElementById('manage-page').style.display = 'block';
+        });
+        
+        // 添加更多层级
+        document.getElementById('add-level-btn').addEventListener('click', function() {
+            const levelContainers = document.querySelectorAll('.level-config');
+            const levelCount = levelContainers.length - 1; // 减去顶层组织
+            
+            if (levelCount >= 6) {
+                alert('最多支持6个层级');
+                return;
+            }
+            
+            const newLevelNumber = levelCount + 1;
+            
+            const newLevelContainer = document.createElement('div');
+            newLevelContainer.className = 'level-config';
+            newLevelContainer.id = 'level-' + newLevelNumber;
+            
+            newLevelContainer.innerHTML = `
+                <div class="level-title">
+                    ${newLevelNumber}级组织
+                    <div class="level-actions-top">
+                        <div class="level-action-btn delete-level" title="删除层级"><i>×</i></div>
+                    </div>
+                </div>
+                
+                <div class="mapping-row">
+                    <span>组织ID字段:</span>
+                    <select id="level${newLevelNumber}-id-field">
+                        <option value="">请选择字段</option>
+                        <option value="level${newLevelNumber}_id">level${newLevelNumber}_id</option>
+                        <option value="org${newLevelNumber}_id">org${newLevelNumber}_id</option>
+                    </select>
+                </div>
+                
+                <div class="mapping-row">
+                    <span>组织名称字段:</span>
+                    <select id="level${newLevelNumber}-name-field">
+                        <option value="">请选择字段</option>
+                        <option value="level${newLevelNumber}_name">level${newLevelNumber}_name</option>
+                        <option value="org${newLevelNumber}_name">org${newLevelNumber}_name</option>
+                    </select>
+                </div>
+                
+                <!-- 负责人配置 -->
+                <div class="manager-config">
+                    <div class="manager-config-title">
+                        负责人配置
+                        <button class="btn btn-sm" id="add-level${newLevelNumber}-manager">添加负责人</button>
+                    </div>
+                    
+                    <!-- 负责人1 -->
+                    <div class="manager-config-item">
+                        <div class="remove-manager-btn" title="删除负责人">×</div>
+                        <div class="mapping-row">
+                            <span>负责人ID字段:</span>
+                            <select>
+                                <option value="">请选择字段</option>
+                                <option value="manager${newLevelNumber}_id">manager${newLevelNumber}_id</option>
+                                <option value="leader${newLevelNumber}_id">leader${newLevelNumber}_id</option>
+                            </select>
+                        </div>
+                        <div class="mapping-row">
+                            <span>负责人姓名字段:</span>
+                            <select>
+                                <option value="">请选择字段</option>
+                                <option value="manager${newLevelNumber}_name">manager${newLevelNumber}_name</option>
+                                <option value="leader${newLevelNumber}_name">leader${newLevelNumber}_name</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 插入到"添加更多层级按钮"之前
+            const levelActions = document.querySelector('.level-actions');
+            levelActions.parentNode.insertBefore(newLevelContainer, levelActions);
+            
+            // 为新添加的按钮绑定事件
+            newLevelContainer.querySelector('.delete-level').addEventListener('click', handleDeleteLevel);
+            newLevelContainer.querySelector(`#add-level${newLevelNumber}-manager`).addEventListener('click', handleAddManager);
+            newLevelContainer.querySelectorAll('.remove-manager-btn').forEach(btn => {
+                btn.addEventListener('click', handleRemoveManager);
+            });
+            
+            // 检查层级数量并更新删除按钮状态
+            updateDeleteButtonsStatus();
+        });
+        
+        // 删除层级
+        function handleDeleteLevel() {
+            const levelConfig = this.closest('.level-config');
+            
+            const levelConfigs = document.querySelectorAll('.level-config');
+            // 检查是否只剩下一个层级和顶层组织
+            if (levelConfigs.length <= 2) {
+                alert('至少需要保留一个组织层级');
+                return;
+            }
+            
+            if (confirm('确定要删除此组织层级吗？')) {
+                levelConfig.remove();
+                // 更新层级编号
+                updateLevelNumbers();
+                // 更新删除按钮状态
+                updateDeleteButtonsStatus();
+            }
+        }
+        
+        // 更新层级编号
+        function updateLevelNumbers() {
+            const levelConfigs = document.querySelectorAll('.level-config');
+            // 跳过顶层组织
+            for (let i = 1; i < levelConfigs.length; i++) {
+                const levelConfig = levelConfigs[i];
+                const levelTitle = levelConfig.querySelector('.level-title');
+                levelTitle.childNodes[0].textContent = i + '级组织';
+                levelConfig.id = 'level-' + i;
+            }
+        }
+        
+        // 更新删除按钮状态
+        function updateDeleteButtonsStatus() {
+            const levelConfigs = document.querySelectorAll('.level-config');
+            
+            // 如果只有一个组织层级和顶层组织，禁用删除按钮
+            if (levelConfigs.length <= 2) {
+                document.querySelector('#level-1 .delete-level').classList.add('disabled');
+            } else {
+                document.querySelector('#level-1 .delete-level').classList.remove('disabled');
+            }
+        }
+        
+        // 添加负责人
+        function handleAddManager() {
+            const managerConfig = this.closest('.manager-config');
+            const newItem = document.createElement('div');
+            newItem.className = 'manager-config-item';
+            newItem.innerHTML = `
+                <div class="remove-manager-btn" title="删除负责人">×</div>
+                <div class="mapping-row">
+                    <span>负责人ID字段:</span>
+                    <select>
+                        <option value="">请选择字段</option>
+                        <option value="manager_id">manager_id</option>
+                        <option value="leader_id">leader_id</option>
+                        <option value="director_id">director_id</option>
+                    </select>
+                </div>
+                <div class="mapping-row">
+                    <span>负责人姓名字段:</span>
+                    <select>
+                        <option value="">请选择字段</option>
+                        <option value="manager_name">manager_name</option>
+                        <option value="leader_name">leader_name</option>
+                        <option value="director_name">director_name</option>
+                    </select>
+                </div>
+            `;
+            managerConfig.appendChild(newItem);
+            
+            // 添加删除事件
+            newItem.querySelector('.remove-manager-btn').addEventListener('click', handleRemoveManager);
+        }
+        
+        // 删除负责人
+        function handleRemoveManager() {
+            const managerConfigItem = this.closest('.manager-config-item');
+            const managerConfig = managerConfigItem.parentNode;
+            
+            // 如果只剩一个负责人，不允许删除
+            if (managerConfig.querySelectorAll('.manager-config-item').length <= 1) {
+                alert('每个层级至少需要一个负责人');
+                return;
+            }
+            
+            managerConfigItem.remove();
+        }
+        
+        // 查看组织架构
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('view-structure-modal').style.display = 'flex';
+            });
+        });
+        
+        // 编辑组织架构
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                alert('编辑功能将在此处实现');
+            });
+        });
+        
+        // 删除组织架构
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('确定要删除此组织架构吗?')) {
+                    alert('删除成功!');
+                }
+            });
+        });
+        
+        // 展开/折叠树节点
+        document.querySelectorAll('.tree-node-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const node = this.parentNode;
+                node.classList.toggle('expanded');
+            });
+        });
+        
+        // 关闭弹窗
+        document.querySelectorAll('.close-btn, .close-modal-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+        
+        // 点击页面其他区域关闭弹窗
+        window.addEventListener('click', function(event) {
+            document.querySelectorAll('.modal').forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绑定删除层级按钮事件
+            document.querySelectorAll('.delete-level').forEach(btn => {
+                btn.addEventListener('click', handleDeleteLevel);
+            });
+            
+            // 绑定添加负责人按钮事件
+            document.querySelectorAll('[id^="add-level"]').forEach(btn => {
+                btn.addEventListener('click', handleAddManager);
+            });
+            
+            // 绑定删除负责人按钮事件
+            document.querySelectorAll('.remove-manager-btn').forEach(btn => {
+                btn.addEventListener('click', handleRemoveManager);
+            });
+            
+            // 初始化删除按钮状态
+            updateDeleteButtonsStatus();
+        });
+    </script>
+
+
+</body></html>

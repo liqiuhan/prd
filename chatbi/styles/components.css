@@ -1,0 +1,343 @@
+/* ===== 通用页面组件 ===== */
+/* 页面标题 */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* 按钮 */
+.btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+    background-color: var(--bg-sidebar);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--menu-hover);
+    color: var(--accent-color);
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+/* 组件操作区 */
+.action-group {
+    display: flex;
+    gap: 12px;
+}
+
+/* 标签页 */
+.tab-container {
+    margin-bottom: 25px;
+}
+
+.tab-list {
+    display: flex;
+    border-bottom: 1px solid var(--tab-border);
+}
+
+.tab-item {
+    padding: 14px 24px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+    position: relative;
+}
+
+.tab-item.active {
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.tab-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+/* 搜索栏 */
+.search-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    background-color: var(--bg-sidebar);
+    color: var(--text-primary);
+}
+
+.search-input:focus {
+    border-color: var(--accent-color);
+}
+
+/* 表格 */
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px var(--shadow-color);
+}
+
+.data-table th {
+    background-color: var(--menu-hover);
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tr:hover {
+    background-color: var(--submenu-hover);
+}
+
+/* 状态标签 */
+.status-tag {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-success {
+    background-color: rgba(82, 196, 26, 0.1);
+    color: #52c41a;
+}
+
+[data-theme="dark"] .status-success {
+    background-color: rgba(82, 196, 26, 0.2);
+    color: #73d13d;
+}
+
+.status-warning {
+    background-color: rgba(250, 140, 22, 0.1);
+    color: #fa8c16;
+}
+
+[data-theme="dark"] .status-warning {
+    background-color: rgba(250, 140, 22, 0.2);
+    color: #ffa940;
+}
+
+.action-link {
+    color: var(--accent-color);
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+.action-link:hover {
+    text-decoration: underline;
+}
+
+/* 分页 */
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.pagination-btn {
+    margin: 0 4px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-sidebar);
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.pagination-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.pagination-btn.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+/* 响应式设计 - 组件 */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .action-group {
+        width: 100%;
+    }
+    
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+} 
+
+/* ===== 业务黑话页面样式 ===== */
+#page-business-jargon .knowledge-list {
+    margin-bottom: 30px;
+}
+
+#page-business-jargon .knowledge-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--bg-sidebar);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 4px;
+}
+
+#page-business-jargon .knowledge-term {
+    font-weight: bold;
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+#page-business-jargon .knowledge-explanation {
+    color: var(--text-secondary);
+}
+
+#page-business-jargon .knowledge-example {
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+#page-business-jargon .search-bar {
+    margin-bottom: 20px;
+}
+
+#page-business-jargon .tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#page-business-jargon .tab {
+    padding: 10px 20px;
+    background-color: var(--bg-sidebar);
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    margin-right: 5px;
+    color: var(--text-secondary);
+}
+
+#page-business-jargon .tab.active {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+#page-business-jargon .tab-content {
+    display: none;
+}
+
+#page-business-jargon .tab-content.active {
+    display: block;
+}
+
+#page-business-jargon .section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--bg-content);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+#page-business-jargon .form-group {
+    margin-bottom: 15px;
+}
+
+#page-business-jargon label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+#page-business-jargon input[type="text"], 
+#page-business-jargon textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: var(--bg-sidebar);
+    color: var(--text-primary);
+}
+
+#page-business-jargon textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+#page-business-jargon button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#page-business-jargon button:hover {
+    background-color: var(--accent-hover);
+}
+
+#page-business-jargon .page-content {
+    padding: 0 20px 20px;
+} 

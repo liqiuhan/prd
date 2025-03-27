@@ -1,0 +1,26 @@
+ChatBI原型链接目录 (生成时间: 2025-03-26 20:30:03)
+==================================================
+
+1. index-sidebar copy: http://nas.chatbi.live:41026/index-sidebar copy.html
+2. index-sidebar: http://nas.chatbi.live:41026/index-sidebar.html
+3. index: http://nas.chatbi.live:41026/index.html
+4.1. Business_jargon: http://nas.chatbi.live:41026/pages/Business_jargon.html
+4.2. Business_jargon2: http://nas.chatbi.live:41026/pages/Business_jargon2.html
+4.3. Indicator_access: http://nas.chatbi.live:41026/pages/Indicator_access.html
+4.4. Indicator_approval: http://nas.chatbi.live:41026/pages/Indicator_approval.html
+4.5. Indicator_choose: http://nas.chatbi.live:41026/pages/Indicator_choose.html
+4.6. Indicator_dimension_approval: http://nas.chatbi.live:41026/pages/Indicator_dimension_approval.html
+4.7. Knowledge_Strategy: http://nas.chatbi.live:41026/pages/Knowledge_Strategy.html
+4.8. Knowledge_import: http://nas.chatbi.live:41026/pages/Knowledge_import.html
+4.9. Knowledge_org: http://nas.chatbi.live:41026/pages/Knowledge_org.html
+4.10. Knowledge_tag: http://nas.chatbi.live:41026/pages/Knowledge_tag.html
+4.11. indicator_choose2: http://nas.chatbi.live:41026/pages/indicator_choose2.html
+4.12. indicator_choose_wrapper: http://nas.chatbi.live:41026/pages/indicator_choose_wrapper.html
+4.13. page-analysis-approach-preview: http://nas.chatbi.live:41026/pages/page-analysis-approach-preview.html
+4.14. page-analysis-approach: http://nas.chatbi.live:41026/pages/page-analysis-approach.html
+4.15. page-empty: http://nas.chatbi.live:41026/pages/page-empty.html
+4.16. page-settings: http://nas.chatbi.live:41026/pages/page-settings.html
+4.17. query_monitor: http://nas.chatbi.live:41026/pages/query_monitor.html
+4.18. rec_questions: http://nas.chatbi.live:41026/pages/rec_questions.html
+4.19. step4_handler: http://nas.chatbi.live:41026/pages/step4_handler.html
+4.20. step5_handler: http://nas.chatbi.live:41026/pages/step5_handler.html

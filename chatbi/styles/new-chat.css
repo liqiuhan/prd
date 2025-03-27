@@ -1,0 +1,687 @@
+/* Monica - 三栏式布局聊天页面样式 */
+
+:root {
+    --primary-color: #5e64ff;
+    --secondary-color: #f2f3ff;
+    --accent-color: #4b51f5;
+    --text-color: #333;
+    --text-light: #777;
+    --background-color: #fff;
+    --sidebar-bg: #f5f5f7;
+    --border-color: #eaeaea;
+    --hover-color: #f0f0f5;
+    --active-item: #e0e2ff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --chip-bg: #f0f2f5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+/* 主容器布局 */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* 侧边栏共享样式 */
+.sidebar {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 左侧边栏 */
+.left-sidebar {
+    width: 240px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 16px 0;
+}
+
+.logo {
+    padding: 0 16px 16px;
+}
+
+.model-list {
+    padding: 8px 12px;
+}
+
+.model-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 4px;
+}
+
+.model-item:hover {
+    background-color: var(--hover-color);
+}
+
+.model-item.active {
+    background-color: var(--active-item);
+}
+
+.model-item img {
+    border-radius: 50%;
+}
+
+.more-models {
+    padding: 10px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.more-models i {
+    margin-left: 5px;
+    font-size: 0.8rem;
+}
+
+.sidebar-section-title {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    padding: 16px 16px 8px;
+    text-transform: uppercase;
+}
+
+.recent-chats {
+    padding: 0 12px;
+    flex: 1;
+}
+
+.recent-item {
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 4px;
+}
+
+.recent-item:hover {
+    background-color: var(--hover-color);
+}
+
+.recent-item.active {
+    background-color: var(--active-item);
+}
+
+.recent-title {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recent-meta {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.sidebar-footer {
+    display: flex;
+    justify-content: space-around;
+    padding: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.footer-icon:hover {
+    background-color: var(--hover-color);
+}
+
+/* 主内容区 */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--background-color);
+}
+
+.welcome-section {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.welcome-section h1 {
+    font-size: 2rem;
+    margin-bottom: 24px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 1.2rem;
+}
+
+.more-link {
+    font-size: 0.9rem;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.tool-item {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tool-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.tool-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.image-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.image-tool-item {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-tool-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.image-tool-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.image-tool-desc {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+/* 聊天界面 */
+.chat-interface {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px;
+    border-top: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 16px 0;
+}
+
+.suggested-questions {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.suggested-questions::-webkit-scrollbar {
+    height: 0;
+}
+
+.question-chip {
+    background-color: var(--chip-bg);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.question-chip:hover {
+    background-color: var(--hover-color);
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.message {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    line-height: 1.5;
+}
+
+.system-message {
+    margin: 0 auto;
+    text-align: center;
+    background-color: var(--chip-bg);
+    max-width: 400px;
+    width: 100%;
+}
+
+.app-badge {
+    color: var(--primary-color);
+    margin-top: 8px;
+}
+
+.message-time {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    text-align: center;
+}
+
+.ai-message {
+    align-self: flex-start;
+}
+
+.message-content {
+    background-color: var(--chip-bg);
+    padding: 12px 16px;
+    border-radius: 12px;
+}
+
+.chat-input-area {
+    padding: 16px 0 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.model-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.model-selector img {
+    border-radius: 50%;
+}
+
+.model-selector i {
+    font-size: 0.7rem;
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.input-container textarea {
+    width: 100%;
+    padding: 12px 42px 12px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    resize: none;
+    height: 50px;
+    max-height: 150px;
+    outline: none;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    transition: border-color 0.3s;
+}
+
+.input-container textarea:focus {
+    border-color: var(--primary-color);
+}
+
+.input-tools {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.input-tools button {
+    background-color: transparent;
+    color: var(--text-light);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-tools button:hover {
+    background-color: var(--hover-color);
+    color: var(--text-color);
+}
+
+.send-btn {
+    color: var(--primary-color) !important;
+}
+
+.input-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.left-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.divider {
+    color: var(--border-color);
+    margin: 0 4px;
+}
+
+.left-tools button {
+    background-color: transparent;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-tools button:hover {
+    background-color: var(--hover-color);
+}
+
+.right-tools button {
+    background-color: var(--chip-bg);
+    padding: 6px 12px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.right-tools button:hover {
+    background-color: var(--hover-color);
+}
+
+/* 右侧边栏 */
+.right-sidebar {
+    width: 300px;
+    background-color: var(--sidebar-bg);
+    border-left: 1px solid var(--border-color);
+    padding: 16px;
+}
+
+.search-box {
+    display: flex;
+    margin-bottom: 16px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px 0 0 8px;
+    outline: none;
+}
+
+.search-box button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0 12px;
+    border-radius: 0 8px 8px 0;
+}
+
+.tools-tabs {
+    display: flex;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tool-tab {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.tool-tab.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background-color: var(--primary-color);
+}
+
+.tool-section {
+    margin-bottom: 24px;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.tool-section-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tool-section-header button {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--chip-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tool-section-content {
+    padding: 16px;
+}
+
+.translate-tool,
+.writing-tool,
+.image-generate-tool {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.translate-options,
+.image-options {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.language-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background-color: var(--chip-bg);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.direction-icon {
+    color: var(--text-light);
+}
+
+.translate-btn,
+.writing-btn,
+.image-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.translate-btn:hover,
+.writing-btn:hover,
+.image-btn:hover {
+    background-color: var(--accent-color);
+}
+
+.template-selector,
+.model-selector {
+    padding: 8px 10px;
+    background-color: var(--chip-bg);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+select {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    outline: none;
+}
+
+textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    resize: none;
+    min-height: 80px;
+    outline: none;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a1a1a1;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .right-sidebar {
+        width: 250px;
+    }
+}
+
+@media (max-width: 992px) {
+    .left-sidebar {
+        width: 200px;
+    }
+    
+    .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .image-tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    
+    .left-sidebar,
+    .right-sidebar {
+        display: none;
+    }
+    
+    .main-content {
+        width: 100%;
+    }
+} 

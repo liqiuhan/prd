@@ -1,0 +1,2206 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBI - 产品能力配置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background-color: #f9f9fc;
+            color: #333;
+        }
+        
+        /* 删除所有侧边栏相关样式 */
+        
+        .main-content {
+            width: 100%;
+            height: 100vh;
+            padding: 0;
+            background-color: #fff;
+            overflow-y: auto;
+        }
+        
+        .content-page {
+            display: none;
+            height: 100%;
+        }
+        
+        .content-page.active {
+            display: block;
+            height: 100%;
+        }
+        
+        .empty-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 16px;
+            padding: 100px 0;
+        }
+        
+        .empty-placeholder i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+        
+        /* 知识&策略页面样式 */
+        :root {
+            --primary-color: #4a6baf;
+            --secondary-color: #f5f7fa;
+            --text-color: #333;
+            --border-color: #ddd;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            
+            /* 标签颜色 */
+            --tag-level1-bg: rgba(74, 107, 175, 0.1);
+            --tag-level1-color: #4a6baf;
+            --tag-level2-bg: rgba(40, 167, 69, 0.1);
+            --tag-level2-color: #28a745;
+            --tag-level3-bg: rgba(220, 53, 69, 0.1);
+            --tag-level3-color: #dc3545;
+        }
+        
+        .knowledge-page {
+            height: 100%;
+            background-color: var(--secondary-color);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+        
+        .search-add {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-add input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 250px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5a9f;
+        }
+        
+        .filter-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        
+        .filter-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .filter-groups {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .filter-option {
+            padding: 5px 10px;
+            background-color: var(--secondary-color);
+            border-radius: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-option:hover {
+            background-color: #e6e9ed;
+        }
+        
+        .filter-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* 层级筛选器 - 新样式 */
+        .level-filter {
+            margin-top: 15px;
+            position: relative;
+        }
+        
+        .level-filter-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .level-filter-title {
+            font-weight: 500;
+        }
+        
+        .level-filter-reset {
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--primary-color);
+        }
+        
+        .tag-filter-trigger {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tag-filter-trigger-text {
+            font-size: 0.95rem;
+            color: #666;
+        }
+        
+        .tag-filter-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 320px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: white;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: none;
+            margin-top: 5px;
+        }
+        
+        .tag-filter-container.active {
+            display: block;
+        }
+        
+        .tag-filter-search {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .tag-tree {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .tag-tree-item {
+            margin-bottom: 6px;
+        }
+        
+        .tag-parent, .tag-child, .tag-grandchild {
+            position: relative;
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .tag-parent:hover, .tag-child:hover, .tag-grandchild:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .tag-toggle {
+            margin-right: 6px; 
+            width: 16px;
+            height: 16px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .tag-children, .tag-grandchildren {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 10;
+            padding: 8px;
+        }
+        
+        .tag-children.expanded, .tag-grandchildren.expanded {
+            display: block;
+        }
+        
+        .selected-filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            min-height: 32px;
+        }
+        
+        .selected-filter-tag {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 15px;
+            background-color: var(--tag-level1-bg);
+            color: var(--tag-level1-color);
+            font-size: 0.85rem;
+        }
+        
+        .selected-filter-tag[data-level="2"] {
+            background-color: var(--tag-level2-bg);
+            color: var(--tag-level2-color);
+        }
+        
+        .selected-filter-tag[data-level="3"] {
+            background-color: var(--tag-level3-bg);
+            color: var(--tag-level3-color);
+        }
+        
+        .remove-filter-tag {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        
+        /* 自定义滚动条样式 */
+        .tag-tree::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .tag-tree::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .tag-tree::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .tag-tree::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .knowledge-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+        
+        .table-scroll {
+            overflow-x: auto; /* 这里是关键 */
+            max-width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .table-container {
+            max-height: 500px; /* 固定高度 */
+            overflow-y: auto; /* 垂直滚动 */
+            width: 100%;
+        }
+        
+        /* 自定义滚动条样式 */
+        .table-scroll::-webkit-scrollbar,
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px; /* 设置横向滚动条高度 */
+        }
+        
+        .table-scroll::-webkit-scrollbar-track,
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .table-scroll::-webkit-scrollbar-thumb,
+        .table-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .table-scroll::-webkit-scrollbar-thumb:hover,
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        .knowledge-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px; /* 确保有最小宽度，触发横向滚动 */
+        }
+        
+        .knowledge-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: var(--secondary-color);
+        }
+        
+        .knowledge-table th, .knowledge-table td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .knowledge-table th {
+            background-color: var(--secondary-color);
+            font-weight: 500;
+        }
+        
+        .knowledge-table tr:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .btn-edit {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .tag-level1 {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            background-color: var(--tag-level1-bg);
+            color: var(--tag-level1-color);
+            white-space: nowrap;
+        }
+        
+        .tag-level2 {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            background-color: var(--tag-level2-bg);
+            color: var(--tag-level2-color);
+            white-space: nowrap;
+        }
+        
+        .tag-level3 {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            background-color: var(--tag-level3-bg);
+            color: var(--tag-level3-color);
+            white-space: nowrap;
+        }
+        
+        .content-preview {
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-header h3 {
+            color: var(--primary-color);
+        }
+        
+        .close-modal {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .qa-container {
+            display: none;
+        }
+        
+        .qa-container.active {
+            display: block;
+        }
+        
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .selected-tag-level1 {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: var(--tag-level1-bg);
+            color: var(--tag-level1-color);
+            border-radius: 15px;
+        }
+        
+        .selected-tag-level2 {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: var(--tag-level2-bg);
+            color: var(--tag-level2-color);
+            border-radius: 15px;
+        }
+        
+        .selected-tag-level3 {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: var(--tag-level3-bg);
+            color: var(--tag-level3-color);
+            border-radius: 15px;
+        }
+        
+        .remove-tag {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        
+        .tag-selector {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .tag-category {
+            margin-bottom: 15px;
+        }
+        
+        .tag-category-title {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .tag-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag-option {
+            padding: 5px 10px;
+            background-color: var(--secondary-color);
+            border-radius: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tag-option:hover {
+            background-color: #e6e9ed;
+        }
+        
+        .tag-option.selected {
+            background-color: var(--tag-level1-bg);
+            color: var(--tag-level1-color);
+        }
+        
+        .tag-subcategory {
+            margin-left: 20px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
+        .tag-subcategory.active {
+            display: block;
+        }
+        
+        .tag-suboption.selected {
+            background-color: var(--tag-level2-bg);
+            color: var(--tag-level2-color);
+        }
+        
+        .tag-subsuboption.selected {
+            background-color: var(--tag-level3-bg);
+            color: var(--tag-level3-color);
+        }
+        
+        .tag-subsubcategory {
+            margin-left: 20px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
+        .tag-subsubcategory.active {
+            display: block;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+        
+        .pagination-item {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        
+        .pagination-item:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .pagination-item.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 50vh;
+            }
+            
+            .sidebar.expanded, .sidebar.collapsed {
+                width: 100%;
+            }
+            
+            .main-content {
+                margin: 10px;
+            }
+            
+            .filter-groups {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .search-add {
+                width: 100%;
+                display: flex;
+            }
+            
+            .search-add input {
+                flex: 1;
+            }
+            
+            .knowledge-table {
+                font-size: 0.9rem;
+            }
+            
+            .action-buttons {
+                display: flex;
+                flex-direction: row;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .level-filter-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .level-filter-arrow {
+                display: none;
+            }
+            
+            .level-filter-select {
+                width: 100%;
+            }
+            
+            .table-container {
+                max-height: 400px; /* 移动设备上稍微减小高度 */
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="main-content" style="margin: 0; width: 100%;">
+        <!-- 知识&策略页面 -->
+        <div class="content-page active" id="page-knowledge-strategy">
+            <div class="knowledge-page">
+                <div class="container">
+                    <div class="header">
+                        <h1>知识&amp;策略</h1>
+                        <div class="search-add">
+                            <input type="text" placeholder="搜索知识...">
+                            <button class="btn btn-primary" id="add-knowledge">添加知识</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-container">
+                        <div class="filter-title">筛选条件</div>
+                        <div class="filter-groups">
+                            <div class="filter-group">
+                                <div class="filter-group-title">切片类型</div>
+                                <div class="filter-options">
+                                    <div class="filter-option active">全部</div>
+                                    <div class="filter-option">文档</div>
+                                    <div class="filter-option">问答切片</div>
+                                    <div class="filter-option">文档切片</div>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <div class="filter-group-title">内容分类</div>
+                                <div class="filter-options">
+                                    <div class="filter-option active">全部</div>
+                                    <div class="filter-option">知识</div>
+                                    <div class="filter-option">策略</div>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <div class="filter-group-title">业务线</div>
+                                <div class="filter-options">
+                                    <div class="filter-option active">全部</div>
+                                    <div class="filter-option">运营中心</div>
+                                    <div class="filter-option">新房</div>
+                                    <div class="filter-option">整装</div>
+                                    <div class="filter-option">北链</div>
+                                    <div class="filter-option">业策</div>
+                                    <div class="filter-option">品质</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 层级筛选器 - 新样式 -->
+                        <div class="level-filter">
+                            <div class="level-filter-header">
+                                <div class="level-filter-title">标签筛选</div>
+                                <div class="level-filter-reset" id="reset-filter">重置筛选</div>
+                            </div>
+                            
+                            <!-- 筛选触发器按钮 -->
+                            <div class="tag-filter-trigger" id="tag-filter-trigger">
+                                <div class="tag-filter-trigger-text">选择标签...</div>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            
+                            <!-- 已选标签显示区域 -->
+                            <div class="selected-filter-tags" id="selected-filter-tags">
+                                <!-- 已选标签将显示在这里 -->
+                            </div>
+                            
+                            <!-- 悬浮筛选容器 -->
+                            <div class="tag-filter-container" id="tag-filter-container">
+                                <input type="text" class="tag-filter-search" id="tag-filter-search" placeholder="搜索标签...">
+                                <div class="tag-tree" id="tag-tree">
+                                    <!-- 业绩标签 -->
+                                    <div class="tag-tree-item">
+                                        <div class="tag-parent" data-value="业绩" data-level="1">
+                                            <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>业绩
+                                        </div>
+                                        <div class="tag-children">
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="二手" data-parent="业绩" data-level="2">
+                                                    <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>二手
+                                                </div>
+                                            </div>
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="新房" data-parent="业绩" data-level="2">
+                                                    <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>新房
+                                                </div>
+                                            </div>
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="租赁" data-parent="业绩" data-level="2">租赁</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 房源标签 -->
+                                    <div class="tag-tree-item">
+                                        <div class="tag-parent" data-value="房源" data-level="1">
+                                            <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>房源
+                                        </div>
+                                        <div class="tag-children">
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="面访" data-parent="房源" data-level="2">面访</div>
+                                            </div>
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="好房" data-parent="房源" data-level="2">好房</div>
+                                            </div>
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="房源维护" data-parent="房源" data-level="2">房源维护</div>
+                                            </div>
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="房评" data-parent="房源" data-level="2">房评</div>
+                                            </div>
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="房源等级" data-parent="房源" data-level="2">
+                                                    <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>房源等级
+                                                </div>
+                                                <div class="tag-grandchildren">
+                                                    <div class="tag-tree-item">
+                                                        <div class="tag-grandchild" data-value="优房" data-parent="房源等级" data-grandparent="房源" data-level="3">优房</div>
+                                                    </div>
+                                                    <div class="tag-tree-item">
+                                                        <div class="tag-grandchild" data-value="良房" data-parent="房源等级" data-grandparent="房源" data-level="3">良房</div>
+                                                    </div>
+                                                    <div class="tag-tree-item">
+                                                        <div class="tag-grandchild" data-value="中房" data-parent="房源等级" data-grandparent="房源" data-level="3">中房</div>
+                                                    </div>
+                                                    <div class="tag-tree-item">
+                                                        <div class="tag-grandchild" data-value="差房" data-parent="房源等级" data-grandparent="房源" data-level="3">差房</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 客源标签 -->
+                                    <div class="tag-tree-item">
+                                        <div class="tag-parent" data-value="客源" data-level="1">
+                                            <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>客源
+                                        </div>
+                                        <div class="tag-children">
+                                            <!-- 客源下暂无二级标签 -->
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 带看标签 -->
+                                    <div class="tag-tree-item">
+                                        <div class="tag-parent" data-value="带看" data-level="1">
+                                            <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>带看
+                                        </div>
+                                        <div class="tag-children">
+                                            <!-- 带看下暂无二级标签 -->
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 商机标签 -->
+                                    <div class="tag-tree-item">
+                                        <div class="tag-parent" data-value="商机" data-level="1">
+                                            <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>商机
+                                        </div>
+                                        <div class="tag-children">
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="400" data-parent="商机" data-level="2">400</div>
+                                            </div>
+                                            <div class="tag-tree-item">
+                                                <div class="tag-child" data-value="线索" data-parent="商机" data-level="2">线索</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 行指标签 -->
+                                    <div class="tag-tree-item">
+                                        <div class="tag-parent" data-value="行指" data-level="1">
+                                            <span class="tag-toggle"><i class="fas fa-caret-right"></i></span>行指
+                                        </div>
+                                        <div class="tag-children">
+                                            <!-- 行指下暂无二级标签 -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="knowledge-container">
+                        <div class="table-scroll">
+                            <div class="table-container">
+                                <table class="knowledge-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">ID</th>
+                                            <th width="12%">标题</th>
+                                            <th width="6%">类型</th>
+                                            <th width="6%">内容分类</th>
+                                            <th width="6%">业务线</th>
+                                            <th width="6%">关键词</th>
+                                            <th width="15%">内容</th>
+                                            <th width="6%">一级分类</th>
+                                            <th width="6%">二级分类</th>
+                                            <th width="6%">三级分类</th>
+                                            <th width="8%">上传者</th>
+                                            <th width="6%">关联思路</th>
+                                            <th width="6%">创建时间</th>
+                                            <th width="6%">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="knowledge-list">
+                                        <tr>
+                                            <td>1001</td>
+                                            <td>销售业绩达成分析</td>
+                                            <td>文档</td>
+                                            <td>知识</td>
+                                            <td>整装</td>
+                                            <td></td>
+                                            <td class="content-preview">本文档详细分析了销售业绩达成的关键因素，包括客户资源管理、带看效率以及成交转化率...</td>
+                                            <td>业绩</td>
+                                            <td>二手</td>
+                                            <td></td>
+                                            <td>李明</td>
+                                            <td>3</td>
+                                            <td>2025-03-10</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1002</td>
+                                            <td>高质量房源获取指南</td>
+                                            <td>文档</td>
+                                            <td>策略</td>
+                                            <td>北链</td>
+                                            <td></td>
+                                            <td class="content-preview">如何高效获取高质量房源是地产经纪人成功的关键。本指南从房源定位、业主沟通和资源整合三方面...</td>
+                                            <td>房源</td>
+                                            <td>面访</td>
+                                            <td></td>
+                                            <td>张华</td>
+                                            <td>5</td>
+                                            <td>2025-03-08</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1003</td>
+                                            <td>如何提高客户转化率？</td>
+                                            <td>问答切片</td>
+                                            <td>知识</td>
+                                            <td>整装</td>
+                                            <td></td>
+                                            <td class="content-preview">问：如何提高客户转化率？答：提高客户转化率需要：1.精准分析客户需求；2.提供个性化房源推荐；3.优化带看流程；4.加强成交信任...</td>
+                                            <td>客源</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>王芳</td>
+                                            <td>2</td>
+                                            <td>2025-03-05</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1004</td>
+                                            <td>商机转化技巧</td>
+                                            <td>文档切片</td>
+                                            <td>策略</td>
+                                            <td>新房</td>
+                                            <td></td>
+                                            <td class="content-preview">商机转化的核心在于正确识别高质量客户。400电话咨询中，通过提问意向度、预算范围和看房计划，可以快速筛选出...</td>
+                                            <td>商机</td>
+                                            <td>400</td>
+                                            <td></td>
+                                            <td>赵伟</td>
+                                            <td>4</td>
+                                            <td>2025-03-01</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1005</td>
+                                            <td>优质房源评定标准</td>
+                                            <td>文档</td>
+                                            <td>知识</td>
+                                            <td>新房</td>
+                                            <td></td>
+                                            <td class="content-preview">本文档详细解析了房源等级评定标准，优房需要满足地段、户型、价格等多方面优势，并且产权清晰，无重大瑕疵...</td>
+                                            <td>房源</td>
+                                            <td>房源等级</td>
+                                            <td>优房</td>
+                                            <td>陈明</td>
+                                            <td>6</td>
+                                            <td>2025-02-28</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1006</td>
+                                            <td>有效带看技巧大全</td>
+                                            <td>文档</td>
+                                            <td>策略</td>
+                                            <td>整装</td>
+                                            <td></td>
+                                            <td class="content-preview">如何提高带看效率和转化率？本文档总结了十大带看技巧，帮助经纪人提升客户体验和成交率...</td>
+                                            <td>带看</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>刘华</td>
+                                            <td>8</td>
+                                            <td>2025-02-25</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1007</td>
+                                            <td>客户异议处理方法</td>
+                                            <td>问答切片</td>
+                                            <td>知识</td>
+                                            <td>整装</td>
+                                            <td></td>
+                                            <td class="content-preview">问：客户对房源价格有异议怎么处理？答：首先要理解客户的真实顾虑，然后从市场行情、房源独特价值、未来升值潜力等多方面进行解析...</td>
+                                            <td>客源</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>王丽</td>
+                                            <td>3</td>
+                                            <td>2025-02-20</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1008</td>
+                                            <td>房源拍摄技巧</td>
+                                            <td>文档</td>
+                                            <td>策略</td>
+                                            <td>北链</td>
+                                            <td></td>
+                                            <td class="content-preview">高质量的房源照片能显著提升客户询盘率。本指南详细介绍了光线处理、角度选择、构图要点等专业拍摄技巧...</td>
+                                            <td>房源</td>
+                                            <td>好房</td>
+                                            <td></td>
+                                            <td>张强</td>
+                                            <td>4</td>
+                                            <td>2025-02-15</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1009</td>
+                                            <td>新房销售策略</td>
+                                            <td>文档</td>
+                                            <td>策略</td>
+                                            <td>新房</td>
+                                            <td></td>
+                                            <td class="content-preview">新房销售与二手房有明显区别，需要不同的策略。本文档分析了新房销售的关键环节和转化技巧...</td>
+                                            <td>业绩</td>
+                                            <td>新房</td>
+                                            <td></td>
+                                            <td>李强</td>
+                                            <td>7</td>
+                                            <td>2025-02-10</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>1010</td>
+                                            <td>中等质量房源管理</td>
+                                            <td>文档</td>
+                                            <td>知识</td>
+                                            <td>新房</td>
+                                            <td></td>
+                                            <td class="content-preview">中房的特点、挑战和价值分析，以及如何对这类房源进行有效维护和推广，提高成交概率...</td>
+                                            <td>房源</td>
+                                            <td>房源等级</td>
+                                            <td>中房</td>
+                                            <td>周明</td>
+                                            <td>5</td>
+                                            <td>2025-02-05</td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-edit">编辑</button>
+                                                <button class="btn btn-sm btn-delete">删除</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="pagination">
+                            <div class="pagination-item active">1</div>
+                            <div class="pagination-item">2</div>
+                            <div class="pagination-item">3</div>
+                            <div class="pagination-item">4</div>
+                            <div class="pagination-item">5</div>
+                            <div class="pagination-item">&gt;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 添加/编辑知识模态框 -->
+            <div class="modal" id="knowledge-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>添加知识</h3>
+                        <span class="close-modal">×</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="knowledge-id">知识ID</label>
+                        <input type="text" id="knowledge-id" class="form-control" placeholder="ID将自动生成" disabled="">
+                    </div>
+                    <div class="form-group">
+                        <label for="knowledge-title">标题</label>
+                        <input type="text" id="knowledge-title" class="form-control" placeholder="输入知识标题">
+                    </div>
+                    <div class="form-group">
+                        <label for="knowledge-type">切片类型</label>
+                        <select id="knowledge-type" class="form-control">
+                            <option value="qa">问答切片</option>
+                            <option value="chunk">文档切片</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="knowledge-category">内容分类</label>
+                        <select id="knowledge-category" class="form-control">
+                            <option value="knowledge">知识</option>
+                            <option value="strategy">策略</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="knowledge-business">业务线</label>
+                        <select id="knowledge-business" class="form-control">
+                            <option value="运营中心">运营中心</option>
+                            <option value="新房">新房</option>
+                            <option value="整装">整装</option>
+                            <option value="北链">北链</option>
+                            <option value="业策">业策</option>
+                            <option value="品质">品质</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="knowledge-keywords">关键词</label>
+                        <input type="text" id="knowledge-keywords" class="form-control" placeholder="请输入关键词，多个关键词用逗号分隔">
+                    </div>
+                    
+                    <!-- 文档/切片内容输入区 -->
+                    <div class="form-group" id="normal-content-container">
+                        <label for="knowledge-content">内容</label>
+                        <textarea id="knowledge-content" class="form-control" placeholder="输入知识内容"></textarea>
+                    </div>
+                    
+                    <!-- 问答对内容输入区 -->
+                    <div class="form-group qa-container" id="qa-content-container">
+                        <label for="knowledge-question">问题</label>
+                        <textarea id="knowledge-question" class="form-control" placeholder="输入问题内容"></textarea>
+                        
+                        <label for="knowledge-answer" style="margin-top: 10px;">回答</label>
+                        <textarea id="knowledge-answer" class="form-control" placeholder="输入回答内容"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>标签</label>
+                        
+                        <!-- 标签筛选器样式选择 -->
+                        <div class="level-filter" style="margin-top: 0;">
+                            <div class="level-filter-container">
+                                <select class="level-filter-select" id="tag-level1-select">
+                                    <option value="">选择一级标签</option>
+                                    <option value="业绩">业绩</option>
+                                    <option value="房源">房源</option>
+                                    <option value="客源">客源</option>
+                                    <option value="带看">带看</option>
+                                    <option value="商机">商机</option>
+                                    <option value="行指">行指</option>
+                                </select>
+                                <span class="level-filter-arrow">→</span>
+                                <select class="level-filter-select" id="tag-level2-select" disabled>
+                                    <option value="">选择二级标签</option>
+                                </select>
+                                <span class="level-filter-arrow">→</span>
+                                <select class="level-filter-select" id="tag-level3-select" disabled>
+                                    <option value="">选择三级标签</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- 已选标签显示区域 -->
+                        <div id="selected-tags" class="selected-tags" style="margin-top: 15px;">
+                            <!-- 已选标签将显示在这里 -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="knowledge-uploader">上传者</label>
+                        <input type="text" id="knowledge-uploader" class="form-control" placeholder="输入上传者姓名">
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button class="btn" id="cancel-knowledge">取消</button>
+                        <button class="btn btn-primary" id="save-knowledge">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("页面已加载，初始化知识与策略页面...");
+            
+            // 全局变量用于知识&策略页面
+            let knowledgeCounter = 1011; // 新知识的ID从1011开始
+            
+            // 标签关系定义，三级标签结构
+            const tagRelations = {
+                "业绩": ["二手", "新房", "租赁"],
+                "商机": ["400", "线索"],
+                "房源": ["面访", "好房", "房源维护", "房评", "房源等级"]
+            };
+            
+            // 三级标签关系定义
+            const tag3Relations = {
+                "房源等级": ["优房", "良房", "中房", "差房"]
+            };
+            
+            // 显示知识&策略页面
+            showPage('page-knowledge-strategy');
+            
+            // 显示指定页面
+            function showPage(pageId) {
+                // 隐藏所有页面
+                document.querySelectorAll('.content-page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // 显示指定页面
+                document.getElementById(pageId).classList.add('active');
+                
+                // 如果是知识&策略页面，初始化相关功能
+                if (pageId === 'page-knowledge-strategy') {
+                    initKnowledgePage();
+                }
+            }
+            
+            // 知识&策略页面初始化
+            function initKnowledgePage() {
+                // 分类筛选选项点击事件
+                document.querySelectorAll('.filter-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        const parentGroup = this.parentElement;
+                        parentGroup.querySelectorAll('.filter-option').forEach(opt => {
+                            opt.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        
+                        // 在实际应用中，这里应该添加筛选逻辑
+                        console.log('筛选条件已更新:', this.textContent);
+                        filterKnowledgeTable();
+                    });
+                });
+                
+                // 切片类型变化事件
+                const typeSelect = document.getElementById('knowledge-type');
+                if (typeSelect) {
+                    typeSelect.addEventListener('change', function() {
+                        const type = this.value;
+                        const normalContainer = document.getElementById('normal-content-container');
+                        const qaContainer = document.getElementById('qa-content-container');
+                        
+                        if (type === 'qa') {
+                            normalContainer.style.display = 'none';
+                            qaContainer.style.display = 'block';
+                        } else {
+                            normalContainer.style.display = 'block';
+                            qaContainer.style.display = 'none';
+                        }
+                    });
+                }
+                
+                // 初始化知识标签选择器
+                initTagSelectors();
+                
+                // 初始化层级筛选器
+                initTagFilter();
+                
+                // 删除知识
+                setupDeleteButtons();
+                
+                // 初始化编辑按钮
+                setupEditButtons();
+                
+                // 模态框操作
+                const modal = document.getElementById('knowledge-modal');
+                const addBtn = document.getElementById('add-knowledge');
+                const closeBtn = document.querySelector('.close-modal');
+                const cancelBtn = document.getElementById('cancel-knowledge');
+                const saveBtn = document.getElementById('save-knowledge');
+                
+                if (addBtn) {
+                    addBtn.addEventListener('click', function() {
+                        console.log('添加知识按钮被点击');
+                        try {
+                            // 直接以超链接形式跳转到知识导入页面
+                            window.location.href = 'Knowledge_import.html';
+                        } catch (error) {
+                            console.error('跳转到知识导入页面时发生错误:', error);
+                            alert('跳转到知识导入页面时发生错误: ' + error.message);
+                        }
+                    });
+                    
+                    closeBtn.addEventListener('click', function() {
+                        modal.style.display = 'none';
+                    });
+                    
+                    cancelBtn.addEventListener('click', function() {
+                        modal.style.display = 'none';
+                    });
+                    
+                    // 点击模态框外部关闭
+                    window.addEventListener('click', function(e) {
+                        if (e.target === modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
+                    
+                    // 保存知识
+                    saveBtn.addEventListener('click', function() {
+                        saveKnowledge();
+                    });
+                }
+            }
+            
+            // 初始化标签筛选器
+            function initTagFilter() {
+                console.log("开始初始化标签筛选器...");
+                try {
+                    // 获取所有相关元素
+                    const tagParents = document.querySelectorAll('.tag-parent');
+                    const tagChildren = document.querySelectorAll('.tag-child');
+                    const tagFilterTrigger = document.getElementById('tag-filter-trigger');
+                    const tagFilterContainer = document.getElementById('tag-filter-container');
+                    const searchInput = document.getElementById('tag-filter-search');
+                    const resetFilterBtn = document.getElementById('reset-filter');
+                    const selectedTagsContainer = document.getElementById('selected-filter-tags');
+                    
+                    console.log(`元素获取状态：触发器=${!!tagFilterTrigger}, 容器=${!!tagFilterContainer}, 搜索框=${!!searchInput}`);
+                    
+                    // 检查关键元素是否存在
+                    if (!tagFilterTrigger || !tagFilterContainer) {
+                        console.error('标签筛选器元素不存在');
+                        return;
+                    }
+                    
+                    // 阻止筛选容器内的点击事件冒泡
+                    tagFilterContainer.addEventListener('click', function(event) {
+                        event.stopPropagation();
+                    });
+                    
+                    // 筛选器触发按钮点击事件
+                    tagFilterTrigger.addEventListener('click', function(event) {
+                        event.stopPropagation();
+                        console.log("标签筛选器触发按钮被点击");
+                        tagFilterContainer.classList.toggle('active');
+                        
+                        // 箭头图标切换
+                        const icon = this.querySelector('i');
+                        if (tagFilterContainer.classList.contains('active')) {
+                            icon.classList.remove('fa-chevron-down');
+                            icon.classList.add('fa-chevron-up');
+                    } else {
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                            
+                            // 关闭所有展开的子菜单
+                            document.querySelectorAll('.tag-children.expanded, .tag-grandchildren.expanded').forEach(function(el) {
+                                el.classList.remove('expanded');
+                            });
+                        }
+                    });
+                    
+                    // 点击页面其他地方关闭筛选器
+                    document.addEventListener('click', function() {
+                        if (tagFilterContainer.classList.contains('active')) {
+                            tagFilterContainer.classList.remove('active');
+                            
+                            // 重置箭头图标
+                            const icon = tagFilterTrigger.querySelector('i');
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                            
+                            // 关闭所有展开的子菜单
+                            document.querySelectorAll('.tag-children.expanded, .tag-grandchildren.expanded').forEach(function(el) {
+                                el.classList.remove('expanded');
+                            });
+                        }
+                    });
+                    
+                    // 一级标签点击事件处理
+                    tagParents.forEach(function(parent) {
+                        // 获取箭头图标和子标签容器
+                        const toggleIcon = parent.querySelector('.tag-toggle');
+                        const childrenContainer = parent.nextElementSibling;
+                        
+                        if (toggleIcon && childrenContainer) {
+                            // 箭头图标点击事件 - 展开/收起子菜单
+                            toggleIcon.addEventListener('click', function(event) {
+                                event.stopPropagation(); // 阻止冒泡
+                                
+                                // 先关闭所有其他展开的子菜单
+                                document.querySelectorAll('.tag-children.expanded').forEach(function(el) {
+                                    if (el !== childrenContainer) {
+                                        el.classList.remove('expanded');
+                                    }
+                                });
+                                
+                                // 关闭所有三级菜单
+                                document.querySelectorAll('.tag-grandchildren.expanded').forEach(function(el) {
+                                    el.classList.remove('expanded');
+                                });
+                                
+                                // 切换当前子菜单的展开状态
+                                childrenContainer.classList.toggle('expanded');
+                                
+                                // 更新箭头图标
+                                if (childrenContainer.classList.contains('expanded')) {
+                                    this.innerHTML = '<i class="fas fa-minus"></i>';
+                                } else {
+                                    this.innerHTML = '<i class="fas fa-plus"></i>';
+                                }
+                            });
+                        }
+                        
+                        // 一级标签本身的点击事件 - 选择标签
+                        parent.addEventListener('click', function(event) {
+                            if (!event.target.matches('.tag-toggle') && !event.target.matches('.tag-toggle i')) {
+                                event.stopPropagation();
+                                
+                                // 添加选中的标签
+                                const tagValue = this.getAttribute('data-value');
+                                
+                                // 获取标签名称，排除图标部分
+                                let tagName = '';
+                                // 遍历所有子节点，跳过toggle图标
+                                Array.from(this.childNodes).forEach(node => {
+                                    // 如果是文本节点而不是span.tag-toggle
+                                    if (node.nodeType === Node.TEXT_NODE) {
+                                        tagName += node.textContent;
+                                    }
+                                });
+                                tagName = tagName.trim(); // 清理空格
+                                
+                                console.log("选中一级标签:", tagValue, tagName);
+                                addSelectedTag(tagValue, tagName, 1);
+                                
+                                // 关闭筛选器
+                                tagFilterContainer.classList.remove('active');
+                                
+                                // 重置箭头图标
+                                const icon = tagFilterTrigger.querySelector('i');
+                                icon.classList.remove('fa-chevron-up');
+                                icon.classList.add('fa-chevron-down');
+                                
+                                // 关闭所有展开的子菜单
+                                document.querySelectorAll('.tag-children.expanded, .tag-grandchildren.expanded').forEach(function(el) {
+                                    el.classList.remove('expanded');
+                                });
+                            }
+                        });
+                    });
+                    
+                    // 二级标签点击事件处理
+                    tagChildren.forEach(function(child) {
+                        // 获取箭头图标和孙标签容器
+                        const toggleIcon = child.querySelector('.tag-toggle');
+                        const grandchildrenContainer = child.nextElementSibling;
+                        
+                        if (toggleIcon && grandchildrenContainer) {
+                            // 箭头图标点击事件 - 展开/收起孙菜单
+                            toggleIcon.addEventListener('click', function(event) {
+                                event.stopPropagation(); // 阻止冒泡
+                                
+                                // 先关闭所有其他展开的孙菜单
+                                document.querySelectorAll('.tag-grandchildren.expanded').forEach(function(el) {
+                                    if (el !== grandchildrenContainer) {
+                                        el.classList.remove('expanded');
+                                    }
+                                });
+                                
+                                // 切换当前孙菜单的展开状态
+                                grandchildrenContainer.classList.toggle('expanded');
+                                
+                                // 更新箭头图标
+                                if (grandchildrenContainer.classList.contains('expanded')) {
+                                    this.innerHTML = '<i class="fas fa-minus"></i>';
+                                } else {
+                                    this.innerHTML = '<i class="fas fa-plus"></i>';
+                                }
+                            });
+                        }
+                        
+                        // 二级标签本身的点击事件 - 选择标签
+                        child.addEventListener('click', function(event) {
+                            if (!event.target.matches('.tag-toggle') && !event.target.matches('.tag-toggle i')) {
+                                event.stopPropagation();
+                                
+                                // 添加选中的标签
+                                const tagValue = this.getAttribute('data-value');
+                                const tagParent = this.getAttribute('data-parent');
+                                
+                                // 获取标签名称，排除图标部分
+                                let tagName = '';
+                                // 遍历所有子节点，跳过toggle图标
+                                Array.from(this.childNodes).forEach(node => {
+                                    // 如果是文本节点而不是span.tag-toggle
+                                    if (node.nodeType === Node.TEXT_NODE) {
+                                        tagName += node.textContent;
+                                    }
+                                });
+                                tagName = tagName.trim(); // 清理空格
+                                
+                                console.log("选中二级标签:", tagValue, tagName);
+                                addSelectedTag(tagValue, tagName, 2);
+                                
+                                // 关闭筛选器
+                                tagFilterContainer.classList.remove('active');
+                                
+                                // 重置箭头图标
+                                const icon = tagFilterTrigger.querySelector('i');
+                                icon.classList.remove('fa-chevron-up');
+                                icon.classList.add('fa-chevron-down');
+                                
+                                // 关闭所有展开的子菜单
+                                document.querySelectorAll('.tag-children.expanded, .tag-grandchildren.expanded').forEach(function(el) {
+                                    el.classList.remove('expanded');
+                                });
+                            }
+                        });
+                    });
+                    
+                    // 三级标签点击事件处理
+                    document.querySelectorAll('.tag-grandchild').forEach(function(grandchild) {
+                        grandchild.addEventListener('click', function(event) {
+                            event.stopPropagation();
+                            
+                            // 添加选中的标签
+                            const tagValue = this.getAttribute('data-value');
+                            const tagParent = this.getAttribute('data-parent');
+                            const tagGrandparent = this.getAttribute('data-grandparent');
+                            const tagName = this.textContent.trim();
+                            
+                            console.log("选中三级标签:", tagValue, tagName);
+                            addSelectedTag(tagValue, tagName, 3);
+                            
+                            // 关闭筛选器
+                            tagFilterContainer.classList.remove('active');
+                            
+                            // 重置箭头图标
+                            const icon = tagFilterTrigger.querySelector('i');
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                            
+                            // 关闭所有展开的子菜单
+                            document.querySelectorAll('.tag-children.expanded, .tag-grandchildren.expanded').forEach(function(el) {
+                                el.classList.remove('expanded');
+                            });
+                        });
+                    });
+                    
+                    // 标签搜索功能
+                    if (searchInput) {
+                        searchInput.addEventListener('click', function(event) {
+                            event.stopPropagation();
+                        });
+                        
+                        searchInput.addEventListener('keydown', function(event) {
+                            event.stopPropagation();
+                        });
+                        
+                        searchInput.addEventListener('input', function(event) {
+                            event.stopPropagation();
+                            const searchText = this.value.toLowerCase().trim();
+                            
+                            console.log('搜索标签:', searchText);
+                            
+                            try {
+                                // 如果搜索框为空，恢复所有标签显示
+                                if (!searchText) {
+                                    // 恢复所有标签的显示状态
+                                    document.querySelectorAll('.tag-parent, .tag-child, .tag-grandchild').forEach(function(tag) {
+                                        tag.style.display = '';
+                                    });
+                                    
+                                    // 关闭所有展开的菜单
+                                    document.querySelectorAll('.tag-children.expanded, .tag-grandchildren.expanded').forEach(function(menu) {
+                                        menu.classList.remove('expanded');
+                                    });
+                                    
+                                    // 恢复所有箭头图标
+                                    document.querySelectorAll('.tag-toggle').forEach(function(toggle) {
+                                        toggle.innerHTML = '<i class="fas fa-plus"></i>';
+                                    });
+                                    
+                                    return;
+                                }
+                                
+                                // 搜索标签
+                                let hasMatch = false;
+                                
+                                // 先隐藏所有标签
+                                document.querySelectorAll('.tag-parent, .tag-child, .tag-grandchild').forEach(function(tag) {
+                                    tag.style.display = 'none';
+                                });
+                                
+                                // 遍历所有一级标签
+                                tagParents.forEach(function(parent) {
+                                    const parentText = parent.textContent.toLowerCase();
+                                    const childrenContainer = parent.nextElementSibling;
+                                    let parentMatch = parentText.includes(searchText);
+                                    let childrenMatch = false;
+                                    
+                                    // 遍历二级标签
+                                    if (childrenContainer) {
+                                        const children = childrenContainer.querySelectorAll('.tag-child');
+                                        children.forEach(function(child) {
+                                            const childText = child.textContent.toLowerCase();
+                                            const grandchildrenContainer = child.nextElementSibling;
+                                            let childMatch = childText.includes(searchText);
+                                            let grandchildMatch = false;
+                                            
+                                            // 遍历三级标签
+                                            if (grandchildrenContainer) {
+                                                const grandchildren = grandchildrenContainer.querySelectorAll('.tag-grandchild');
+                                                grandchildren.forEach(function(grandchild) {
+                                                    const grandchildText = grandchild.textContent.toLowerCase();
+                                                    const isMatch = grandchildText.includes(searchText);
+                                                    
+                                                    if (isMatch) {
+                                                        grandchild.style.display = '';
+                                                        childMatch = true;
+                                                        parentMatch = true;
+                                                        grandchildMatch = true;
+                                                    } else {
+                                                        grandchild.style.display = 'none';
+                                                    }
+                                                });
+                                                
+                                                if (childMatch) {
+                                                    // 显示三级菜单容器
+                                                    grandchildrenContainer.classList.add('expanded');
+                                                }
+                                            }
+                                            
+                                            if (childMatch || grandchildMatch) {
+                                                child.style.display = '';
+                                                childrenMatch = true;
+                                            } else {
+                                                child.style.display = 'none';
+                                            }
+                                        });
+                                        
+                                        if (parentMatch || childrenMatch) {
+                                            // 显示二级菜单容器
+                                            childrenContainer.classList.add('expanded');
+                                        }
+                                    }
+                                    
+                                    if (parentMatch || childrenMatch) {
+                                        parent.style.display = '';
+                                        hasMatch = true;
+                                    } else {
+                                        parent.style.display = 'none';
+                                    }
+                                });
+                                
+                                // 如果没有任何匹配，显示一条提示
+                                if (!hasMatch) {
+                                    console.log('没有匹配的标签');
+                                }
+                            } catch (error) {
+                                console.error('搜索标签时出错:', error);
+                            }
+                        });
+                    }
+                    
+                    // 添加选中标签函数
+                    function addSelectedTag(tagId, tagName, level) {
+                        const selectedTagsContainer = document.getElementById('selected-filter-tags');
+                        
+                        console.log(`添加标签: ID=${tagId}, 名称=${tagName}, 级别=${level}`);
+                        
+                        // 创建标签元素
+                        const tagElement = document.createElement('div');
+                        tagElement.className = 'selected-filter-tag';
+                        tagElement.setAttribute('data-value', tagId);
+                        tagElement.setAttribute('data-level', level);
+                        tagElement.innerHTML = `${tagName} <span class="remove-filter-tag">×</span>`;
+                        
+                        // 删除标签事件处理
+                        tagElement.querySelector('.remove-filter-tag').addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            console.log(`移除标签: ${tagName}`);
+                            selectedTagsContainer.removeChild(tagElement);
+                            filterKnowledgeTable();
+                        });
+                        
+                        // 添加到容器
+                        selectedTagsContainer.appendChild(tagElement);
+                        
+                        // 更新表格筛选
+                        filterKnowledgeTable();
+                    }
+                    
+                    // 重置筛选按钮事件
+                    if (resetFilterBtn) {
+                        resetFilterBtn.addEventListener('click', function(event) {
+                            event.stopPropagation();
+                            console.log("重置标签筛选");
+                            document.getElementById('selected-filter-tags').innerHTML = '';
+                            filterKnowledgeTable();
+                        });
+                    }
+                    
+                } catch (error) {
+                    console.error('初始化标签筛选器失败:', error);
+                }
+            }
+            
+            // 添加标签函数
+            function addTag(tagText, level, parentCategory = '', grandparentCategory = '') {
+                const selectedTagsContainer = document.getElementById('selected-tags');
+                
+                // 如果是一级标签，先移除现有的一级标签
+                if (level === 1) {
+                    document.querySelectorAll('.selected-tag-level1').forEach(tag => {
+                        selectedTagsContainer.removeChild(tag);
+                    });
+                }
+                
+                // 如果是二级标签且有父分类，移除相同父分类的其他二级标签
+                if (level === 2 && parentCategory) {
+                    document.querySelectorAll(`.selected-tag-level2[data-parent="${parentCategory}"]`).forEach(tag => {
+                        selectedTagsContainer.removeChild(tag);
+                    });
+                }
+                
+                // 如果是三级标签且有父分类，移除相同父分类的其他三级标签
+                if (level === 3 && parentCategory) {
+                    document.querySelectorAll(`.selected-tag-level3[data-parent="${parentCategory}"]`).forEach(tag => {
+                        selectedTagsContainer.removeChild(tag);
+                    });
+                }
+                
+                const tagElement = document.createElement('div');
+                tagElement.className = `selected-tag-level${level}`;
+                tagElement.setAttribute('data-text', tagText);
+                tagElement.setAttribute('data-level', level);
+                
+                if (parentCategory) {
+                    tagElement.setAttribute('data-parent', parentCategory);
+                }
+                
+                if (grandparentCategory) {
+                    tagElement.setAttribute('data-grandparent', grandparentCategory);
+                }
+                
+                tagElement.innerHTML = `${tagText} <span class="remove-tag">×</span>`;
+                
+                // 为删除按钮添加事件
+                tagElement.querySelector('.remove-tag').addEventListener('click', function() {
+                    // 移除标签
+                    selectedTagsContainer.removeChild(tagElement);
+                    
+                    // 同步更新选择器的选中状态
+                    if (level === 1) {
+                        const option = document.querySelector(`.tag-option[data-category="${tagText}"][data-level="1"]`);
+                        if (option) {
+                            option.classList.remove('selected');
+                        }
+                        
+                        // 隐藏子分类选择器
+                        const subcategory = document.getElementById(`${tagText}-subcategory`);
+                        if (subcategory) {
+                            subcategory.classList.remove('active');
+                        }
+                        
+                        // 移除所有子标签和孙标签
+                        document.querySelectorAll(`.selected-tag-level2[data-parent="${tagText}"]`).forEach(childTag => {
+                            selectedTagsContainer.removeChild(childTag);
+                        });
+                        
+                        document.querySelectorAll(`.selected-tag-level3[data-grandparent="${tagText}"]`).forEach(grandchildTag => {
+                            selectedTagsContainer.removeChild(grandchildTag);
+                        });
+                        
+                        // 移除子标签和孙标签选择器的选中状态
+                        document.querySelectorAll(`.tag-suboption[data-category="${tagText}"]`).forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        
+                        document.querySelectorAll(`.tag-subsuboption[data-category="${tagText}"]`).forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                    } else if (level === 2) {
+                        const option = document.querySelector(`.tag-suboption[data-subitem="${tagText}"]`);
+                        if (option) {
+                            option.classList.remove('selected');
+                        }
+                        
+                        // 隐藏孙分类选择器
+                        const subsubcategory = document.getElementById(`${tagText}-subsubcategory`);
+                        if (subsubcategory) {
+                            subsubcategory.classList.remove('active');
+                        }
+                        
+                        // 移除所有孙标签
+                        document.querySelectorAll(`.selected-tag-level3[data-parent="${tagText}"]`).forEach(grandchildTag => {
+                            selectedTagsContainer.removeChild(grandchildTag);
+                        });
+                        
+                        // 移除孙标签选择器的选中状态
+                        document.querySelectorAll(`.tag-subsuboption[data-subitem="${tagText}"]`).forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                    } else if (level === 3) {
+                        const option = document.querySelector(`.tag-subsuboption[data-subsubitem="${tagText}"]`);
+                        if (option) {
+                            option.classList.remove('selected');
+                        }
+                    }
+                });
+                
+                // 将一级标签添加到最前面，然后是二级标签，最后是三级标签
+                if (level === 1) {
+                    selectedTagsContainer.prepend(tagElement);
+                } else if (level === 2) {
+                    // 找到一级标签
+                    const level1Tag = document.querySelector(`.selected-tag-level1[data-text="${parentCategory}"]`);
+                    if (level1Tag) {
+                        // 将二级标签插入到一级标签之后
+                        level1Tag.after(tagElement);
+                    } else {
+                        selectedTagsContainer.appendChild(tagElement);
+                    }
+                } else {
+                    selectedTagsContainer.appendChild(tagElement);
+                }
+            }
+            
+            // 移除标签函数
+            function removeTag(tagText, level) {
+                const selectedTagsContainer = document.getElementById('selected-tags');
+                let selector = '';
+                if (level === 1) {
+                    selector = `.selected-tag-level${level}[data-text="${tagText}"]`;
+                } else if (level === 2) {
+                    selector = `.selected-tag-level${level}[data-text="${tagText}"]`;
+                } else if (level === 3) {
+                    selector = `.selected-tag-level${level}[data-text="${tagText}"]`;
+                }
+                
+                const tag = document.querySelector(selector);
+                if (tag) {
+                    selectedTagsContainer.removeChild(tag);
+                }
+            }
+            
+            // 删除知识按钮设置
+            function setupDeleteButtons() {
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        if (confirm('确定要删除这条知识吗？')) {
+                            const row = this.closest('tr');
+                            row.parentNode.removeChild(row);
+                        }
+                    });
+                });
+            }
+            
+            // 编辑按钮设置
+            function setupEditButtons() {
+                document.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const modal = document.getElementById('knowledge-modal');
+                        const row = this.closest('tr');
+                        const id = row.cells[0].textContent;
+                        const title = row.cells[1].textContent;
+                        const type = row.cells[2].textContent;
+                        const category = row.cells[3].textContent;
+                        const business = row.cells[4].textContent; // 获取业务线
+                        const keywords = row.cells[5].textContent; // 获取关键词
+                        const content = row.cells[6].textContent;
+                        
+                        // 获取标签
+                        const level1 = row.cells[7].textContent;
+                        const level2 = row.cells[8].textContent;
+                        const level3 = row.cells[9].textContent;
+                        
+                        const uploader = row.cells[10].textContent;
+                        
+                        document.querySelector('.modal-header h3').textContent = '编辑知识';
+                        document.getElementById('knowledge-id').value = id;
+                        document.getElementById('knowledge-title').value = title;
+                        document.getElementById('knowledge-keywords').value = keywords; // 设置关键词
+                        
+                        // 设置业务线
+                        const businessSelect = document.getElementById('knowledge-business');
+                        businessSelect.value = business;
+                        
+                        // 设置切片类型
+                        const typeSelect = document.getElementById('knowledge-type');
+                        let typeValue = 'qa';
+                        
+                        if (type === '问答切片') typeValue = 'qa';
+                        else if (type === '文档切片') typeValue = 'chunk';
+                        
+                        typeSelect.value = typeValue;
+                        
+                        // 设置内容分类
+                        const categorySelect = document.getElementById('knowledge-category');
+                        let categoryValue = 'knowledge';
+                        
+                        if (category === '知识') categoryValue = 'knowledge';
+                        else if (category === '策略') categoryValue = 'strategy';
+                        
+                        categorySelect.value = categoryValue;
+                        
+                        // 根据切片类型显示不同的内容输入区域
+                        if (typeValue === 'qa') {
+                            document.getElementById('normal-content-container').style.display = 'none';
+                            document.getElementById('qa-content-container').style.display = 'block';
+                            
+                            // 尝试分割问答内容
+                            const contentText = content;
+                            if (contentText.includes('问：') && contentText.includes('答：')) {
+                                const questionPart = contentText.substring(contentText.indexOf('问：') + 2, contentText.indexOf('答：')).trim();
+                                const answerPart = contentText.substring(contentText.indexOf('答：') + 2).trim();
+                                
+                                document.getElementById('knowledge-question').value = questionPart;
+                                document.getElementById('knowledge-answer').value = answerPart;
+                            } else {
+                                document.getElementById('knowledge-question').value = '';
+                                document.getElementById('knowledge-answer').value = contentText;
+                            }
+                        } else {
+                            document.getElementById('normal-content-container').style.display = 'block';
+                            document.getElementById('qa-content-container').style.display = 'none';
+                            document.getElementById('knowledge-content').value = content;
+                        }
+                        
+                        document.getElementById('knowledge-uploader').value = uploader;
+                        
+                        // 清空已选标签
+                        const selectedTagsContainer = document.getElementById('selected-tags');
+                        selectedTagsContainer.innerHTML = '';
+                        
+                        // 重置标签选择器
+                        resetTagSelectors();
+                        
+                        // 设置标签
+                        if (level1) {
+                            const tagLevel1Select = document.getElementById('tag-level1-select');
+                            tagLevel1Select.value = level1;
+                            
+                            // 触发change事件
+                            const event = new Event('change');
+                            tagLevel1Select.dispatchEvent(event);
+                            
+                            if (level2) {
+                                // 等待二级标签选择器更新
+                                setTimeout(() => {
+                                    const tagLevel2Select = document.getElementById('tag-level2-select');
+                                    tagLevel2Select.value = level2;
+                                    tagLevel2Select.dispatchEvent(new Event('change'));
+                                    
+                                    if (level3) {
+                                        // 等待三级标签选择器更新
+                                        setTimeout(() => {
+                                            const tagLevel3Select = document.getElementById('tag-level3-select');
+                                            tagLevel3Select.value = level3;
+                                            tagLevel3Select.dispatchEvent(new Event('change'));
+                                        }, 100);
+                                    }
+                                }, 100);
+                            }
+                        }
+                        
+                        modal.style.display = 'flex';
+                    });
+                });
+            }
+            
+            // 筛选知识表格函数
+            function filterKnowledgeTable() {
+                // 获取所有已选标签
+                const selectedTags = document.querySelectorAll('#selected-filter-tags .selected-filter-tag');
+                
+                console.log(`执行筛选，已选标签数量: ${selectedTags.length}`);
+                // 对于调试，显示所有标签内容
+                if(selectedTags.length > 0) {
+                    console.log("筛选标签详情:");
+                    selectedTags.forEach((tag, index) => {
+                        console.log(`标签 ${index+1}:`, {
+                            text: tag.textContent.replace('×', '').trim(),
+                            level: tag.getAttribute('data-level'),
+                            value: tag.getAttribute('data-value')
+                        });
+                    });
+                }
+                
+                // 如果没有选择标签，则显示所有行
+                if (selectedTags.length === 0) {
+                    console.log('没有选择标签，显示所有行');
+                    document.querySelectorAll('#knowledge-list tr').forEach(row => {
+                        row.style.display = '';
+                    });
+                    return;
+                }
+                
+                // 记录所有已选标签内容
+                const tagTexts = [];
+                selectedTags.forEach(tag => {
+                    const level = tag.getAttribute('data-level');
+                    const levelText = level == 1 ? '一级分类' : level == 2 ? '二级分类' : '三级分类';
+                    const tagText = tag.textContent.replace('×', '').trim();
+                    tagTexts.push(`${levelText}: ${tagText}`);
+                });
+                console.log('已选标签: ' + tagTexts.join(', '));
+                
+                // 筛选逻辑
+                let visibleCount = 0;
+                const rows = document.querySelectorAll('#knowledge-list tr');
+                console.log(`要筛选的行数: ${rows.length}`);
+                
+                rows.forEach(row => {
+                    let shouldShow = true;
+                    
+                    // 检查每个已选标签是否匹配行数据
+                    selectedTags.forEach(tag => {
+                        const level = parseInt(tag.getAttribute('data-level'));
+                        const tagText = tag.textContent.replace('×', '').trim();
+                        
+                        // 根据不同级别标签检查表格中对应的列
+                        let cellIndex = -1;
+                        if (level === 1) cellIndex = 7;
+                        else if (level === 2) cellIndex = 8;
+                        else if (level === 3) cellIndex = 9;
+                        
+                        if (cellIndex >= 0) {
+                            const cell = row.cells[cellIndex];
+                            if (!cell) {
+                                console.log(`行缺少单元格 ${cellIndex}`);
+                                shouldShow = false;
+                            } else {
+                                const cellText = cell.textContent.trim();
+                                if (cellText !== tagText) {
+                                    shouldShow = false;
+                                    console.log(`不匹配: 标签"${tagText}"(级别${level}) ≠ 单元格"${cellText}"`);
+                                }
+                            }
+                        }
+                    });
+                    
+                    // 显示或隐藏行
+                    row.style.display = shouldShow ? '' : 'none';
+                    if (shouldShow) visibleCount++;
+                });
+                
+                console.log(`筛选后可见行数: ${visibleCount}`);
+            }
+            
+            // 初始化知识标签选择器
+            function initTagSelectors() {
+                // ... existing code ...
+            }
+            
+            // 初始化页面显示
+            try {
+            initKnowledgePage();
+            } catch(error) {
+                console.error('初始化页面失败:', error);
+            }
+
+            // 添加界面调试信息 - 显示所有点击事件
+            document.addEventListener('click', function(event) {
+                const target = event.target;
+                const tagName = target.tagName;
+                const className = target.className;
+                const id = target.id;
+                console.log(`点击元素: ${tagName}${id ? '#'+id : ''}${className ? '.'+className : ''}`);
+            });
+        });
+    </script>
+
+
+</body></html>

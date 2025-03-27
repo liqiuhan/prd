@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新指标关系配置</title>
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --primary-light: #91d5ff;
+            --border-color: #e8e8e8;
+            --background-color: #f5f5f5;
+            --hover-color: #e6f7ff;
+            --text-color: #333;
+            --light-text: #666;
+            --success-color: #52c41a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 16px;
+            color: #000;
+        }
+        
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+        
+        h2 {
+            font-size: 20px;
+            color: var(--primary-color);
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-light);
+            margin-bottom: 20px;
+        }
+        
+        .steps-container {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+        
+        .step-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 20px;
+            min-width: 320px;
+            max-width: 100%;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .step-card.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+        }
+        
+        .step-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-nav {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 0 20px 30px 0;
+            background: white;
+            z-index: 10;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 20px;
+            max-width: 220px;
+            float: left;
+        }
+        
+        .step-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        
+        .step-item:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .step-item.active {
+            background-color: var(--hover-color);
+        }
+        
+        .step-item:hover .step-num {
+            transform: scale(1.1);
+        }
+        
+        .step-item:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            width: 2px;
+            height: 16px;
+            background-color: var(--border-color);
+            z-index: 1;
+            transition: background-color 0.3s ease;
+        }
+        
+        .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: var(--light-text);
+            transition: all 0.3s ease;
+        }
+        
+        .content-wrapper {
+            margin-left: 240px;
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .step-nav {
+                float: none;
+                margin: 0 0 20px 0;
+                max-width: 100%;
+                position: relative;
+                top: 0;
+            }
+            
+            .content-wrapper {
+                margin-left: 0;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background-color: #fff;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        .select-container {
+            position: relative;
+        }
+        
+        .search-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .search-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            display: none;
+        }
+        
+        .dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .dropdown::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .dropdown::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        
+        .dropdown::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+        
+        .dropdown.show {
+            display: block;
+        }
+        
+        .dropdown-category {
+            padding: 10px 12px;
+            font-weight: bold;
+            color: #666;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-item {
+            padding: 10px 12px 10px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .dropdown-item.selected {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .dropdown-item.selected::before {
+            content: "✓";
+            position: absolute;
+            left: 8px;
+            color: var(--primary-color);
+        }
+        
+        .highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            min-height: 44px;
+            background-color: white;
+            transition: all 0.3s;
+        }
+        
+        .tag-input-container:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        .tag {
+            background-color: var(--hover-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .tag:hover {
+            background-color: rgba(24, 144, 255, 0.1);
+        }
+        
+        .tag .remove {
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: bold;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .tag .remove:hover {
+            background-color: rgba(24, 144, 255, 0.2);
+            color: #f5222d;
+        }
+        
+        .tag-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 6px;
+            min-width: 100px;
+            font-size: 14px;
+        }
+        
+        .hierarchical-filter {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            background-color: white;
+        }
+        
+        .filter-level {
+            margin-bottom: 16px;
+        }
+        
+        .filter-level-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .checkbox-item:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .checkbox-item input[type="radio"],
+        .checkbox-item input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+        
+        /* 约束条件样式 */
+        .constraint-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            transition: all 0.2s;
+        }
+        
+        .constraint-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            background-color: var(--hover-color);
+        }
+        
+        .constraint-dimension {
+            font-weight: bold;
+            margin-right: 12px;
+            color: var(--primary-color);
+        }
+        
+        .constraint-values {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .constraint-value {
+            background-color: var(--hover-color);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            border: 1px solid var(--primary-light);
+        }
+        
+        .constraint-remove {
+            margin-left: auto;
+            color: #999;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .constraint-remove:hover {
+            background-color: rgba(245, 34, 45, 0.1);
+            color: #f5222d;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .btn:hover {
+            background-color: #40a9ff;
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+        }
+        
+        .btn:disabled {
+            background-color: #d9d9d9;
+            color: rgba(0, 0, 0, 0.25);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .btn:disabled:hover {
+            background-color: #d9d9d9;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background-color: white;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #6ad82a;
+            box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
+        }
+        
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .btn-loading:after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: calc(50% - 8px);
+            left: calc(50% - 8px);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            animation: btn-loading-spinner 0.6s linear infinite;
+        }
+        
+        @keyframes btn-loading-spinner {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        /* 问题卡片预览样式 */
+        .preview-section {
+            margin-top: 30px;
+        }
+        
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 16px;
+            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-light);
+        }
+        
+        .question-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+        
+        .question-content {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--light-text);
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* 步骤内容样式 */
+        .step-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .step-item.active .step-num {
+            background-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(24, 144, 255, 0.2);
+        }
+        
+        .step-item.completed .step-num {
+            background-color: var(--success-color);
+            box-shadow: 0 0 0 4px rgba(82, 196, 26, 0.2);
+        }
+        
+        .step-item.completed:not(:last-child)::after {
+            background-color: var(--success-color);
+        }
+        
+        .step-item.active .step-label {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .step-item.completed .step-label {
+            color: var(--success-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 步骤导航 -->
+        <div class="step-nav">
+            <div class="step-item active" data-step="1">
+                <div class="step-num">1</div>
+                <div class="step-label">选择指标</div>
+            </div>
+            <div class="step-item" data-step="2">
+                <div class="step-num">2</div>
+                <div class="step-label">选择对象层级</div>
+            </div>
+            <div class="step-item" data-step="3">
+                <div class="step-num">3</div>
+                <div class="step-label">设置时间范围</div>
+            </div>
+            <div class="step-item" data-step="4">
+                <div class="step-num">4</div>
+                <div class="step-label">限制约束条件</div>
+            </div>
+            <div class="step-item" data-step="5">
+                <div class="step-num">5</div>
+                <div class="step-label">选择分组</div>
+            </div>
+            <div class="step-item" data-step="6">
+                <div class="step-num">6</div>
+                <div class="step-label">排序方式</div>
+            </div>
+            <div class="step-item" data-step="7">
+                <div class="step-num">7</div>
+                <div class="step-label">结果筛选</div>
+            </div>
+            <div class="step-item" data-step="8">
+                <div class="step-num">8</div>
+                <div class="step-label">问题预览</div>
+            </div>
+        </div>
+        
+        <div class="content-wrapper">
+            <div class="card">
+                <!-- 步骤1：选择指标 -->
+                <div class="step-content active" id="step1">
+                    <h2>1. 选择指标</h2>
+                    <div class="form-group">
+                        <label for="indicatorSearch">指标搜索</label>
+                        <div class="select-container">
+                            <input type="text" id="indicatorSearch" class="search-select" placeholder="搜索或选择指标">
+                            <div class="dropdown" id="indicatorDropdown">
+                                <!-- 指标选项将通过JS动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>已选指标</label>
+                        <div class="tag-input-container" id="selectedIndicatorsContainer">
+                            <!-- 已选指标标签将在这里显示 -->
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="nextBtn1">下一步</button>
+                    </div>
+                </div>
+                
+                <!-- 步骤2：选择对象层级 -->
+                <div class="step-content" id="step2">
+                    <h2>2. 选择对象层级</h2>
+                    <div class="form-group">
+                        <label>请选择查询数据的范围（可多选）</label>
+                        <div class="checkbox-group" id="objectLevelGroup">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level1" value="全国">
+                                <label for="level1">全国</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level2" value="区域">
+                                <label for="level2">区域</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level3" value="业绩城市">
+                                <label for="level3">业绩城市</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level4" value="事业部">
+                                <label for="level4">事业部</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level5" value="大部">
+                                <label for="level5">大部</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level6" value="大区">
+                                <label for="level6">大区</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level7" value="CA">
+                                <label for="level7">CA</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level8" value="门店">
+                                <label for="level8">门店</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="objectLevel" id="level9" value="经纪人">
+                                <label for="level9">经纪人</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="nextBtn2">下一步</button>
+                    </div>
+                </div>
+                
+                <!-- 步骤3：设置时间范围 -->
+                <div class="step-content" id="step3">
+                    <h2>3. 设置时间范围</h2>
+                    <div class="form-group">
+                        <label>选择时间范围</label>
+                        <div class="select-container">
+                            <select id="timeRangeSelect" class="form-control">
+                                <option value="">请选择</option>
+                                <option value="today">今日以来</option>
+                                <option value="yesterday">昨日</option>
+                                <option value="last7days">过去7天</option>
+                                <option value="last30days">过去30天</option>
+                                <option value="last90days">过去3个月</option>
+                                <option value="last12months">过去12个月</option>
+                                <option value="thisMonth">本月</option>
+                                <option value="lastMonth">上月</option>
+                                <option value="thisYear">今年</option>
+                                <option value="lastYear">去年</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>自定义时间范围</label>
+                        <div class="tag-input-container" id="timeRangeContainer">
+                            <input type="text" class="tag-input" id="timeRangeInput" placeholder="输入时间范围，按回车添加">
+                        </div>
+                        <div class="hint">例如：2023年1月、2023Q1、2023H1</div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="nextBtn3">下一步</button>
+                    </div>
+                </div>
+                
+                <!-- 步骤4：限制约束条件 -->
+                <div class="step-content" id="step4">
+                    <h2>4. 限制约束条件</h2>
+                    
+                    <div class="form-group">
+                        <label>选择维度</label>
+                        <div class="select-container">
+                            <select id="constraintDimension" class="form-control">
+                                <option value="">请选择维度</option>
+                                <option value="业务类型">业务类型</option>
+                                <option value="客户类型">客户类型</option>
+                                <option value="房源类型">房源类型</option>
+                                <option value="成交方式">成交方式</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="constraintValuesContainer" style="display: none;">
+                        <label>选择具体枚举值</label>
+                        <div class="checkbox-group" id="constraintValues">
+                            <!-- 枚举值将通过JS动态生成 -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="hierarchical-filter" id="selectedConstraints">
+                            <!-- 已选择的约束条件将在这里显示 -->
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="nextBtn4">下一步</button>
+                    </div>
+                </div>
+                
+                <!-- 步骤5：选择分组 -->
+                <div class="step-content" id="step5">
+                    <h2>5. 选择分组</h2>
+                    <div class="form-group">
+                        <label>请选择分组方式（可多选）</label>
+                        <div class="checkbox-group" id="groupByOptions">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="groupBy" id="group1" value="各区域">
+                                <label for="group1">各区域</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="groupBy" id="group2" value="各业绩城市">
+                                <label for="group2">各业绩城市</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="groupBy" id="group3" value="各事业部">
+                                <label for="group3">各事业部</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="groupBy" id="group4" value="各大部">
+                                <label for="group4">各大部</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="groupBy" id="group5" value="各大区">
+                                <label for="group5">各大区</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="groupBy" id="group6" value="各CA">
+                                <label for="group6">各CA</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="groupBy" id="group7" value="各门店">
+                                <label for="group7">各门店</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="groupBy" id="group8" value="各经纪人">
+                                <label for="group8">各经纪人</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="nextBtn5">下一步</button>
+                    </div>
+                </div>
+                
+                <!-- 步骤6：排序方式 -->
+                <div class="step-content" id="step6">
+                    <h2>6. 排序方式</h2>
+                    <div class="form-group">
+                        <label>选择排序方式（可多选）</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="sortOrder" id="sortAsc" value="asc">
+                                <label for="sortAsc">正序（从小到大）</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="sortOrder" id="sortDesc" value="desc">
+                                <label for="sortDesc">降序（从大到小）</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="nextBtn6">下一步</button>
+                    </div>
+                </div>
+                
+                <!-- 步骤7：结果筛选 -->
+                <div class="step-content" id="step7">
+                    <h2>7. 结果筛选</h2>
+                    <div class="form-group">
+                        <label>选择结果筛选方式（可多选）</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="resultFilter" id="filter1" value="all">
+                                <label for="filter1">显示全部结果</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="resultFilter" id="filter2" value="top1">
+                                <label for="filter2">仅显示第一名</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="resultFilter" id="filter3" value="top3">
+                                <label for="filter3">仅显示前三名</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="resultFilter" id="filter4" value="last1">
+                                <label for="filter4">仅显示倒数第一</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="resultFilter" id="filter5" value="last3">
+                                <label for="filter5">仅显示倒数三名</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="nextBtn7">预览问题</button>
+                    </div>
+                </div>
+                
+                <!-- 步骤8：问题预览 -->
+                <div class="step-content" id="step8">
+                    <h2>8. 问题预览</h2>
+                    <div class="preview-section">
+                        <p>根据您选择的指标和参数，以下是系统自动生成的问题预览：</p>
+                        
+                        <div class="questions-grid" id="previewQuestions">
+                            <!-- 问题卡片将通过JS动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-success" id="saveBtn">确认保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 模拟指标数据
+            const indicators = [
+                { id: 1, name: '成交量', category: '交易' },
+                { id: 2, name: '成交金额', category: '交易' },
+                { id: 3, name: '客单价', category: '交易' },
+                { id: 4, name: '新签约客户数', category: '客户' },
+                { id: 5, name: '续约率', category: '客户' },
+                { id: 6, name: '转化率', category: '运营' },
+                { id: 7, name: '获客成本', category: '运营' },
+                { id: 8, name: '房源录入量', category: '房源' },
+                { id: 9, name: '带看量', category: '房源' },
+                { id: 10, name: '新房成交量', category: '交易' },
+                { id: 11, name: '二手房成交量', category: '交易' },
+                { id: 12, name: '租赁成交量', category: '交易' },
+                { id: 13, name: '线索数', category: '客户' },
+                { id: 14, name: '接通率', category: '客户' },
+                { id: 15, name: '约谈率', category: '客户' },
+                { id: 16, name: '活跃经纪人数', category: '人员' },
+                { id: 17, name: '人均业绩', category: '人员' },
+                { id: 18, name: '线索转化率', category: '运营' },
+                { id: 19, name: '客户满意度', category: '客户' },
+                { id: 20, name: '复购率', category: '客户' }
+            ];
+            
+            // 存储已选指标
+            let selectedIndicators = [];
+            
+            // 存储表单数据
+            const formData = {
+                indicators: [],
+                objectLevels: [],
+                timeRanges: [],
+                constraints: [],
+                groupBy: [],
+                sortOrder: [],
+                resultFilter: []
+            };
+            
+            // 当前步骤
+            let currentStep = 1;
+            
+            // 初始化步骤导航事件
+            initStepNavigation();
+            
+            // 渲染指标下拉选项
+            const indicatorDropdown = document.getElementById('indicatorDropdown');
+            
+            // 初始化按钮状态
+            initButtonStates();
+            
+            function initButtonStates() {
+                // 设置所有按钮的初始状态
+                for(let i = 1; i <= 7; i++) {
+                    validateStep(i);
+                }
+            }
+            
+            function renderIndicatorDropdown() {
+                indicatorDropdown.innerHTML = '';
+                
+                // 按分类分组显示
+                const categories = [...new Set(indicators.map(item => item.category))];
+                
+                categories.forEach(category => {
+                    const categoryHeader = document.createElement('div');
+                    categoryHeader.className = 'dropdown-category';
+                    categoryHeader.textContent = category;
+                    indicatorDropdown.appendChild(categoryHeader);
+                    
+                    // 筛选该分类下的指标
+                    const categoryIndicators = indicators.filter(i => i.category === category);
+                    
+                    categoryIndicators.forEach(indicator => {
+                        const option = document.createElement('div');
+                        option.className = 'dropdown-item';
+                        option.dataset.id = indicator.id;
+                        option.textContent = indicator.name;
+                        
+                        // 如果已选，添加标记
+                        if (selectedIndicators.some(si => si.id === indicator.id)) {
+                            option.classList.add('selected');
+                        }
+                        
+                        // 绑定点击事件
+                        option.addEventListener('click', () => {
+                            if (option.classList.contains('selected')) {
+                                // 取消选择
+                                option.classList.remove('selected');
+                                selectedIndicators = selectedIndicators.filter(si => si.id !== indicator.id);
+                            } else {
+                                // 选择
+                                option.classList.add('selected');
+                                selectedIndicators.push(indicator);
+                            }
+                            
+                            // 更新已选标签
+                            renderSelectedIndicators();
+                            
+                            // 更新表单数据
+                            formData.indicators = selectedIndicators.map(i => ({ id: i.id, name: i.name }));
+                            
+                            // 如果有选择指标，自动检验是否可以进入下一步
+                            validateStep(1);
+                        });
+                        
+                        indicatorDropdown.appendChild(option);
+                    });
+                });
+            }
+            
+            // 更新已选指标标签
+            const selectedIndicatorsContainer = document.getElementById('selectedIndicatorsContainer');
+            
+            function renderSelectedIndicators() {
+                // 清空容器
+                selectedIndicatorsContainer.innerHTML = '';
+                
+                // 渲染每个已选指标
+                selectedIndicators.forEach(indicator => {
+                    const tag = document.createElement('div');
+                    tag.className = 'tag';
+                    tag.innerHTML = `
+                        <span>${indicator.name}</span>
+                        <span class="remove" data-id="${indicator.id}">&times;</span>
+                    `;
+                    selectedIndicatorsContainer.appendChild(tag);
+                });
+                
+                // 添加输入元素
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'tag-input';
+                input.placeholder = selectedIndicators.length ? '' : '请从下拉菜单选择指标';
+                input.disabled = true;
+                selectedIndicatorsContainer.appendChild(input);
+                
+                // 绑定删除按钮事件
+                const removeBtns = selectedIndicatorsContainer.querySelectorAll('.remove');
+                removeBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = parseInt(btn.dataset.id);
+                        // 从已选列表移除
+                        selectedIndicators = selectedIndicators.filter(si => si.id !== id);
+                        // 更新下拉列表选中状态
+                        const option = indicatorDropdown.querySelector(`.dropdown-item[data-id="${id}"]`);
+                        if (option) {
+                            option.classList.remove('selected');
+                        }
+                        // 重新渲染标签
+                        renderSelectedIndicators();
+                        
+                        // 更新表单数据
+                        formData.indicators = selectedIndicators.map(i => ({ id: i.id, name: i.name }));
+                    });
+                });
+            }
+            
+            // 初始化渲染
+            renderIndicatorDropdown();
+            renderSelectedIndicators();
+            
+            // 指标搜索框
+            const indicatorSearch = document.getElementById('indicatorSearch');
+            
+            // 显示/隐藏下拉列表
+            indicatorSearch.addEventListener('focus', () => {
+                indicatorDropdown.classList.add('show');
+            });
+            
+            // 搜索过滤
+            indicatorSearch.addEventListener('input', function() {
+                const value = this.value.toLowerCase().trim();
+                
+                if (value === '') {
+                    // 如果输入为空，显示所有选项
+                    indicatorDropdown.querySelectorAll('.dropdown-item, .dropdown-category').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                    return;
+                }
+                
+                // 过滤选项
+                const options = indicatorDropdown.querySelectorAll('.dropdown-item');
+                let hasVisible = false;
+                
+                options.forEach(option => {
+                    if (option.textContent.toLowerCase().includes(value)) {
+                        option.style.display = 'block';
+                        hasVisible = true;
+                        
+                        // 高亮匹配文本
+                        const regex = new RegExp(`(${value})`, 'gi');
+                        option.innerHTML = option.textContent.replace(regex, '<span class="highlight">$1</span>');
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+                
+                // 隐藏没有匹配选项的分类标题
+                const categories = indicatorDropdown.querySelectorAll('.dropdown-category');
+                categories.forEach(category => {
+                    let nextEl = category.nextElementSibling;
+                    let hasVisibleOption = false;
+                    
+                    while (nextEl && !nextEl.classList.contains('dropdown-category')) {
+                        if (nextEl.style.display !== 'none') {
+                            hasVisibleOption = true;
+                            break;
+                        }
+                        nextEl = nextEl.nextElementSibling;
+                    }
+                    
+                    category.style.display = hasVisibleOption ? 'block' : 'none';
+                });
+            });
+            
+            // 点击外部关闭下拉框
+            document.addEventListener('click', function(e) {
+                if (!indicatorSearch.contains(e.target) && !indicatorDropdown.contains(e.target)) {
+                    indicatorDropdown.classList.remove('show');
+                }
+            });
+            
+            // 初始化步骤导航事件
+            function initStepNavigation() {
+                const stepItems = document.querySelectorAll('.step-item');
+                
+                stepItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const stepNumber = parseInt(item.dataset.step);
+                        
+                        // 只能点击已完成步骤或下一步
+                        if (stepNumber <= currentStep) {
+                            goToStep(stepNumber);
+                        }
+                    });
+                });
+                
+                // 添加下一步按钮事件监听
+                for (let i = 1; i <= 7; i++) {
+                    document.getElementById(`nextBtn${i}`).addEventListener('click', function() {
+                        if (validateStep(i)) {
+                            goToStep(i + 1);
+                        }
+                    });
+                }
+                
+                // 监听对象层级选择事件
+                document.querySelectorAll('input[name="objectLevel"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        // 收集所有选中的值
+                        const selectedLevels = Array.from(document.querySelectorAll('input[name="objectLevel"]:checked'))
+                            .map(input => input.value);
+                        
+                        formData.objectLevels = selectedLevels;
+                        validateStep(2);
+                    });
+                });
+                
+                // 时间范围选择事件
+                document.getElementById('timeRangeSelect').addEventListener('change', function() {
+                    if (this.value) {
+                        // 添加选中的预定义时间范围
+                        const text = this.options[this.selectedIndex].text;
+                        addTimeRangeTag(text);
+                        this.value = ''; // 重置选择
+                        
+                        validateStep(3);
+                    }
+                });
+                
+                // 约束条件维度变化事件
+                document.getElementById('constraintDimension').addEventListener('change', handleConstraintDimensionChange);
+                
+                // 分组方式选择事件
+                document.querySelectorAll('input[name="groupBy"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        // 收集所有选中的值
+                        const selectedGroups = Array.from(document.querySelectorAll('input[name="groupBy"]:checked'))
+                            .map(input => input.value);
+                        
+                        formData.groupBy = selectedGroups;
+                        validateStep(5);
+                    });
+                });
+                
+                // 排序方式选择事件
+                document.querySelectorAll('input[name="sortOrder"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        // 收集所有选中的值
+                        const selectedOrders = Array.from(document.querySelectorAll('input[name="sortOrder"]:checked'))
+                            .map(input => input.value);
+                        
+                        formData.sortOrder = selectedOrders;
+                        validateStep(6);
+                    });
+                });
+                
+                // 结果筛选方式选择事件
+                document.querySelectorAll('input[name="resultFilter"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        // 收集所有选中的值
+                        const selectedFilters = Array.from(document.querySelectorAll('input[name="resultFilter"]:checked'))
+                            .map(input => input.value);
+                        
+                        formData.resultFilter = selectedFilters;
+                        validateStep(7);
+                    });
+                });
+                
+                // 保存按钮事件
+                document.getElementById('saveBtn').addEventListener('click', handleSave);
+            }
+            
+            // 步骤切换函数
+            function goToStep(stepNumber) {
+                // 更新当前步骤
+                currentStep = stepNumber;
+                
+                // 更新步骤导航样式
+                updateStepNavigation();
+                
+                // 显示对应步骤内容
+                document.querySelectorAll('.step-content').forEach(content => {
+                    content.style.display = 'none';
+                    content.classList.remove('active');
+                });
+                document.getElementById('step' + stepNumber).style.display = 'block';
+                document.getElementById('step' + stepNumber).classList.add('active');
+                
+                // 如果进入问题预览步骤，渲染问题卡片
+                if (stepNumber === 8) {
+                    renderPreviewQuestions();
+                }
+            }
+            
+            // 更新步骤导航样式
+            function updateStepNavigation() {
+                const stepItems = document.querySelectorAll('.step-item');
+                
+                stepItems.forEach(item => {
+                    const stepNumber = parseInt(item.dataset.step);
+                    item.classList.remove('active', 'completed');
+                    
+                    if (stepNumber < currentStep) {
+                        item.classList.add('completed');
+                    } else if (stepNumber === currentStep) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+            
+            // 验证步骤是否可以进入下一步
+            function validateStep(stepNumber) {
+                let isValid = false;
+                
+                switch (stepNumber) {
+                    case 1: // 选择指标
+                        isValid = selectedIndicators.length > 0;
+                        document.getElementById('nextBtn1').disabled = !isValid;
+                        break;
+                    case 2: // 选择对象层级
+                        isValid = formData.objectLevels.length > 0;
+                        document.getElementById('nextBtn2').disabled = !isValid;
+                        break;
+                    case 3: // 设置时间范围
+                        isValid = formData.timeRanges.length > 0;
+                        document.getElementById('nextBtn3').disabled = !isValid;
+                        break;
+                    case 4: // 约束条件
+                        isValid = true; // 约束条件可选
+                        document.getElementById('nextBtn4').disabled = !isValid;
+                        break;
+                    case 5: // 分组
+                        isValid = formData.groupBy.length > 0;
+                        document.getElementById('nextBtn5').disabled = !isValid;
+                        break;
+                    case 6: // 排序
+                        isValid = formData.sortOrder.length > 0;
+                        document.getElementById('nextBtn6').disabled = !isValid;
+                        break;
+                    case 7: // 筛选
+                        isValid = formData.resultFilter.length > 0;
+                        document.getElementById('nextBtn7').disabled = !isValid;
+                        break;
+                }
+                
+                return isValid;
+            }
+            
+            // 约束条件维度变化事件
+            const constraintDimension = document.getElementById('constraintDimension');
+            const constraintValuesContainer = document.getElementById('constraintValuesContainer');
+            const constraintValues = document.getElementById('constraintValues');
+            
+            function handleConstraintDimensionChange() {
+                if (this.value) {
+                    constraintValuesContainer.style.display = 'block';
+                    
+                    // 模拟不同维度的可选值
+                    let values = [];
+                    switch(this.value) {
+                        case '业务类型':
+                            values = ['新房交易', '二手房交易', '租赁业务', '咨询服务'];
+                            break;
+                        case '客户类型':
+                            values = ['个人买家', '个人卖家', '企业客户', 'VIP客户', '老客户', '新客户'];
+                            break;
+                        case '房源类型':
+                            values = ['普通住宅', '别墅', '公寓', '商铺', '写字楼', '厂房'];
+                            break;
+                        case '成交方式':
+                            values = ['线上成交', '线下成交', '居间撮合', '代理交易'];
+                            break;
+                        default:
+                            values = [];
+                    }
+                    
+                    // 清空并重新渲染选项
+                    constraintValues.innerHTML = '';
+                    values.forEach((value, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'checkbox-item';
+                        item.innerHTML = `
+                            <input type="checkbox" id="const${index}" value="${value}">
+                            <label for="const${index}">${value}</label>
+                        `;
+                        
+                        // 添加复选框变化事件
+                        const checkbox = item.querySelector('input');
+                        checkbox.addEventListener('change', function() {
+                            // 收集已选值
+                            const selectedValues = Array.from(constraintValues.querySelectorAll('input:checked'))
+                                .map(input => input.value);
+                            
+                            if (selectedValues.length > 0) {
+                                // 添加约束条件
+                                const constraintObj = {
+                                    dimension: constraintDimension.value,
+                                    values: selectedValues
+                                };
+                                
+                                // 更新表单数据
+                                // 检查是否已存在相同维度的约束条件
+                                const existingIndex = formData.constraints.findIndex(c => c.dimension === constraintObj.dimension);
+                                if (existingIndex >= 0) {
+                                    formData.constraints[existingIndex] = constraintObj;
+                                } else {
+                                    formData.constraints.push(constraintObj);
+                                }
+                                
+                                // 刷新已选约束条件显示
+                                renderSelectedConstraints();
+                                
+                                validateStep(4);
+                            }
+                        });
+                        
+                        constraintValues.appendChild(item);
+                    });
+                } else {
+                    constraintValuesContainer.style.display = 'none';
+                }
+            }
+            
+            // 渲染已选约束条件
+            function renderSelectedConstraints() {
+                const selectedConstraints = document.getElementById('selectedConstraints');
+                selectedConstraints.innerHTML = '';
+                
+                if (formData.constraints.length === 0) {
+                    selectedConstraints.innerHTML = '<div class="hint">暂无约束条件</div>';
+                    return;
+                }
+                
+                formData.constraints.forEach(constraint => {
+                    const item = document.createElement('div');
+                    item.className = 'constraint-item';
+                    
+                    const valuesHtml = constraint.values.map(v => 
+                        `<span class="constraint-value">${v}</span>`).join('');
+                    
+                    item.innerHTML = `
+                        <div class="constraint-dimension">${constraint.dimension}:</div>
+                        <div class="constraint-values">${valuesHtml}</div>
+                        <div class="constraint-remove" data-dimension="${constraint.dimension}">&times;</div>
+                    `;
+                    
+                    // 绑定删除按钮事件
+                    item.querySelector('.constraint-remove').addEventListener('click', function() {
+                        const dimension = this.dataset.dimension;
+                        formData.constraints = formData.constraints.filter(c => c.dimension !== dimension);
+                        renderSelectedConstraints();
+                    });
+                    
+                    selectedConstraints.appendChild(item);
+                });
+            }
+            
+            // 时间范围标签输入
+            const timeRangeInput = document.getElementById('timeRangeInput');
+            const timeRangeContainer = document.getElementById('timeRangeContainer');
+            
+            timeRangeInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && this.value.trim()) {
+                    e.preventDefault();
+                    addTimeRangeTag(this.value.trim());
+                    this.value = '';
+                    
+                    validateStep(3);
+                }
+            });
+            
+            function addTimeRangeTag(text) {
+                const tag = document.createElement('div');
+                tag.className = 'tag';
+                tag.innerHTML = `
+                    <span>${text}</span>
+                    <span class="remove">&times;</span>
+                `;
+                
+                tag.querySelector('.remove').addEventListener('click', function() {
+                    tag.remove();
+                    
+                    // 更新表单数据
+                    updateTimeRanges();
+                });
+                
+                timeRangeContainer.insertBefore(tag, timeRangeInput);
+                
+                // 更新表单数据
+                updateTimeRanges();
+            }
+            
+            // 更新时间范围数据
+            function updateTimeRanges() {
+                const tags = timeRangeContainer.querySelectorAll('.tag');
+                formData.timeRanges = Array.from(tags).map(tag => tag.querySelector('span').textContent);
+            }
+            
+            const timeRangeSelect = document.getElementById('timeRangeSelect');
+            timeRangeSelect.addEventListener('change', function() {
+                if (this.value) {
+                    // 添加选中的预定义时间范围
+                    const text = this.options[this.selectedIndex].text;
+                    addTimeRangeTag(text);
+                    this.value = ''; // 重置选择
+                }
+            });
+            
+            // 保存按钮事件
+            function handleSave() {
+                console.log('保存数据:', formData);
+                
+                // 准备推荐问题数据
+                const questions = generatePreviewQuestions();
+                
+                // 将数据发送到父窗口
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'recommendedQuestionsData',
+                        questions: questions
+                    }, '*');
+                }
+                
+                alert('保存成功！');
+            }
+            
+            // 监听来自父窗口的消息
+            window.addEventListener('message', function(event) {
+                // 检查消息类型
+                if (event.data && event.data.type === 'getRecommendedQuestions') {
+                    console.log('收到获取推荐问题请求');
+                    
+                    // 立即生成并发送推荐问题数据
+                    try {
+                        const questions = generatePreviewQuestions();
+                        console.log('生成推荐问题:', questions);
+                        
+                        // 将数据发送回父窗口
+                        if (window.parent && window.parent !== window) {
+                            window.parent.postMessage({
+                                type: 'recommendedQuestionsData',
+                                questions: questions
+                            }, '*');
+                            console.log('已发送推荐问题数据到父窗口');
+                        }
+                    } catch(e) {
+                        console.error('生成推荐问题出错:', e);
+                        // 发送空数据，避免父窗口一直等待
+                        if (window.parent && window.parent !== window) {
+                            window.parent.postMessage({
+                                type: 'recommendedQuestionsData',
+                                questions: []
+                            }, '*');
+                        }
+                    }
+                }
+            });
+            
+            // 渲染问题预览卡片
+            function renderPreviewQuestions() {
+                const previewContainer = document.getElementById('previewQuestions');
+                previewContainer.innerHTML = '';
+                
+                // 生成6个问题卡片
+                const questions = generatePreviewQuestions();
+                
+                questions.forEach(question => {
+                    const card = document.createElement('div');
+                    card.className = 'question-card';
+                    card.innerHTML = `
+                        <div class="question-title">${question.title}</div>
+                        <div class="question-content">${question.content}</div>
+                        <div class="question-meta">
+                            <span>${question.time}</span>
+                            <span>${question.type}</span>
+                        </div>
+                    `;
+                    previewContainer.appendChild(card);
+                });
+            }
+            
+            // 生成预览问题
+            function generatePreviewQuestions() {
+                try {
+                    const questions = [];
+                    
+                    // 获取选择的指标名称（确保有默认值）
+                    const indicatorNames = selectedIndicators && selectedIndicators.length > 0 
+                        ? selectedIndicators.map(i => i.name) 
+                        : ['成交量', '客单价', '转化率'];
+                    
+                    // 获取时间范围（确保有默认值）
+                    const timeRange = formData && formData.timeRanges && formData.timeRanges.length > 0 
+                        ? formData.timeRanges[0] 
+                        : '本月';
+                    
+                    // 获取对象层级（确保有默认值）
+                    const levels = formData && formData.objectLevels && formData.objectLevels.length > 0 
+                        ? (formData.objectLevels.length > 1 
+                            ? `${formData.objectLevels[0]}和${formData.objectLevels[1]}` 
+                            : formData.objectLevels[0])
+                        : '全国';
+                    
+                    // 获取分组方式（确保有默认值）
+                    const groupBy = formData && formData.groupBy && formData.groupBy.length > 0 
+                        ? formData.groupBy[0] 
+                        : '各区域';
+                    
+                    // 获取排序方式（确保有默认值）
+                    const sortOrder = formData && formData.sortOrder && formData.sortOrder.includes('desc') 
+                        ? '降序' 
+                        : '正序';
+                    
+                    // 常用问题模板
+                    const questionTemplates = [
+                        {
+                            title: `${timeRange}${levels}${indicatorNames[0] || '成交量'}排名`,
+                            content: `${timeRange}${levels}${indicatorNames[0] || '成交量'}排名前10，按${sortOrder}排列`,
+                            time: timeRange,
+                            type: '排名分析'
+                        },
+                        {
+                            title: `${levels}${indicatorNames[0] || '成交量'}与${indicatorNames[1] || '客单价'}关系分析`,
+                            content: `分析${levels}${indicatorNames[0] || '成交量'}与${indicatorNames[1] || '客单价'}之间的关系`,
+                            time: timeRange,
+                            type: '关系分析'
+                        },
+                        {
+                            title: `${timeRange}${groupBy}${indicatorNames[0] || '成交量'}对比`,
+                            content: `对比${timeRange}${groupBy}${indicatorNames[0] || '成交量'}情况`,
+                            time: timeRange,
+                            type: '对比分析'
+                        },
+                        {
+                            title: `${levels}${indicatorNames[0] || '成交量'}趋势分析`,
+                            content: `分析${levels}${indicatorNames[0] || '成交量'}${timeRange}趋势变化`,
+                            time: timeRange,
+                            type: '趋势分析'
+                        },
+                        {
+                            title: `${levels}${indicatorNames[0] || '成交量'}与目标完成率`,
+                            content: `${levels}${indicatorNames[0] || '成交量'}${timeRange}目标完成情况分析`,
+                            time: timeRange,
+                            type: '目标分析'
+                        },
+                        {
+                            title: `${timeRange}${levels}业绩异常门店排查`,
+                            content: `${timeRange}内${levels}${indicatorNames[0] || '成交量'}异常波动门店排查`,
+                            time: timeRange,
+                            type: '异常分析'
+                        }
+                    ];
+                    
+                    // 返回问题模板作为预览问题
+                    return questionTemplates;
+                } catch (error) {
+                    console.error("生成预览问题出错:", error);
+                    // 返回默认问题
+                    return [
+                        {
+                            title: "成交量排名分析",
+                            content: "分析各区域成交量排名情况",
+                            time: "本月",
+                            type: "排名分析"
+                        },
+                        {
+                            title: "客单价趋势分析",
+                            content: "分析客单价月度变化趋势",
+                            time: "过去3个月",
+                            type: "趋势分析"
+                        }
+                    ];
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

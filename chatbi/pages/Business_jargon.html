@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>业务黑话</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 0;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .knowledge-list {
+            margin-bottom: 30px;
+        }
+        .knowledge-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        .knowledge-item.synonym {
+            border-left-color: #2196F3;
+        }
+        .knowledge-item.explanation {
+            border-left-color: #4CAF50;
+        }
+        .knowledge-item.rewrite {
+            border-left-color: #FF9800;
+        }
+        .knowledge-type {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            color: white;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        .knowledge-type.synonym {
+            background-color: #2196F3;
+        }
+        .knowledge-type.explanation {
+            background-color: #4CAF50;
+        }
+        .knowledge-type.rewrite {
+            background-color: #FF9800;
+        }
+        .knowledge-term {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .knowledge-explanation {
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .knowledge-mapping {
+            color: #2196F3;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .knowledge-rule {
+            color: #4CAF50;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .knowledge-question {
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .knowledge-correct-question {
+            color: #FF9800;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .knowledge-correct-answer {
+            color: #009688;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #eee;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .filter-select {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-col {
+            flex: 1;
+        }
+        .add-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .add-btn:hover {
+            background-color: #45a049;
+        }
+        .add-btn i {
+            font-size: 18px;
+        }
+        
+        /* 翻页控件样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .pagination-btn {
+            padding: 8px 12px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .pagination-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .add-knowledge-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+        
+        .add-knowledge-btn:hover {
+            transform: scale(1.1);
+            background-color: #45a049;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 101;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+        }
+        
+        .knowledge-type-selector {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        .knowledge-type-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .knowledge-type-btn:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .knowledge-type-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        
+        .knowledge-form {
+            display: none;
+        }
+        
+        .knowledge-form.active {
+            display: block;
+        }
+        
+        /* 添加表格样式 */
+        .knowledge-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .knowledge-table th, 
+        .knowledge-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .knowledge-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .knowledge-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .knowledge-table .type-cell {
+            width: 100px;
+        }
+        
+        .knowledge-table .term-cell {
+            width: 150px;
+            font-weight: bold;
+        }
+        
+        .knowledge-table .business-cell {
+            width: 120px;
+        }
+        
+        .knowledge-table .role-cell {
+            width: 120px;
+        }
+        
+        .knowledge-table .content-cell {
+            width: auto;
+        }
+        
+        .knowledge-table .actions-cell {
+            width: 150px;
+            text-align: right;
+        }
+        
+        .action-btn {
+            padding: 4px 8px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .edit-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .auth-btn {
+            background-color: #FF9800;
+            color: white;
+        }
+        
+        .table-actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 15px;
+        }
+        
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .bulk-action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            background-color: #f0f0f0;
+        }
+        
+        .bulk-action-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .bulk-action-btn.download {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .bulk-action-btn.upload {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .bulk-action-btn.delete {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .checkbox-cell {
+            width: 40px;
+            text-align: center;
+        }
+        
+        /* 移动按钮到右上角 */
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        
+        /* 下载模板按钮和下拉菜单 */
+        .download-template-container {
+            position: relative;
+            margin-right: 10px;
+        }
+        
+        .download-template-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .download-template-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .download-template-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .download-template-container:hover .download-template-menu {
+            display: block;
+        }
+        
+        .download-template-item {
+            padding: 10px 15px;
+            text-decoration: none;
+            display: block;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .download-template-item:hover {
+            background-color: #f1f1f1;
+        }
+        
+        /* 添加多选下拉菜单样式 */
+        select[multiple] {
+            min-height: 80px;
+            padding: 5px;
+        }
+        
+        small {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>业务黑话词典</h1>
+        
+        <!-- 将标题改为普通文字，添加按钮放在右上角 -->
+        <div class="header-actions">
+            <h2 class="page-title">业务黑话</h2>
+            <div style="display: flex; gap: 10px;">
+                <div class="download-template-container">
+                    <button class="download-template-btn">下载模板</button>
+                    <div class="download-template-menu">
+                        <a href="#" class="download-template-item" onclick="downloadTemplate('synonym')">同义词映射模板</a>
+                        <a href="#" class="download-template-item" onclick="downloadTemplate('explanation')">名词解释模板</a>
+                        <a href="#" class="download-template-item" onclick="downloadTemplate('rewrite')">问题改写模板</a>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="openAddKnowledgeModal()"><i>+</i> 新增知识</button>
+            </div>
+        </div>
+        
+        <div id="knowledge-list" class="tab-content active">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="search-input" placeholder="搜索业务黑话..." onkeyup="searchKnowledge()">
+                <select class="filter-select" id="type-filter" onchange="filterKnowledge()">
+                    <option value="all">所有类型</option>
+                    <option value="synonym">同义词映射</option>
+                    <option value="explanation">名词解释和规则</option>
+                    <option value="rewrite">问题改写</option>
+                </select>
+            </div>
+            
+            <!-- 表格操作栏，让批量操作按钮默认显示 -->
+            <div class="table-actions-bar">
+                <div class="bulk-actions" id="bulk-actions">
+                    <button class="bulk-action-btn download">批量下载</button>
+                    <button class="bulk-action-btn upload">批量上传</button>
+                    <button class="bulk-action-btn delete">批量删除</button>
+                    <button class="bulk-action-btn business" onclick="openBatchBusinessModal()">批量修改业务线</button>
+                    <button class="bulk-action-btn role" onclick="openBatchRoleModal()">批量修改角色</button>
+                </div>
+                <div class="selected-info" id="selected-info"></div>
+            </div>
+            
+            <!-- 改为表格形式 -->
+            <table class="knowledge-table" id="knowledge-table">
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell"><input type="checkbox" id="select-all" onclick="toggleSelectAll()"></th>
+                        <th class="type-cell">类型</th>
+                        <th class="term-cell">术语</th>
+                        <th class="business-cell">适用业务线</th>
+                        <th class="role-cell">适用角色</th>
+                        <th class="content-cell">内容</th>
+                        <th class="actions-cell">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="knowledge-items">
+                    <!-- 数据将通过JavaScript动态加载 -->
+                </tbody>
+            </table>
+            
+            <!-- 添加翻页控件 -->
+            <div class="pagination">
+                <button class="pagination-btn" id="prev-page" onclick="changePage(-1)">上一页</button>
+                <div class="pagination-info">第 <span id="current-page">1</span> 页 / 共 <span id="total-pages">1</span> 页</div>
+                <button class="pagination-btn" id="next-page" onclick="changePage(1)">下一页</button>
+            </div>
+        </div>
+        
+        <!-- 添加知识的模态框 -->
+        <div class="modal" id="knowledge-modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeAddKnowledgeModal()">&times;</span>
+                <h2>添加新知识</h2>
+                
+                <div class="knowledge-type-selector">
+                    <div class="knowledge-type-btn active" onclick="switchKnowledgeForm('synonym-form')">同义词映射</div>
+                    <div class="knowledge-type-btn" onclick="switchKnowledgeForm('explanation-form')">名词解释</div>
+                    <div class="knowledge-type-btn" onclick="switchKnowledgeForm('rewrite-form')">问题改写</div>
+                </div>
+                
+                <!-- 同义词映射表单 -->
+                <div id="synonym-form" class="knowledge-form active">
+                    <form>
+                        <div class="form-group">
+                            <label for="synonym-term">黑话术语</label>
+                            <input type="text" id="synonym-term" name="synonym-term" required placeholder="例如：GMV">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="synonym-mapping">映射标准术语</label>
+                            <input type="text" id="synonym-mapping" name="synonym-mapping" required placeholder="例如：商品交易总额">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="synonym-business">适用业务线</label>
+                            <select id="synonym-business" name="synonym-business" multiple>
+                                <option value="全部业务线">全部业务线</option>
+                                <option value="电商">电商</option>
+                                <option value="金融">金融</option>
+                                <option value="文娱">文娱</option>
+                                <option value="物流">物流</option>
+                            </select>
+                            <small>按住Ctrl键可多选</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="synonym-role">适用角色</label>
+                            <select id="synonym-role" name="synonym-role" multiple>
+                                <option value="全部角色">全部角色</option>
+                                <option value="产品经理">产品经理</option>
+                                <option value="研发">研发</option>
+                                <option value="设计师">设计师</option>
+                                <option value="运营">运营</option>
+                                <option value="市场">市场</option>
+                            </select>
+                            <small>按住Ctrl键可多选</small>
+                        </div>
+                        
+                        <button type="button" onclick="addSynonym()">提交</button>
+                    </form>
+                </div>
+                
+                <!-- 名词解释和规则表单 -->
+                <div id="explanation-form" class="knowledge-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="explanation-term">名词术语</label>
+                            <input type="text" id="explanation-term" name="explanation-term" required placeholder="例如：闭环">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="term-explanation">术语解释</label>
+                            <textarea id="term-explanation" name="term-explanation" required placeholder="例如：指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="process-rule">处理规则</label>
+                            <textarea id="process-rule" name="process-rule" placeholder="例如：遇到'闭环'一词时，需要明确询问用户是指哪个具体业务流程的闭环"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="explanation-business">适用业务线</label>
+                            <select id="explanation-business" name="explanation-business" multiple>
+                                <option value="全部业务线">全部业务线</option>
+                                <option value="电商">电商</option>
+                                <option value="金融">金融</option>
+                                <option value="文娱">文娱</option>
+                                <option value="物流">物流</option>
+                            </select>
+                            <small>按住Ctrl键可多选</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="explanation-role">适用角色</label>
+                            <select id="explanation-role" name="explanation-role" multiple>
+                                <option value="全部角色">全部角色</option>
+                                <option value="产品经理">产品经理</option>
+                                <option value="研发">研发</option>
+                                <option value="设计师">设计师</option>
+                                <option value="运营">运营</option>
+                                <option value="市场">市场</option>
+                            </select>
+                            <small>按住Ctrl键可多选</small>
+                        </div>
+                        
+                        <button type="button" onclick="addExplanation()">提交</button>
+                    </form>
+                </div>
+                
+                <!-- 问题改写表单 -->
+                <div id="rewrite-form" class="knowledge-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="rewrite-title">标题/场景描述</label>
+                            <input type="text" id="rewrite-title" name="rewrite-title" required placeholder="例如：查询问题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="original-question">原始问题</label>
+                            <textarea id="original-question" name="original-question" required placeholder="例如：查一下抓手有哪些？"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="corrected-question">改写后问题</label>
+                            <textarea id="corrected-question" name="corrected-question" required placeholder="例如：有哪些实现业务目标的具体方法或工具？"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="correct-answer">标准答案</label>
+                            <textarea id="correct-answer" name="correct-answer" required placeholder="例如：实现业务目标的具体方法或工具包括：数据分析、用户调研、A/B测试、敏捷开发等方法论。"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="rewrite-business">适用业务线</label>
+                            <select id="rewrite-business" name="rewrite-business" multiple>
+                                <option value="全部业务线">全部业务线</option>
+                                <option value="电商">电商</option>
+                                <option value="金融">金融</option>
+                                <option value="文娱">文娱</option>
+                                <option value="物流">物流</option>
+                            </select>
+                            <small>按住Ctrl键可多选</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="rewrite-role">适用角色</label>
+                            <select id="rewrite-role" name="rewrite-role" multiple>
+                                <option value="全部角色">全部角色</option>
+                                <option value="产品经理">产品经理</option>
+                                <option value="研发">研发</option>
+                                <option value="设计师">设计师</option>
+                                <option value="运营">运营</option>
+                                <option value="市场">市场</option>
+                            </select>
+                            <small>按住Ctrl键可多选</small>
+                        </div>
+                        
+                        <button type="button" onclick="addRewrite()">提交</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量修改业务线模态框 -->
+    <div class="modal" id="batch-business-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeBatchBusinessModal()">&times;</span>
+            <h2>批量修改业务线</h2>
+            
+            <div class="form-group">
+                <label for="batch-business-select">选择业务线</label>
+                <select id="batch-business-select" multiple>
+                    <option value="全部业务线">全部业务线</option>
+                    <option value="电商">电商</option>
+                    <option value="金融">金融</option>
+                    <option value="文娱">文娱</option>
+                    <option value="物流">物流</option>
+                </select>
+            </div>
+            
+            <button type="button" onclick="applyBatchBusiness()">应用</button>
+        </div>
+    </div>
+    
+    <!-- 批量修改角色模态框 -->
+    <div class="modal" id="batch-role-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeBatchRoleModal()">&times;</span>
+            <h2>批量修改角色</h2>
+            
+            <div class="form-group">
+                <label for="batch-role-select">选择角色</label>
+                <select id="batch-role-select" multiple>
+                    <option value="全部角色">全部角色</option>
+                    <option value="产品经理">产品经理</option>
+                    <option value="研发">研发</option>
+                    <option value="设计师">设计师</option>
+                    <option value="运营">运营</option>
+                    <option value="市场">市场</option>
+                </select>
+            </div>
+            
+            <button type="button" onclick="applyBatchRole()">应用</button>
+        </div>
+    </div>
+
+    <script>
+        // 翻页相关变量
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let knowledgeItems = [];
+        let filteredItems = [];
+        let selectedItems = new Set();
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加示例数据
+            loadSampleData();
+            
+            // 获取所有知识项
+            knowledgeItems = Array.from(document.querySelectorAll('.knowledge-row'));
+            filteredItems = [...knowledgeItems];
+            
+            // 初始化分页
+            updatePagination();
+            showCurrentPageItems();
+        });
+        
+        // 加载示例数据
+        function loadSampleData() {
+            const tbody = document.getElementById('knowledge-items');
+            
+            // 同义词映射示例
+            addKnowledgeRow(tbody, 'synonym', 'GMV', '商品交易总额', '电商', '产品经理,运营');
+            addKnowledgeRow(tbody, 'synonym', 'UV', '访客数', '全部业务线', '产品经理,研发');
+            addKnowledgeRow(tbody, 'synonym', 'PV', '页面浏览量', '电商,金融', '全部角色');
+            addKnowledgeRow(tbody, 'synonym', 'ROI', '投资回报率', '金融', '市场,运营');
+            
+            // 名词解释和规则示例
+            addKnowledgeRow(tbody, 'explanation', '闭环', '指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。<br>规则：遇到"闭环"一词时，需要明确询问用户是指哪个具体业务流程的闭环', '全部业务线', '产品经理,研发');
+            addKnowledgeRow(tbody, 'explanation', '赋能', '指提供资源、工具或权力，使他人能够完成任务或实现目标。在企业环境中，常用于描述管理层为员工提供支持的行为。<br>规则：可进一步询问赋能的具体方式，避免空泛表述', '电商,文娱', '产品经理');
+            addKnowledgeRow(tbody, 'explanation', '抓手', '指实现目标的具体方法、途径或工具，是将战略落地的关键点。<br>规则：遇到"抓手"一词时，需要明确询问用户是指哪个具体业务的抓手', '金融', '全部角色');
+            addKnowledgeRow(tbody, 'explanation', '颗粒度', '指数据或任务的详细程度，颗粒度越细，表示描述或分析越详细。', '电商,物流', '研发,产品经理');
+            
+            // 问题改写示例
+            addKnowledgeRow(tbody, 'rewrite', '查询问题', '原始问题：查一下抓手有哪些？<br>改写问题：有哪些实现业务目标的具体方法或工具？<br>标准答案：实现业务目标的具体方法或工具包括：数据分析、用户调研、A/B测试、敏捷开发等方法论。', '全部业务线', '全部角色');
+            addKnowledgeRow(tbody, 'rewrite', '业务指标查询', '原始问题：帮我看看昨天的UV和PV情况？<br>改写问题：昨天的访客数和页面浏览量数据是多少？<br>标准答案：昨天的访客数为XX，页面浏览量为XX，环比上周同期有XX%的增长。', '电商,金融', '产品经理,运营');
+            addKnowledgeRow(tbody, 'rewrite', '产品定位问题', '原始问题：我们产品的赛道是什么？<br>改写问题：我们产品所在的市场领域和主要竞争对手有哪些？<br>标准答案：我们产品主要在XX市场领域，主要竞争对手包括XX、XX等公司的类似产品。', '文娱', '产品经理,市场');
+            addKnowledgeRow(tbody, 'rewrite', '绩效评估问题', '原始问题：这个指标的权重怎么定？<br>改写问题：在绩效评估体系中，这个业务指标应该占多少比重才合适？<br>标准答案：根据公司的战略重点和业务特点，建议该指标在整体评估中占据XX%的权重。', '全部业务线', '产品经理');
+        }
+        
+        // 添加知识行
+        function addKnowledgeRow(tbody, type, term, content, business = '全部业务线', role = '全部角色') {
+            const row = document.createElement('tr');
+            row.className = `knowledge-row ${type}`;
+            
+            let typeText = '';
+            switch(type) {
+                case 'synonym':
+                    typeText = '同义词映射';
+                    break;
+                case 'explanation':
+                    typeText = '名词解释';
+                    break;
+                case 'rewrite':
+                    typeText = '问题改写';
+                    break;
+            }
+            
+            row.innerHTML = `
+                <td class="checkbox-cell"><input type="checkbox" class="item-checkbox" onchange="toggleItemSelection(this)"></td>
+                <td class="type-cell"><span class="knowledge-type ${type}">${typeText}</span></td>
+                <td class="term-cell">${term}</td>
+                <td class="business-cell">${business}</td>
+                <td class="role-cell">${role}</td>
+                <td class="content-cell">${content}</td>
+                <td class="actions-cell">
+                    <button class="action-btn edit-btn" onclick="editKnowledgeItem(this)">编辑</button>
+                    <button class="action-btn delete-btn" onclick="deleteKnowledgeItem(this)">删除</button>
+                    <button class="action-btn auth-btn" onclick="authorizeKnowledgeItem(this)">授权</button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        }
+        
+        // 全选/取消全选
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('select-all');
+            const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+            
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+                toggleItemSelection(checkbox);
+            });
+        }
+        
+        // 切换项目选择状态
+        function toggleItemSelection(checkbox) {
+            const row = checkbox.closest('tr');
+            const rowId = Array.from(row.parentNode.children).indexOf(row);
+            
+            if (checkbox.checked) {
+                selectedItems.add(rowId);
+                row.classList.add('selected');
+            } else {
+                selectedItems.delete(rowId);
+                row.classList.remove('selected');
+            }
+            
+            updateBulkActions();
+        }
+        
+        // 更新批量操作区域
+        function updateBulkActions() {
+            const selectedInfo = document.getElementById('selected-info');
+            
+            if (selectedItems.size > 0) {
+                selectedInfo.textContent = `已选择 ${selectedItems.size} 项`;
+            } else {
+                selectedInfo.textContent = '';
+            }
+        }
+        
+        // 编辑知识项
+        function editKnowledgeItem(button) {
+            const row = button.closest('tr');
+            const type = row.className.split(' ')[1];
+            const term = row.querySelector('.term-cell').textContent;
+            
+            alert(`编辑 ${type} 类型的知识项: ${term}`);
+            // 这里后续可以实现编辑功能
+        }
+        
+        // 删除知识项
+        function deleteKnowledgeItem(button) {
+            const row = button.closest('tr');
+            const term = row.querySelector('.term-cell').textContent;
+            
+            if (confirm(`确定要删除知识项 "${term}" 吗？`)) {
+                row.remove();
+                
+                // 更新知识项数组
+                knowledgeItems = Array.from(document.querySelectorAll('.knowledge-row'));
+                filterItems(document.getElementById('search-input').value.toLowerCase(), 
+                           document.getElementById('type-filter').value);
+            }
+        }
+        
+        // 授权知识项
+        function authorizeKnowledgeItem(button) {
+            const row = button.closest('tr');
+            const term = row.querySelector('.term-cell').textContent;
+            
+            alert(`授权知识项: ${term}`);
+            // 这里后续可以实现授权功能
+        }
+        
+        // 添加同义词映射
+        function addSynonym() {
+            const term = document.getElementById('synonym-term').value.trim();
+            const mapping = document.getElementById('synonym-mapping').value.trim();
+            const businessSelect = document.getElementById('synonym-business');
+            const roleSelect = document.getElementById('synonym-role');
+            
+            if (!term || !mapping) {
+                alert('请填写黑话术语和映射标准术语！');
+                return;
+            }
+            
+            // 获取选中的业务线
+            const selectedBusiness = Array.from(businessSelect.selectedOptions).map(option => option.value);
+            const business = selectedBusiness.length > 0 ? selectedBusiness.join(',') : '全部业务线';
+            
+            // 获取选中的角色
+            const selectedRole = Array.from(roleSelect.selectedOptions).map(option => option.value);
+            const role = selectedRole.length > 0 ? selectedRole.join(',') : '全部角色';
+            
+            // 添加到表格中
+            const tbody = document.getElementById('knowledge-items');
+            addKnowledgeRow(tbody, 'synonym', term, mapping, business, role);
+            
+            // 更新知识项数组
+            knowledgeItems = Array.from(document.querySelectorAll('.knowledge-row'));
+            
+            // 重置表单
+            document.getElementById('synonym-form').querySelector('form').reset();
+            
+            // 关闭模态框
+            closeAddKnowledgeModal();
+            
+            // 更新分页
+            updatePagination();
+            currentPage = 1;
+            showCurrentPageItems();
+            
+            // 显示成功消息
+            alert('同义词映射添加成功！');
+        }
+        
+        // 添加名词解释和规则
+        function addExplanation() {
+            const term = document.getElementById('explanation-term').value.trim();
+            const explanation = document.getElementById('term-explanation').value.trim();
+            const rule = document.getElementById('process-rule').value.trim();
+            const businessSelect = document.getElementById('explanation-business');
+            const roleSelect = document.getElementById('explanation-role');
+            
+            if (!term || !explanation) {
+                alert('请填写名词术语和术语解释！');
+                return;
+            }
+            
+            let content = explanation;
+            if (rule) {
+                content += `<br>规则：${rule}`;
+            }
+            
+            // 获取选中的业务线
+            const selectedBusiness = Array.from(businessSelect.selectedOptions).map(option => option.value);
+            const business = selectedBusiness.length > 0 ? selectedBusiness.join(',') : '全部业务线';
+            
+            // 获取选中的角色
+            const selectedRole = Array.from(roleSelect.selectedOptions).map(option => option.value);
+            const role = selectedRole.length > 0 ? selectedRole.join(',') : '全部角色';
+            
+            // 添加到表格中
+            const tbody = document.getElementById('knowledge-items');
+            addKnowledgeRow(tbody, 'explanation', term, content, business, role);
+            
+            // 更新知识项数组
+            knowledgeItems = Array.from(document.querySelectorAll('.knowledge-row'));
+            
+            // 重置表单
+            document.getElementById('explanation-form').querySelector('form').reset();
+            
+            // 关闭模态框
+            closeAddKnowledgeModal();
+            
+            // 更新分页
+            updatePagination();
+            currentPage = 1;
+            showCurrentPageItems();
+            
+            // 显示成功消息
+            alert('名词解释和规则添加成功！');
+        }
+        
+        // 添加问题改写
+        function addRewrite() {
+            const title = document.getElementById('rewrite-title').value.trim();
+            const originalQuestion = document.getElementById('original-question').value.trim();
+            const correctedQuestion = document.getElementById('corrected-question').value.trim();
+            const correctAnswer = document.getElementById('correct-answer').value.trim();
+            const businessSelect = document.getElementById('rewrite-business');
+            const roleSelect = document.getElementById('rewrite-role');
+            
+            if (!title || !originalQuestion || !correctedQuestion || !correctAnswer) {
+                alert('请填写所有必填字段！');
+                return;
+            }
+            
+            const content = `原始问题：${originalQuestion}<br>改写问题：${correctedQuestion}<br>标准答案：${correctAnswer}`;
+            
+            // 获取选中的业务线
+            const selectedBusiness = Array.from(businessSelect.selectedOptions).map(option => option.value);
+            const business = selectedBusiness.length > 0 ? selectedBusiness.join(',') : '全部业务线';
+            
+            // 获取选中的角色
+            const selectedRole = Array.from(roleSelect.selectedOptions).map(option => option.value);
+            const role = selectedRole.length > 0 ? selectedRole.join(',') : '全部角色';
+            
+            // 添加到表格中
+            const tbody = document.getElementById('knowledge-items');
+            addKnowledgeRow(tbody, 'rewrite', title, content, business, role);
+            
+            // 更新知识项数组
+            knowledgeItems = Array.from(document.querySelectorAll('.knowledge-row'));
+            
+            // 重置表单
+            document.getElementById('rewrite-form').querySelector('form').reset();
+            
+            // 关闭模态框
+            closeAddKnowledgeModal();
+            
+            // 更新分页
+            updatePagination();
+            currentPage = 1;
+            showCurrentPageItems();
+            
+            // 显示成功消息
+            alert('问题改写添加成功！');
+        }
+        
+        // 搜索功能
+        function searchKnowledge() {
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            const typeFilter = document.getElementById('type-filter').value;
+            
+            filterItems(searchText, typeFilter);
+        }
+        
+        // 过滤类型
+        function filterKnowledge() {
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            const typeFilter = document.getElementById('type-filter').value;
+            
+            filterItems(searchText, typeFilter);
+        }
+        
+        // 过滤项目
+        function filterItems(searchText, typeFilter) {
+            // 先隐藏所有项目
+            knowledgeItems.forEach(item => {
+                item.style.display = 'none';
+            });
+            
+            // 根据条件筛选项目
+            filteredItems = knowledgeItems.filter(item => {
+                // 检查类型匹配
+                const typeMatch = typeFilter === 'all' || item.classList.contains(typeFilter);
+                
+                // 检查文本匹配
+                let textMatch = false;
+                if (searchText === '') {
+                    textMatch = true;
+                } else {
+                    const textElements = item.querySelectorAll('.term-cell, .content-cell');
+                    
+                    textElements.forEach(element => {
+                        if (element.textContent.toLowerCase().includes(searchText)) {
+                            textMatch = true;
+                        }
+                    });
+                }
+                
+                return typeMatch && textMatch;
+            });
+            
+            // 重置当前页码并更新分页
+            currentPage = 1;
+            updatePagination();
+            showCurrentPageItems();
+            
+            // 重置选择
+            selectedItems.clear();
+            document.getElementById('select-all').checked = false;
+            updateBulkActions();
+        }
+        
+        // 翻页功能
+        function changePage(delta) {
+            const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+            
+            // 计算新的页码
+            const newPage = currentPage + delta;
+            
+            // 检查页码有效性
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                showCurrentPageItems();
+                updatePaginationButtons();
+            }
+        }
+        
+        // 显示当前页的项目
+        function showCurrentPageItems() {
+            // 先隐藏所有项目
+            knowledgeItems.forEach(item => {
+                item.style.display = 'none';
+            });
+            
+            // 计算当前页要显示的项目
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredItems.length);
+            
+            // 显示当前页的项目
+            for (let i = startIndex; i < endIndex; i++) {
+                filteredItems[i].style.display = '';
+            }
+            
+            // 更新页码显示
+            document.getElementById('current-page').textContent = currentPage;
+        }
+        
+        // 更新分页信息和按钮状态
+        function updatePagination() {
+            const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
+            document.getElementById('total-pages').textContent = totalPages;
+            
+            updatePaginationButtons();
+        }
+        
+        // 更新分页按钮状态
+        function updatePaginationButtons() {
+            const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            
+            // 更新上一页按钮状态
+            if (currentPage <= 1) {
+                prevBtn.classList.add('disabled');
+            } else {
+                prevBtn.classList.remove('disabled');
+            }
+            
+            // 更新下一页按钮状态
+            if (currentPage >= totalPages) {
+                nextBtn.classList.add('disabled');
+            } else {
+                nextBtn.classList.remove('disabled');
+            }
+        }
+        
+        // 打开添加知识模态框
+        function openAddKnowledgeModal() {
+            document.getElementById('knowledge-modal').style.display = 'flex';
+        }
+        
+        // 关闭添加知识模态框
+        function closeAddKnowledgeModal() {
+            document.getElementById('knowledge-modal').style.display = 'none';
+        }
+        
+        // 切换知识表单类型
+        function switchKnowledgeForm(formId) {
+            // 隐藏所有表单
+            document.querySelectorAll('.knowledge-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // 取消所有按钮的活动状态
+            document.querySelectorAll('.knowledge-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 显示选中的表单
+            document.getElementById(formId).classList.add('active');
+            
+            // 设置选中按钮的活动状态
+            document.querySelector(`.knowledge-type-btn[onclick="switchKnowledgeForm('${formId}')"]`).classList.add('active');
+        }
+        
+        // 打开批量修改业务线模态框
+        function openBatchBusinessModal() {
+            if (selectedItems.size === 0) {
+                alert('请先选择要修改的项目！');
+                return;
+            }
+            
+            document.getElementById('batch-business-modal').style.display = 'flex';
+        }
+        
+        // 关闭批量修改业务线模态框
+        function closeBatchBusinessModal() {
+            document.getElementById('batch-business-modal').style.display = 'none';
+        }
+        
+        // 打开批量修改角色模态框
+        function openBatchRoleModal() {
+            if (selectedItems.size === 0) {
+                alert('请先选择要修改的项目！');
+                return;
+            }
+            
+            document.getElementById('batch-role-modal').style.display = 'flex';
+        }
+        
+        // 关闭批量修改角色模态框
+        function closeBatchRoleModal() {
+            document.getElementById('batch-role-modal').style.display = 'none';
+        }
+        
+        // 应用批量业务线修改
+        function applyBatchBusiness() {
+            const businessSelect = document.getElementById('batch-business-select');
+            const selectedBusiness = Array.from(businessSelect.selectedOptions).map(option => option.value);
+            
+            if (selectedBusiness.length === 0) {
+                alert('请选择至少一个业务线！');
+                return;
+            }
+            
+            const business = selectedBusiness.join(',');
+            
+            // 获取所有选中的行
+            const rows = document.querySelectorAll('.knowledge-row');
+            selectedItems.forEach(index => {
+                if (index < rows.length) {
+                    const row = rows[index];
+                    row.querySelector('.business-cell').textContent = business;
+                }
+            });
+            
+            // 关闭模态框
+            closeBatchBusinessModal();
+            
+            // 显示成功消息
+            alert(`已成功为${selectedItems.size}个项目更新业务线！`);
+        }
+        
+        // 应用批量角色修改
+        function applyBatchRole() {
+            const roleSelect = document.getElementById('batch-role-select');
+            const selectedRole = Array.from(roleSelect.selectedOptions).map(option => option.value);
+            
+            if (selectedRole.length === 0) {
+                alert('请选择至少一个角色！');
+                return;
+            }
+            
+            const role = selectedRole.join(',');
+            
+            // 获取所有选中的行
+            const rows = document.querySelectorAll('.knowledge-row');
+            selectedItems.forEach(index => {
+                if (index < rows.length) {
+                    const row = rows[index];
+                    row.querySelector('.role-cell').textContent = role;
+                }
+            });
+            
+            // 关闭模态框
+            closeBatchRoleModal();
+            
+            // 显示成功消息
+            alert(`已成功为${selectedItems.size}个项目更新角色！`);
+        }
+        
+        // 下载模板功能
+        function downloadTemplate(templateType) {
+            // 创建不同类型的模板内容
+            let templateContent = '';
+            let fileName = '';
+            
+            switch(templateType) {
+                case 'synonym':
+                    templateContent = '黑话术语,标准术语,适用业务线,适用角色\nGMV,商品交易总额,电商,产品经理/运营\nUV,访客数,全部业务线,产品经理/研发\nPV,页面浏览量,电商/金融,全部角色\nROI,投资回报率,金融,市场/运营';
+                    fileName = '同义词映射模板.csv';
+                    break;
+                case 'explanation':
+                    templateContent = '名词术语,术语解释,处理规则,适用业务线,适用角色\n闭环,指一个完整的工作流程，从开始到结束形成一个封闭的循环，确保每个环节都有人负责，不会出现断点。,遇到"闭环"一词时，需要明确询问用户是指哪个具体业务流程的闭环,全部业务线,产品经理/研发\n赋能,指提供资源、工具或权力，使他人能够完成任务或实现目标。在企业环境中，常用于描述管理层为员工提供支持的行为。,可进一步询问赋能的具体方式，避免空泛表述,电商/文娱,产品经理';
+                    fileName = '名词解释模板.csv';
+                    break;
+                case 'rewrite':
+                    templateContent = '标题/场景描述,原始问题,改写后问题,标准答案,适用业务线,适用角色\n查询问题,查一下抓手有哪些？,有哪些实现业务目标的具体方法或工具？,实现业务目标的具体方法或工具包括：数据分析、用户调研、A/B测试、敏捷开发等方法论。,全部业务线,全部角色\n业务指标查询,帮我看看昨天的UV和PV情况？,昨天的访客数和页面浏览量数据是多少？,昨天的访客数为XX，页面浏览量为XX，环比上周同期有XX%的增长。,电商/金融,产品经理/运营';
+                    fileName = '问题改写模板.csv';
+                    break;
+                default:
+                    alert('未知模板类型');
+                    return;
+            }
+            
+            // 创建Blob对象
+            const blob = new Blob([templateContent], { type: 'text/csv;charset=utf-8;' });
+            
+            // 创建下载链接
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            
+            // 触发下载
+            link.click();
+            
+            // 清理
+            setTimeout(function() {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+        }
+    </script>
+</body>
+</html>

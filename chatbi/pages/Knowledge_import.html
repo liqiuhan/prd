@@ -1,0 +1,2155 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识导入</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --light: #f1f5f9;
+            --dark: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9fc;
+            color: #334155;
+            padding: 20px;
+        }
+        
+        .knowledge-page {
+            height: 100%;
+            background-color: #f9f9fc;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            outline: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--light);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        
+        .knowledge-type-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .knowledge-type-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .knowledge-type-card:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+        
+        .knowledge-type-card.active {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        
+        .knowledge-type-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .knowledge-type-card.active .knowledge-type-icon {
+            color: var(--primary);
+        }
+        
+        .knowledge-type-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .knowledge-type-desc {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+        
+        .import-steps {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .import-step {
+            padding: 12px 15px;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            font-weight: 500;
+        }
+        
+        .import-step::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: transparent;
+        }
+        
+        .import-step.active {
+            color: var(--primary);
+        }
+        
+        .import-step.active::after {
+            background-color: var(--primary);
+        }
+        
+        .import-step.completed {
+            color: var(--success);
+        }
+        
+        .import-step.completed::after {
+            background-color: var(--success);
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        .step-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .source-option {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .source-option:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+        
+        .source-option.active {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        
+        .source-icon {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-right: 15px;
+        }
+        
+        .source-option.active .source-icon {
+            color: var(--primary);
+        }
+        
+        .source-details {
+            flex: 1;
+        }
+        
+        .source-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .source-desc {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+        
+        .file-list {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-icon {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        .file-name {
+            flex: 1;
+        }
+        
+        .file-size {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+        
+        .file-remove {
+            color: var(--danger);
+            cursor: pointer;
+        }
+        
+        .qa-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .qa-table th, .qa-table td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .qa-table th {
+            background-color: #f8fafc;
+        }
+        
+        .preview-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .preview-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .preview-content {
+            margin-bottom: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+        }
+        
+        .preview-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        .source-content {
+            display: none;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+        
+        .tag-document {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .tag-qa {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .knowledge-slice-container {
+            margin-top: 20px;
+        }
+        
+        .knowledge-slice {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f8fafc;
+        }
+        
+        .slice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .slice-title {
+            font-weight: 600;
+        }
+        
+        .slice-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .slice-action {
+            cursor: pointer;
+            color: var(--secondary);
+        }
+        
+        .slice-action:hover {
+            color: var(--primary);
+        }
+        
+        .add-slice-btn {
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            background-color: transparent;
+            color: var(--secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .add-slice-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+        
+        .add-slice-btn i {
+            margin-right: 5px;
+        }
+        
+        .preview-section {
+            margin-bottom: 30px;
+        }
+        
+        .preview-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .knowledge-type-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .import-steps {
+                flex-direction: column;
+            }
+            
+            .import-step {
+                padding: 10px;
+            }
+        }
+        
+        .tag-selector {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .tag-level {
+            flex: 1;
+        }
+        
+        .selected-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .selected-tag-remove {
+            margin-left: 5px;
+            color: var(--secondary);
+            cursor: pointer;
+        }
+        
+        .selected-tag-remove:hover {
+            color: var(--danger);
+        }
+        
+        .selected-item {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .selected-item-remove {
+            margin-left: 5px;
+            color: var(--secondary);
+            cursor: pointer;
+        }
+        
+        .selected-item-remove:hover {
+            color: var(--danger);
+        }
+        
+        .selected-items-container {
+            margin-top: 5px;
+            min-height: 30px;
+        }
+        
+        .d-flex {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="knowledge-page">
+        <div class="container">
+            <div class="header">
+                <h1>知识导入</h1>
+                <button id="back-to-strategy" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> 返回知识&策略
+                </button>
+            </div>
+
+            <!-- 知识导入卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>知识导入</h2>
+                </div>
+
+                <!-- 导入步骤指示器 -->
+                <div class="import-steps">
+                    <div class="import-step active" data-step="1">1. 选择知识类型</div>
+                    <div class="import-step" data-step="2">2. 选择来源与内容</div>
+                    <div class="import-step" data-step="3">3. 内容处理</div>
+                    <div class="import-step" data-step="4">4. 预览确认</div>
+                </div>
+
+                <!-- 步骤1: 选择知识类型 -->
+                <div class="step-content active" data-step="1">
+                    <div class="knowledge-type-selector">
+                        <div class="knowledge-type-card" data-type="document">
+                            <div class="knowledge-type-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="knowledge-type-title">文档知识</div>
+                            <div class="knowledge-type-desc">上传文档，系统自动提取内容</div>
+                        </div>
+                        
+                        <div class="knowledge-type-card" data-type="webpage">
+                            <div class="knowledge-type-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="knowledge-type-title">网页知识</div>
+                            <div class="knowledge-type-desc">输入网页链接，系统抓取网页内容</div>
+                        </div>
+                        
+                        <div class="knowledge-type-card" data-type="qa">
+                            <div class="knowledge-type-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="knowledge-type-title">问答知识</div>
+                            <div class="knowledge-type-desc">导入问答对，适用于常见问题解答</div>
+                        </div>
+
+                        <div class="knowledge-type-card" data-type="media">
+                            <div class="knowledge-type-icon">
+                                <i class="fas fa-film"></i>
+                            </div>
+                            <div class="knowledge-type-title">音视频知识</div>
+                            <div class="knowledge-type-desc">上传音频或视频，系统自动提取内容</div>
+                        </div>
+
+                        <div class="knowledge-type-card" data-type="manual">
+                            <div class="knowledge-type-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="knowledge-type-title">手动录入</div>
+                            <div class="knowledge-type-desc">手动录入知识内容</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-buttons">
+                        <div></div> <!-- 占位，保持对齐 -->
+                        <button class="btn btn-primary" id="next-step-1">
+                            下一步 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤2: 选择来源与内容 -->
+                <div class="step-content" data-step="2">
+                    <!-- 文档知识来源选项 -->
+                    <div class="source-options document-sources">
+                        <div class="source-option" data-source="file">
+                            <div class="source-icon">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <div class="source-details">
+                                <div class="source-title">上传文件</div>
+                                <div class="source-desc">支持 PDF, DOCX, TXT, HTML 等格式</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 网页知识来源选项 -->
+                    <div class="source-options webpage-sources" style="display: none;">
+                        <div class="source-option" data-source="url">
+                            <div class="source-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="source-details">
+                                <div class="source-title">网页链接</div>
+                                <div class="source-desc">输入网页URL，系统将抓取内容</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问答知识来源选项 -->
+                    <div class="source-options qa-sources" style="display: none;">
+                        <div class="source-option" data-source="csv">
+                            <div class="source-icon">
+                                <i class="fas fa-file-csv"></i>
+                            </div>
+                            <div class="source-details">
+                                <div class="source-title">CSV/Excel文件</div>
+                                <div class="source-desc">上传包含问题和答案的表格文件</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 音视频知识来源选项 -->
+                    <div class="source-options media-sources" style="display: none;">
+                        <div class="source-option" data-source="media">
+                            <div class="source-icon">
+                                <i class="fas fa-file-video"></i>
+                            </div>
+                            <div class="source-details">
+                                <div class="source-title">上传音视频文件</div>
+                                <div class="source-desc">支持 MP4, MP3, WAV, AVI 等格式</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 手动录入知识来源选项 -->
+                    <div class="source-options manual-sources" style="display: none;">
+                        <div class="source-option" data-source="manual">
+                            <div class="source-icon">
+                                <i class="fas fa-keyboard"></i>
+                            </div>
+                            <div class="source-details">
+                                <div class="source-title">手动输入</div>
+                                <div class="source-desc">直接输入知识内容</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 文件上传区域 -->
+                    <div class="source-content file-content" style="display: none;">
+                        <div class="upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h3>拖拽文件到此处</h3>
+                            <p>支持 PDF, DOCX, TXT, HTML 等格式</p>
+                            <button class="btn btn-primary" style="margin-top: 15px;">
+                                <i class="fas fa-folder-open"></i> 选择文件
+                            </button>
+                        </div>
+                        
+                        <div class="file-list">
+                            <div class="file-item">
+                                <i class="fas fa-file-pdf file-icon"></i>
+                                <div class="file-name">产品说明书.pdf</div>
+                                <div class="file-size">2.4 MB</div>
+                                <div class="file-remove"><i class="fas fa-times"></i></div>
+                            </div>
+                            <div class="file-item">
+                                <i class="fas fa-file-word file-icon"></i>
+                                <div class="file-name">技术文档.docx</div>
+                                <div class="file-size">1.8 MB</div>
+                                <div class="file-remove"><i class="fas fa-times"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- URL输入区域 -->
+                    <div class="source-content url-content" style="display: none;">
+                        <div class="form-group">
+                            <label>输入网页URL</label>
+                            <input type="text" class="form-control" placeholder="https://example.com/page">
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-globe"></i> 获取内容
+                        </button>
+                    </div>
+                    
+                    <!-- CSV上传区域 -->
+                    <div class="source-content csv-content" style="display: none;">
+                        <div class="upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-csv"></i>
+                            </div>
+                            <h3>上传CSV或Excel文件</h3>
+                            <p>文件应包含问题和答案列</p>
+                            <button class="btn btn-primary" style="margin-top: 15px;">
+                                <i class="fas fa-folder-open"></i> 选择文件
+                            </button>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label>列映射</label>
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <div style="flex: 1;">
+                                    <label>问题列</label>
+                                    <select class="form-control">
+                                        <option>A列 (问题)</option>
+                                        <option>B列</option>
+                                        <option>C列</option>
+                                    </select>
+                                </div>
+                                <div style="flex: 1;">
+                                    <label>答案列</label>
+                                    <select class="form-control">
+                                        <option>B列 (答案)</option>
+                                        <option>A列</option>
+                                        <option>C列</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 音视频上传区域 -->
+                    <div class="source-content media-content" style="display: none;">
+                        <div class="upload-area">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-video"></i>
+                            </div>
+                            <h3>拖拽音视频文件到此处</h3>
+                            <p>支持 MP4, MP3, WAV, AVI 等格式</p>
+                            <button class="btn btn-primary" style="margin-top: 15px;">
+                                <i class="fas fa-folder-open"></i> 选择文件
+                            </button>
+                        </div>
+                        
+                        <div class="file-list">
+                            <div class="file-item">
+                                <i class="fas fa-file-video file-icon"></i>
+                                <div class="file-name">产品演示视频.mp4</div>
+                                <div class="file-size">15.6 MB</div>
+                                <div class="file-remove"><i class="fas fa-times"></i></div>
+                            </div>
+                            <div class="file-item">
+                                <i class="fas fa-file-audio file-icon"></i>
+                                <div class="file-name">用户反馈录音.mp3</div>
+                                <div class="file-size">2.3 MB</div>
+                                <div class="file-remove"><i class="fas fa-times"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 手动录入区域 -->
+                    <div class="source-content manual-content" style="display: none;">
+                        <div class="form-group">
+                            <label>标题</label>
+                            <input type="text" class="form-control" placeholder="输入知识标题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>切片类型</label>
+                            <select class="form-control" id="manual-knowledge-type">
+                                <option value="document">文档切片</option>
+                                <option value="qa">问答切片</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>内容分类</label>
+                            <select class="form-control">
+                                <option value="knowledge">知识</option>
+                                <option value="strategy">策略</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>业务线</label>
+                            <select class="form-control" id="business-line">
+                                <option value="">选择业务线</option>
+                                <option value="operation">运营</option>
+                                <option value="newhouse">新房</option>
+                                <option value="decoration">整装</option>
+                                <option value="beichain">北链</option>
+                                <option value="strategy">业策</option>
+                                <option value="quality">品质</option>
+                            </select>
+                            <div class="selected-items-container" id="selected-business-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <div class="d-flex">
+                                <input type="text" class="form-control" id="keywords-input" placeholder="输入关键词，按回车添加">
+                                <button class="btn btn-outline" id="add-keyword" style="margin-left: 8px;"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div class="selected-items-container" id="selected-keywords-container"></div>
+                        </div>
+                        
+                        <div class="manual-content-document">
+                            <div class="form-group">
+                                <label>内容</label>
+                                <textarea class="form-control" rows="6" placeholder="输入知识内容"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="manual-content-qa" style="display: none;">
+                            <div class="form-group">
+                                <label>问题</label>
+                                <textarea class="form-control" rows="3" placeholder="输入问题"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>回答</label>
+                                <textarea class="form-control" rows="6" placeholder="输入回答"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>标签</label>
+                            <div class="tag-selector">
+                                <div class="tag-level">
+                                    <label>一级标签</label>
+                                    <select class="form-control" id="tag-level-1">
+                                        <option value="">选择一级标签</option>
+                                        <option value="performance">业绩</option>
+                                        <option value="house">房源</option>
+                                        <option value="client">客源</option>
+                                        <option value="view">带看</option>
+                                        <option value="opportunity">商机</option>
+                                        <option value="indicator">行指</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>二级标签</label>
+                                    <select class="form-control" id="tag-level-2" disabled>
+                                        <option value="">选择二级标签</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>三级标签</label>
+                                    <select class="form-control" id="tag-level-3" disabled>
+                                        <option value="">选择三级标签</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="selected-tags" style="margin-top: 15px;">
+                            <!-- 已选标签会显示在这里 -->
+                        </div>
+                    </div>
+                    
+                    <div class="step-buttons">
+                        <button class="btn btn-outline" id="prev-step-2">
+                            <i class="fas fa-arrow-left"></i> 上一步
+                        </button>
+                        <button class="btn btn-primary" id="next-step-2">
+                            下一步 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤3: 内容处理 (所有知识类型都需要此步骤) -->
+                <div class="step-content" data-step="3">
+                    <!-- 文档知识处理选项 -->
+                    <div id="document-process-options">
+                        <div class="form-group">
+                            <label>标题</label>
+                            <input type="text" class="form-control" placeholder="输入知识标题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>内容分类</label>
+                            <select class="form-control">
+                                <option value="knowledge">知识</option>
+                                <option value="strategy">策略</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>业务线</label>
+                            <select class="form-control" id="doc-business-line">
+                                <option value="">选择业务线</option>
+                                <option value="operation">运营</option>
+                                <option value="newhouse">新房</option>
+                                <option value="decoration">整装</option>
+                                <option value="beichain">北链</option>
+                                <option value="strategy">业策</option>
+                                <option value="quality">品质</option>
+                            </select>
+                            <div class="selected-items-container" id="doc-selected-business-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <div class="d-flex">
+                                <input type="text" class="form-control" id="doc-keywords-input" placeholder="输入关键词，按回车添加">
+                                <button class="btn btn-outline" id="doc-add-keyword" style="margin-left: 8px;"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div class="selected-items-container" id="doc-selected-keywords-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>标签</label>
+                            <div class="tag-selector">
+                                <div class="tag-level">
+                                    <label>一级标签</label>
+                                    <select class="form-control" id="doc-tag-level-1">
+                                        <option value="">选择一级标签</option>
+                                        <option value="performance">业绩</option>
+                                        <option value="house">房源</option>
+                                        <option value="client">客源</option>
+                                        <option value="view">带看</option>
+                                        <option value="opportunity">商机</option>
+                                        <option value="indicator">行指</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>二级标签</label>
+                                    <select class="form-control" id="doc-tag-level-2" disabled>
+                                        <option value="">选择二级标签</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>三级标签</label>
+                                    <select class="form-control" id="doc-tag-level-3" disabled>
+                                        <option value="">选择三级标签</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>处理选项</label>
+                            <div style="margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="chunk" checked="">
+                                    <label for="chunk">自动分块</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        将长文本自动分割成适合AI处理的小块
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="extract" checked="">
+                                    <label for="extract">提取关键信息</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        从原始内容中提取重要的事实和信息点
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="embed" checked="">
+                                    <label for="embed">生成嵌入向量</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        为内容生成向量嵌入，以便语义搜索
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 网页知识处理选项 -->
+                    <div id="webpage-process-options" style="display: none;">
+                        <div class="form-group">
+                            <label>标题</label>
+                            <input type="text" class="form-control" placeholder="输入知识标题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>内容分类</label>
+                            <select class="form-control">
+                                <option value="knowledge">知识</option>
+                                <option value="strategy">策略</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>业务线</label>
+                            <select class="form-control" id="web-business-line">
+                                <option value="">选择业务线</option>
+                                <option value="operation">运营</option>
+                                <option value="newhouse">新房</option>
+                                <option value="decoration">整装</option>
+                                <option value="beichain">北链</option>
+                                <option value="strategy">业策</option>
+                                <option value="quality">品质</option>
+                            </select>
+                            <div class="selected-items-container" id="web-selected-business-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <div class="d-flex">
+                                <input type="text" class="form-control" id="web-keywords-input" placeholder="输入关键词，按回车添加">
+                                <button class="btn btn-outline" id="web-add-keyword" style="margin-left: 8px;"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div class="selected-items-container" id="web-selected-keywords-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>标签</label>
+                            <div class="tag-selector">
+                                <div class="tag-level">
+                                    <label>一级标签</label>
+                                    <select class="form-control" id="web-tag-level-1">
+                                        <option value="">选择一级标签</option>
+                                        <option value="performance">业绩</option>
+                                        <option value="house">房源</option>
+                                        <option value="client">客源</option>
+                                        <option value="view">带看</option>
+                                        <option value="opportunity">商机</option>
+                                        <option value="indicator">行指</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>二级标签</label>
+                                    <select class="form-control" id="web-tag-level-2" disabled>
+                                        <option value="">选择二级标签</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>三级标签</label>
+                                    <select class="form-control" id="web-tag-level-3" disabled>
+                                        <option value="">选择三级标签</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>处理选项</label>
+                            <div style="margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="webpage-chunk" checked="">
+                                    <label for="webpage-chunk">自动分块</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        将长文本自动分割成适合AI处理的小块
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="webpage-extract" checked="">
+                                    <label for="webpage-extract">提取关键信息</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        从原始内容中提取重要的事实和信息点
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="webpage-embed" checked="">
+                                    <label for="webpage-embed">生成嵌入向量</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        为内容生成向量嵌入，以便语义搜索
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问答知识处理选项 -->
+                    <div id="qa-process-options" style="display: none;">
+                        <div class="form-group">
+                            <label>标题</label>
+                            <input type="text" class="form-control" placeholder="输入知识标题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>内容分类</label>
+                            <select class="form-control">
+                                <option value="knowledge">知识</option>
+                                <option value="strategy">策略</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>业务线</label>
+                            <select class="form-control" id="qa-business-line">
+                                <option value="">选择业务线</option>
+                                <option value="operation">运营</option>
+                                <option value="newhouse">新房</option>
+                                <option value="decoration">整装</option>
+                                <option value="beichain">北链</option>
+                                <option value="strategy">业策</option>
+                                <option value="quality">品质</option>
+                            </select>
+                            <div class="selected-items-container" id="qa-selected-business-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <div class="d-flex">
+                                <input type="text" class="form-control" id="qa-keywords-input" placeholder="输入关键词，按回车添加">
+                                <button class="btn btn-outline" id="qa-add-keyword" style="margin-left: 8px;"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div class="selected-items-container" id="qa-selected-keywords-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>标签</label>
+                            <div class="tag-selector">
+                                <div class="tag-level">
+                                    <label>一级标签</label>
+                                    <select class="form-control" id="qa-tag-level-1">
+                                        <option value="">选择一级标签</option>
+                                        <option value="performance">业绩</option>
+                                        <option value="house">房源</option>
+                                        <option value="client">客源</option>
+                                        <option value="view">带看</option>
+                                        <option value="opportunity">商机</option>
+                                        <option value="indicator">行指</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>二级标签</label>
+                                    <select class="form-control" id="qa-tag-level-2" disabled>
+                                        <option value="">选择二级标签</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>三级标签</label>
+                                    <select class="form-control" id="qa-tag-level-3" disabled>
+                                        <option value="">选择三级标签</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>处理选项</label>
+                            <div style="margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="qa-embed" checked="">
+                                    <label for="qa-embed">生成嵌入向量</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        为问答对生成向量嵌入，以便语义搜索
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 音视频知识处理选项 -->
+                    <div id="media-process-options" style="display: none;">
+                        <div class="form-group">
+                            <label>标题</label>
+                            <input type="text" class="form-control" placeholder="输入知识标题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>内容分类</label>
+                            <select class="form-control">
+                                <option value="knowledge">知识</option>
+                                <option value="strategy">策略</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>业务线</label>
+                            <select class="form-control" id="media-business-line">
+                                <option value="">选择业务线</option>
+                                <option value="operation">运营</option>
+                                <option value="newhouse">新房</option>
+                                <option value="decoration">整装</option>
+                                <option value="beichain">北链</option>
+                                <option value="strategy">业策</option>
+                                <option value="quality">品质</option>
+                            </select>
+                            <div class="selected-items-container" id="media-selected-business-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>关键词</label>
+                            <div class="d-flex">
+                                <input type="text" class="form-control" id="media-keywords-input" placeholder="输入关键词，按回车添加">
+                                <button class="btn btn-outline" id="media-add-keyword" style="margin-left: 8px;"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div class="selected-items-container" id="media-selected-keywords-container"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>标签</label>
+                            <div class="tag-selector">
+                                <div class="tag-level">
+                                    <label>一级标签</label>
+                                    <select class="form-control" id="media-tag-level-1">
+                                        <option value="">选择一级标签</option>
+                                        <option value="performance">业绩</option>
+                                        <option value="house">房源</option>
+                                        <option value="client">客源</option>
+                                        <option value="view">带看</option>
+                                        <option value="opportunity">商机</option>
+                                        <option value="indicator">行指</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>二级标签</label>
+                                    <select class="form-control" id="media-tag-level-2" disabled>
+                                        <option value="">选择二级标签</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="tag-level">
+                                    <label>三级标签</label>
+                                    <select class="form-control" id="media-tag-level-3" disabled>
+                                        <option value="">选择三级标签</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>处理选项</label>
+                            <div style="margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="media-transcribe" checked="">
+                                    <label for="media-transcribe">音频转文字</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        将音频内容自动转换为文字
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="media-chunk" checked="">
+                                    <label for="media-chunk">自动分块</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        将长文本自动分割成适合AI处理的小块
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="media-extract" checked="">
+                                    <label for="media-extract">提取关键信息</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        从转写内容中提取重要的事实和信息点
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="media-embed" checked="">
+                                    <label for="media-embed">生成嵌入向量</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        为内容生成向量嵌入，以便语义搜索
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 手动录入知识处理选项 -->
+                    <div id="manual-process-options" style="display: none;">
+                        <div class="form-group">
+                            <label>处理选项</label>
+                            <div style="margin-top: 10px;">
+                                <div style="margin-bottom: 10px;">
+                                    <input type="checkbox" id="manual-embed" checked="">
+                                    <label for="manual-embed">生成嵌入向量</label>
+                                    <div style="margin-left: 25px; margin-top: 5px; color: var(--secondary); font-size: 0.9rem;">
+                                        为内容生成向量嵌入，以便语义搜索
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-buttons">
+                        <button class="btn btn-outline" id="prev-step-3">
+                            <i class="fas fa-arrow-left"></i> 上一步
+                        </button>
+                        <button class="btn btn-primary" id="next-step-3">
+                            下一步 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤4: 预览确认 -->
+                <div class="step-content" data-step="4">
+                    <h3 style="margin-bottom: 20px;">知识预览</h3>
+                    
+                    <!-- 文档知识预览 -->
+                    <div class="document-preview">
+                        <!-- 文档切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">文档切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">产品使用说明文档</div>
+                                <div class="preview-content">
+                                    这是一份产品使用说明文档的内容摘要，描述了产品的基本功能和使用方法。系统已经将内容分割成了适合智能体处理的知识片段...
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-document">文档切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问答切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">问答切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">如何安装该产品？</div>
+                                <div class="preview-content">
+                                    1. 下载安装包
+                                    2. 运行安装向导
+                                    3. 按照提示完成安装
+                                    4. 重启系统
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-item">
+                                <div class="preview-title">系统要求是什么？</div>
+                                <div class="preview-content">
+                                    系统需要Windows 10或更高版本，至少4GB内存，10GB可用磁盘空间，并且需要.NET Framework 4.8或更高版本。
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 网页知识预览 -->
+                    <div class="webpage-preview" style="display: none;">
+                        <!-- 网页切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">网页切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">公司产品介绍页面</div>
+                                <div class="preview-content">
+                                    这是从公司网站抓取的产品介绍页面内容，包含了产品的特点、优势和应用场景。系统已经将内容分割成了适合智能体处理的知识片段...
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-document">网页切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问答切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">问答切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">产品有哪些主要功能？</div>
+                                <div class="preview-content">
+                                    产品主要功能包括数据分析、报表生成、自动化处理和多平台兼容等，能够满足企业在不同场景下的各种需求。
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-item">
+                                <div class="preview-title">如何联系客服？</div>
+                                <div class="preview-content">
+                                    您可以通过官网提供的在线客服、电子邮件或客服热线与我们联系，我们的工作时间是周一至周五9:00-18:00。
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 客户服务</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问答知识预览 -->
+                    <div class="qa-preview" style="display: none;">
+                        <div class="preview-item">
+                            <div class="preview-title">如何重置密码？</div>
+                            <div class="preview-content">
+                                点击登录页面的"忘记密码"链接，按照提示操作，系统会向您的注册邮箱发送一封密码重置邮件。
+                            </div>
+                            <div class="preview-meta">
+                                <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                <div>分类: 常见问题</div>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-item">
+                            <div class="preview-title">系统支持哪些文件格式？</div>
+                            <div class="preview-content">
+                                系统目前支持PDF、DOCX、TXT、CSV等格式的文件，未来还将支持更多的文件格式。
+                            </div>
+                            <div class="preview-meta">
+                                <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                <div>分类: 系统功能</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 音视频知识预览 -->
+                    <div class="media-preview" style="display: none;">
+                        <!-- 音视频转写切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">音视频转写</div>
+                            <div class="preview-item">
+                                <div class="preview-title">产品演示视频 - 转写文本</div>
+                                <div class="preview-content">
+                                    这是从产品演示视频中提取的转写文本，详细介绍了产品的使用方法和功能特点。系统已经将内容分割成了适合智能体处理的知识片段...
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-document">转写切片</span></div>
+                                    <div>分类: 产品说明</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问答切片部分 -->
+                        <div class="preview-section">
+                            <div class="preview-section-title">问答切片</div>
+                            <div class="preview-item">
+                                <div class="preview-title">视频中提到的主要功能有哪些？</div>
+                                <div class="preview-content">
+                                    视频中演示了产品的三个主要功能：数据可视化、智能分析和自动报表生成。每个功能都有详细的操作演示和使用案例。
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 产品演示</div>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-item">
+                                <div class="preview-title">视频中强调了哪些产品优势？</div>
+                                <div class="preview-content">
+                                    视频强调了产品的三大优势：使用简单直观、处理速度快、与现有系统无缝集成。特别提到了与竞品相比节省30%的时间。
+                                </div>
+                                <div class="preview-meta">
+                                    <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                    <div>分类: 产品演示</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 手动录入知识预览 -->
+                    <div class="manual-preview" style="display: none;">
+                        <!-- 文档类型预览 -->
+                        <div class="manual-document-preview">
+                            <div class="preview-section">
+                                <div class="preview-section-title">文档切片</div>
+                                <div class="preview-item">
+                                    <div class="preview-title">手动录入的知识标题</div>
+                                    <div class="preview-content">
+                                        这里是手动录入的知识内容。内容会根据用户的输入动态生成预览...
+                                    </div>
+                                    <div class="preview-meta">
+                                        <div>类型: <span class="tag tag-document">文档切片</span></div>
+                                        <div>分类: <span class="manual-category-preview">知识</span></div>
+                                        <div>业务线: <span class="manual-business-preview">未选择</span></div>
+                                        <div>标签: <span class="manual-tags-preview">未选择标签</span></div>
+                                        <div>关键词: <span class="manual-keywords-preview">未填写</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问答类型预览 -->
+                        <div class="manual-qa-preview" style="display: none;">
+                            <div class="preview-section">
+                                <div class="preview-section-title">问答切片</div>
+                                <div class="preview-item">
+                                    <div class="preview-title">手动录入的问题</div>
+                                    <div class="preview-content">
+                                        手动录入的问题的回答内容。内容会根据用户的输入动态生成预览...
+                                    </div>
+                                    <div class="preview-meta">
+                                        <div>类型: <span class="tag tag-qa">问答切片</span></div>
+                                        <div>分类: <span class="manual-category-preview">知识</span></div>
+                                        <div>业务线: <span class="manual-business-preview">未选择</span></div>
+                                        <div>标签: <span class="manual-tags-preview">未选择标签</span></div>
+                                        <div>关键词: <span class="manual-keywords-preview">未填写</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-buttons">
+                        <button class="btn btn-outline" id="prev-step-4">
+                            <i class="fas fa-arrow-left"></i> 上一步
+                        </button>
+                        <button class="btn btn-primary" id="finish-import">
+                            <i class="fas fa-check"></i> 完成导入
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 返回按钮事件
+            document.getElementById('back-to-strategy').addEventListener('click', function() {
+                try {
+                    // 直接通过超链接返回到知识策略页面
+                    window.location.href = 'Knowledge_Strategy.html';
+                } catch (error) {
+                    console.error('返回知识&策略页面时发生错误:', error);
+                }
+            });
+            
+            // 知识类型选择
+            const knowledgeTypeCards = document.querySelectorAll('.knowledge-type-card');
+            let selectedKnowledgeType = null;
+            
+            knowledgeTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 移除所有卡片的活动状态
+                    knowledgeTypeCards.forEach(c => c.classList.remove('active'));
+                    // 添加当前卡片的活动状态
+                    this.classList.add('active');
+                    selectedKnowledgeType = this.getAttribute('data-type');
+                });
+            });
+            
+            // 初始化业务线选择和关键词功能
+            setupBusinessLineSelectors();
+            setupKeywordsInputs();
+            
+            // 设置业务线选择器
+            function setupBusinessLineSelectors() {
+                // 各个知识类型的业务线选择器
+                const businessLines = [
+                    {selectId: 'business-line', containerId: 'selected-business-container'},
+                    {selectId: 'doc-business-line', containerId: 'doc-selected-business-container'},
+                    {selectId: 'web-business-line', containerId: 'web-selected-business-container'},
+                    {selectId: 'qa-business-line', containerId: 'qa-selected-business-container'},
+                    {selectId: 'media-business-line', containerId: 'media-selected-business-container'}
+                ];
+                
+                // 为每个业务线选择器设置功能
+                businessLines.forEach(item => {
+                    const select = document.querySelector(`select#${item.selectId}`);
+                    const container = document.getElementById(item.containerId);
+                    
+                    if (select && container) {
+                        select.addEventListener('change', function() {
+                            if (this.value) {
+                                // 获取选中的文本
+                                const selectedText = this.options[this.selectedIndex].text;
+                                const selectedValue = this.value;
+                                
+                                // 清空容器
+                                container.innerHTML = '';
+                                
+                                // 创建选中项
+                                const selectedItem = document.createElement('div');
+                                selectedItem.className = 'selected-item';
+                                selectedItem.setAttribute('data-value', selectedValue);
+                                selectedItem.innerHTML = `
+                                    ${selectedText}
+                                    <span class="selected-item-remove"><i class="fas fa-times"></i></span>
+                                `;
+                                
+                                // 添加到容器
+                                container.appendChild(selectedItem);
+                                
+                                // 添加删除按钮事件
+                                selectedItem.querySelector('.selected-item-remove').addEventListener('click', function(e) {
+                                    e.stopPropagation();
+                                    selectedItem.remove();
+                                    select.value = ''; // 重置选择器
+                                    
+                                    // 触发更新预览
+                                    if (item.selectId === 'business-line') {
+                                        updateManualPreview();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // 设置关键词输入
+            function setupKeywordsInputs() {
+                // 各个知识类型的关键词输入
+                const keywordsInputs = [
+                    {inputId: 'keywords-input', buttonId: 'add-keyword', containerId: 'selected-keywords-container'},
+                    {inputId: 'doc-keywords-input', buttonId: 'doc-add-keyword', containerId: 'doc-selected-keywords-container'},
+                    {inputId: 'web-keywords-input', buttonId: 'web-add-keyword', containerId: 'web-selected-keywords-container'},
+                    {inputId: 'qa-keywords-input', buttonId: 'qa-add-keyword', containerId: 'qa-selected-keywords-container'},
+                    {inputId: 'media-keywords-input', buttonId: 'media-add-keyword', containerId: 'media-selected-keywords-container'}
+                ];
+                
+                // 为每个关键词输入设置功能
+                keywordsInputs.forEach(item => {
+                    const input = document.getElementById(item.inputId);
+                    const button = document.getElementById(item.buttonId);
+                    const container = document.getElementById(item.containerId);
+                    
+                    if (input && button && container) {
+                        // 添加关键词函数
+                        function addKeyword() {
+                            const keyword = input.value.trim();
+                            if (keyword) {
+                                // 创建关键词项
+                                const keywordItem = document.createElement('div');
+                                keywordItem.className = 'selected-item';
+                                keywordItem.innerHTML = `
+                                    ${keyword}
+                                    <span class="selected-item-remove"><i class="fas fa-times"></i></span>
+                                `;
+                                
+                                // 添加到容器
+                                container.appendChild(keywordItem);
+                                
+                                // 添加删除按钮事件
+                                keywordItem.querySelector('.selected-item-remove').addEventListener('click', function(e) {
+                                    e.stopPropagation();
+                                    keywordItem.remove();
+                                    
+                                    // 触发更新预览
+                                    if (item.inputId === 'keywords-input') {
+                                        updateManualPreview();
+                                    }
+                                });
+                                
+                                // 清空输入框
+                                input.value = '';
+                                
+                                // 触发更新预览
+                                if (item.inputId === 'keywords-input') {
+                                    updateManualPreview();
+                                }
+                            }
+                        }
+                        
+                        // 按钮点击事件
+                        button.addEventListener('click', addKeyword);
+                        
+                        // 回车键事件
+                        input.addEventListener('keypress', function(e) {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                addKeyword();
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // 导入步骤切换
+            const importSteps = document.querySelectorAll('.import-step');
+            const stepContents = document.querySelectorAll('.step-content');
+            
+            // 下一步按钮
+            document.getElementById('next-step-1').addEventListener('click', function() {
+                if (!selectedKnowledgeType) {
+                    alert('请选择知识类型');
+                    return;
+                }
+                goToStep(2);
+            });
+            
+            document.getElementById('next-step-2').addEventListener('click', function() {
+                // 所有知识类型都需要第3步内容处理
+                goToStep(3);
+            });
+            
+            document.getElementById('next-step-3').addEventListener('click', function() {
+                goToStep(4);
+            });
+            
+            // 上一步按钮
+            document.getElementById('prev-step-2').addEventListener('click', function() {
+                goToStep(1);
+            });
+            
+            document.getElementById('prev-step-3').addEventListener('click', function() {
+                goToStep(2);
+            });
+            
+            document.getElementById('prev-step-4').addEventListener('click', function() {
+                // 所有知识类型都返回到步骤3
+                goToStep(3);
+            });
+            
+            document.getElementById('finish-import').addEventListener('click', function() {
+                alert('知识导入成功！');
+                // 重置流程
+                selectedKnowledgeType = null;
+                goToStep(1);
+                // 重置卡片选择
+                knowledgeTypeCards.forEach(c => c.classList.remove('active'));
+            });
+            
+            function goToStep(stepNumber) {
+                // 更新步骤指示器
+                importSteps.forEach(step => {
+                    const step_num = parseInt(step.getAttribute('data-step'));
+                    step.classList.remove('active', 'completed');
+                    
+                    if (step_num === stepNumber) {
+                        step.classList.add('active');
+                    } else if (step_num < stepNumber) {
+                        step.classList.add('completed');
+                    }
+                });
+                
+                // 更新步骤内容
+                stepContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (parseInt(content.getAttribute('data-step')) === stepNumber) {
+                        content.classList.add('active');
+                    }
+                });
+                
+                // 如果是步骤2，根据选择的知识类型显示相应的来源选项
+                if (stepNumber === 2) {
+                    // 隐藏所有来源选项
+                    document.querySelectorAll('.source-options').forEach(option => {
+                        option.style.display = 'none';
+                    });
+                    
+                    // 显示相应的来源选项
+                    const activeSourceOptions = document.querySelector(`.${selectedKnowledgeType}-sources`);
+                    if (activeSourceOptions) {
+                        activeSourceOptions.style.display = 'block';
+                        
+                        // 默认选中第一个来源选项
+                        const firstSourceOption = activeSourceOptions.querySelector('.source-option');
+                        if (firstSourceOption) {
+                            firstSourceOption.click();
+                        }
+                    }
+                }
+                
+                // 如果是步骤4，根据知识类型显示相应的预览
+                if (stepNumber === 4) {
+                    // 隐藏所有预览
+                    document.querySelector('.document-preview').style.display = 'none';
+                    document.querySelector('.webpage-preview').style.display = 'none';
+                    document.querySelector('.qa-preview').style.display = 'none';
+                    document.querySelector('.media-preview').style.display = 'none';
+                    document.querySelector('.manual-preview').style.display = 'none';
+                    
+                    // 显示相应的预览
+                    if (selectedKnowledgeType === 'document') {
+                        document.querySelector('.document-preview').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'webpage') {
+                        document.querySelector('.webpage-preview').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'qa') {
+                        document.querySelector('.qa-preview').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'media') {
+                        document.querySelector('.media-preview').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'manual') {
+                        // 显示手动录入预览
+                        document.querySelector('.manual-preview').style.display = 'block';
+                        
+                        // 根据选择的知识类型显示不同的预览
+                        const manualKnowledgeType = document.getElementById('manual-knowledge-type').value;
+                        if (manualKnowledgeType === 'qa') {
+                            document.querySelector('.manual-document-preview').style.display = 'none';
+                            document.querySelector('.manual-qa-preview').style.display = 'block';
+                        } else {
+                            document.querySelector('.manual-document-preview').style.display = 'block';
+                            document.querySelector('.manual-qa-preview').style.display = 'none';
+                        }
+                    }
+                }
+                
+                // 如果是步骤3，根据知识类型显示相应的处理选项
+                if (stepNumber === 3) {
+                    // 隐藏所有处理选项
+                    document.getElementById('document-process-options').style.display = 'none';
+                    document.getElementById('webpage-process-options').style.display = 'none';
+                    document.getElementById('qa-process-options').style.display = 'none';
+                    document.getElementById('media-process-options').style.display = 'none';
+                    document.getElementById('manual-process-options').style.display = 'none';
+                    
+                    // 显示相应的处理选项
+                    if (selectedKnowledgeType === 'document') {
+                        document.getElementById('document-process-options').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'webpage') {
+                        document.getElementById('webpage-process-options').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'qa') {
+                        document.getElementById('qa-process-options').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'media') {
+                        document.getElementById('media-process-options').style.display = 'block';
+                    } else if (selectedKnowledgeType === 'manual') {
+                        document.getElementById('manual-process-options').style.display = 'block';
+                    }
+                }
+            }
+            
+            // 来源选项切换
+            const sourceOptions = document.querySelectorAll('.source-option');
+            
+            sourceOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 找到父元素下的所有选项
+                    const parentOptions = this.parentElement.querySelectorAll('.source-option');
+                    
+                    // 移除所有选项的活动状态
+                    parentOptions.forEach(o => o.classList.remove('active'));
+                    
+                    // 添加当前选项的活动状态
+                    this.classList.add('active');
+                    
+                    // 隐藏所有内容区域
+                    document.querySelectorAll('.source-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // 显示相应的内容区域
+                    const source = this.getAttribute('data-source');
+                    const sourceContent = document.querySelector(`.${source}-content`);
+                    if (sourceContent) {
+                        sourceContent.style.display = 'block';
+                    }
+                });
+            });
+            
+            // 手动录入知识类型切换
+            const manualKnowledgeType = document.getElementById('manual-knowledge-type');
+            if (manualKnowledgeType) {
+                manualKnowledgeType.addEventListener('change', function() {
+                    const selectedType = this.value;
+                    // 隐藏所有内容区域
+                    document.querySelector('.manual-content-document').style.display = 'none';
+                    document.querySelector('.manual-content-qa').style.display = 'none';
+                    
+                    // 显示相应的内容区域
+                    if (selectedType === 'document' || selectedType === 'slice') {
+                        document.querySelector('.manual-content-document').style.display = 'block';
+                    } else if (selectedType === 'qa') {
+                        document.querySelector('.manual-content-qa').style.display = 'block';
+                    }
+                });
+            }
+            
+            // 标签选择逻辑
+            const tagLevel1 = document.getElementById('tag-level-1');
+            const tagLevel2 = document.getElementById('tag-level-2');
+            const tagLevel3 = document.getElementById('tag-level-3');
+            
+            if (tagLevel1 && tagLevel2 && tagLevel3) {
+                // 二级标签数据
+                const level2Tags = {
+                    'performance': ['二手', '新房', '租赁'],
+                    'opportunity': ['400', '线索'],
+                    'house': ['面访', '好房', '房源维护', '房评', '房源等级']
+                };
+                
+                // 三级标签数据
+                const level3Tags = {
+                    '房源等级': ['优房', '良房', '中房', '差房']
+                };
+                
+                // 一级标签变更时更新二级标签
+                tagLevel1.addEventListener('change', function() {
+                    const selectedLevel1 = this.value;
+                    
+                    // 重置二级和三级标签
+                    tagLevel2.innerHTML = '<option value="">选择二级标签</option>';
+                    tagLevel3.innerHTML = '<option value="">选择三级标签</option>';
+                    
+                    if (selectedLevel1 && level2Tags[selectedLevel1]) {
+                        // 启用二级标签选择器
+                        tagLevel2.disabled = false;
+                        
+                        // 添加二级标签选项
+                        level2Tags[selectedLevel1].forEach(tag => {
+                            const option = document.createElement('option');
+                            option.value = tag;
+                            option.textContent = tag;
+                            tagLevel2.appendChild(option);
+                        });
+                    } else {
+                        // 禁用二级标签选择器
+                        tagLevel2.disabled = true;
+                    }
+                    
+                    // 禁用三级标签选择器
+                    tagLevel3.disabled = true;
+                });
+                
+                // 二级标签变更时更新三级标签
+                tagLevel2.addEventListener('change', function() {
+                    const selectedLevel2 = this.value;
+                    
+                    // 重置三级标签
+                    tagLevel3.innerHTML = '<option value="">选择三级标签</option>';
+                    
+                    if (selectedLevel2 && level3Tags[selectedLevel2]) {
+                        // 启用三级标签选择器
+                        tagLevel3.disabled = false;
+                        
+                        // 添加三级标签选项
+                        level3Tags[selectedLevel2].forEach(tag => {
+                            const option = document.createElement('option');
+                            option.value = tag;
+                            option.textContent = tag;
+                            tagLevel3.appendChild(option);
+                        });
+                    } else {
+                        // 禁用三级标签选择器
+                        tagLevel3.disabled = true;
+                    }
+                });
+            }
+            
+            // 手动录入区域的输入监听
+            const manualInputs = document.querySelectorAll('.manual-content input, .manual-content textarea, .manual-content select');
+            manualInputs.forEach(input => {
+                input.addEventListener('input', updateManualPreview);
+            });
+            
+            // 更新手动录入预览
+            function updateManualPreview() {
+                // 获取输入值
+                const title = document.querySelector('.manual-content input[placeholder="输入知识标题"]').value || '手动录入的知识标题';
+                const contentType = document.getElementById('manual-knowledge-type').value;
+                const category = document.querySelector('.manual-content select[class="form-control"]').value || '知识';
+                
+                // 获取业务线
+                let businessText = '未选择';
+                const businessItem = document.querySelector('#selected-business-container .selected-item');
+                if (businessItem) {
+                    businessText = businessItem.textContent.trim();
+                }
+                
+                // 获取关键词
+                let keywordsText = '未填写';
+                const keywordItems = document.querySelectorAll('#selected-keywords-container .selected-item');
+                if (keywordItems.length > 0) {
+                    const keywords = [];
+                    keywordItems.forEach(item => {
+                        keywords.push(item.textContent.trim());
+                    });
+                    keywordsText = keywords.join(', ');
+                }
+                
+                // 更新标题
+                const titleElements = document.querySelectorAll('.manual-preview .preview-title');
+                if (contentType === 'qa') {
+                    titleElements[0].textContent = title || '手动录入的问题';
+                } else {
+                    titleElements[0].textContent = title;
+                }
+                
+                // 更新内容
+                if (contentType === 'qa') {
+                    const question = document.querySelector('.manual-content-qa textarea[placeholder="输入问题"]').value;
+                    const answer = document.querySelector('.manual-content-qa textarea[placeholder="输入回答"]').value;
+                    const contentElement = document.querySelector('.manual-qa-preview .preview-content');
+                    contentElement.textContent = answer || '手动录入的问题的回答内容。内容会根据用户的输入动态生成预览...';
+                } else {
+                    const content = document.querySelector('.manual-content-document textarea').value;
+                    const contentElement = document.querySelector('.manual-document-preview .preview-content');
+                    contentElement.textContent = content || '这里是手动录入的知识内容。内容会根据用户的输入动态生成预览...';
+                }
+                
+                // 更新分类
+                const categoryElements = document.querySelectorAll('.manual-category-preview');
+                categoryElements.forEach(element => {
+                    element.textContent = category === 'strategy' ? '策略' : '知识';
+                });
+                
+                // 更新业务线
+                const businessElements = document.querySelectorAll('.manual-business-preview');
+                businessElements.forEach(element => {
+                    element.textContent = businessText;
+                });
+                
+                // 更新关键词
+                const keywordElements = document.querySelectorAll('.manual-keywords-preview');
+                keywordElements.forEach(element => {
+                    element.textContent = keywordsText;
+                });
+                
+                // 更新标签
+                const level1 = document.getElementById('tag-level-1');
+                const level2 = document.getElementById('tag-level-2');
+                const level3 = document.getElementById('tag-level-3');
+                
+                let tagsText = '未选择标签';
+                if (level1.value) {
+                    tagsText = level1.options[level1.selectedIndex].text;
+                    if (level2.value) {
+                        tagsText += ' > ' + level2.options[level2.selectedIndex].text;
+                        if (level3.value) {
+                            tagsText += ' > ' + level3.options[level3.selectedIndex].text;
+                        }
+                    }
+                }
+                
+                const tagElements = document.querySelectorAll('.manual-tags-preview');
+                tagElements.forEach(element => {
+                    element.textContent = tagsText;
+                });
+            }
+            
+            // 标签变更时更新预览
+            document.getElementById('tag-level-1').addEventListener('change', updateManualPreview);
+            document.getElementById('tag-level-2').addEventListener('change', updateManualPreview);
+            document.getElementById('tag-level-3').addEventListener('change', updateManualPreview);
+            
+            // 业务线变更时更新预览
+            document.getElementById('business-line').addEventListener('change', updateManualPreview);
+            
+            // 手动录入知识类型变更时更新预览类型
+            document.getElementById('manual-knowledge-type').addEventListener('change', function() {
+                const selectedType = this.value;
+                updateManualPreview();
+            });
+            
+            // 处理所有知识类型的标签选择逻辑
+            function setupTagSelectors(level1Id, level2Id, level3Id) {
+                const level1 = document.getElementById(level1Id);
+                const level2 = document.getElementById(level2Id);
+                const level3 = document.getElementById(level3Id);
+                
+                if (level1 && level2 && level3) {
+                    // 二级标签数据
+                    const level2Tags = {
+                        'performance': ['二手', '新房', '租赁'],
+                        'opportunity': ['400', '线索'],
+                        'house': ['面访', '好房', '房源维护', '房评', '房源等级']
+                    };
+                    
+                    // 三级标签数据
+                    const level3Tags = {
+                        '房源等级': ['优房', '良房', '中房', '差房']
+                    };
+                    
+                    // 一级标签变更时更新二级标签
+                    level1.addEventListener('change', function() {
+                        const selectedLevel1 = this.value;
+                        
+                        // 重置二级和三级标签
+                        level2.innerHTML = '<option value="">选择二级标签</option>';
+                        level3.innerHTML = '<option value="">选择三级标签</option>';
+                        
+                        if (selectedLevel1 && level2Tags[selectedLevel1]) {
+                            // 启用二级标签选择器
+                            level2.disabled = false;
+                            
+                            // 添加二级标签选项
+                            level2Tags[selectedLevel1].forEach(tag => {
+                                const option = document.createElement('option');
+                                option.value = tag;
+                                option.textContent = tag;
+                                level2.appendChild(option);
+                            });
+                        } else {
+                            // 禁用二级标签选择器
+                            level2.disabled = true;
+                        }
+                        
+                        // 禁用三级标签选择器
+                        level3.disabled = true;
+                    });
+                    
+                    // 二级标签变更时更新三级标签
+                    level2.addEventListener('change', function() {
+                        const selectedLevel2 = this.value;
+                        
+                        // 重置三级标签
+                        level3.innerHTML = '<option value="">选择三级标签</option>';
+                        
+                        if (selectedLevel2 && level3Tags[selectedLevel2]) {
+                            // 启用三级标签选择器
+                            level3.disabled = false;
+                            
+                            // 添加三级标签选项
+                            level3Tags[selectedLevel2].forEach(tag => {
+                                const option = document.createElement('option');
+                                option.value = tag;
+                                option.textContent = tag;
+                                level3.appendChild(option);
+                            });
+                        } else {
+                            // 禁用三级标签选择器
+                            level3.disabled = true;
+                        }
+                    });
+                }
+            }
+            
+            // 设置各种导入类型的标签选择器
+            setupTagSelectors('tag-level-1', 'tag-level-2', 'tag-level-3'); // 手动录入
+            setupTagSelectors('doc-tag-level-1', 'doc-tag-level-2', 'doc-tag-level-3'); // 文档知识
+            setupTagSelectors('web-tag-level-1', 'web-tag-level-2', 'web-tag-level-3'); // 网页知识
+            setupTagSelectors('qa-tag-level-1', 'qa-tag-level-2', 'qa-tag-level-3'); // 问答知识
+            setupTagSelectors('media-tag-level-1', 'media-tag-level-2', 'media-tag-level-3'); // 音视频知识
+        });
+    </script>
+</body></html>
