@@ -1050,9 +1050,9 @@
                             <label class="filter-label">员工所在角色包</label>
                             <select class="filter-input">
                                 <option value="">全部</option>
-                                <option value="admin">管理员</option>
+                                <option value="admin">城市总</option>
                                 <option value="user">普通用户</option>
-                                <option value="analyst">分析师</option>
+                                <option value="analyst">城市业策</option>
                             </select>
                         </div>
                         <div class="filter-group">
@@ -1265,7 +1265,11 @@
         const channels = ['ChatBI', '小诸葛', '孙小圣', '小新', '品质小助手'];
         
         // 错误类型列表
-        const errorTypes = ['无指标权限', '模型报错', '指标未找到', '功能未支持', '超时', ''];
+        const errorTypes = ['无指标权限', '模型报错', '指标未找到', '功能未支持', '超时', '无相关知识', '数据异常', '查询语法错误'];
+        
+        // 意图类型列表
+        const intentTypes = ['knowledge_qa', 'data_query', 'data_analysis', 'report_search'];
+        const intentNames = ['知识问答', '取数', '分析', '查报告'];
         
         for (let i = 0; i < 42; i++) {
             // 为各复杂字段创建一致的数量，随机选择2-4个
@@ -1294,14 +1298,22 @@
                 });
             }
             
+            // 为每行选择一个随机的意图类型索引
+            const intentTypeIndex = i % 4;
+            const intentType = intentTypes[intentTypeIndex];
+            const intentName = intentNames[intentTypeIndex];
+            
+            // 为每行生成一个错误类型，确保每行都有错误类型
+            const errorType = errorTypes[i % errorTypes.length];
+            
             mockData.push({
                 channel: channels[i % channels.length],
-                questionType: ['数据查询', '数据分析', '数据可视化'][i % 3],
-                errorType: i % 7 === 0 ? errorTypes[i % errorTypes.length] : '',
+                questionType: ['数据查询', '数据分析', '数据可视化', '知识问答'][i % 4],
+                errorType: errorType, // 确保每行都有错误类型
                 usercode: `USER${(i + 1).toString().padStart(3, '0')}`,
                 name: ['张三', '李四', '王五', '赵六', '钱七'][i % 5],
-                businessLine: ['销售', '市场', '财务', '运营'][i % 4],
-                role: ['管理员', '分析师', '用户'][i % 3],
+                businessLine: ['贝壳城市', '整装', '财务', '北链'][i % 4],
+                role: ['城市总', '城市业策', 'CA'][i % 3],
                 statisticsDate: `2025-03-${(i % 30 + 1).toString().padStart(2, '0')}`,
                 createTime: `2025-03-${(i % 30 + 1).toString().padStart(2, '0')} ${Math.floor(Math.random() * 24).toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`,
                 algorithmResponseTime: `${Math.floor(300 + Math.random() * 300)}ms`,
@@ -1310,12 +1322,40 @@
                 sessionId: `S${(i + 1).toString().padStart(5, '0')}`,
                 requestId: `R${(i + 1).toString().padStart(5, '0')}`,
                 feedback: i % 3 === 0 ? '点赞' : i % 5 === 0 ? '点踩' : '',
-                originalQuestion: i % 3 === 0 ? '上个季度销售额同比增长情况' : i % 3 === 1 ? '各地区营收占比分布，按照地区分组统计，需要计算各地区的占比情况，如华北占比25%，华东占比32%等' : '2025年Q1各产品销售额对比，并按照销售额从高到低排序，需要计算环比增长情况，生成柱状图展示',
-                chatbiAnswer: i % 3 === 0 ? '上个季度销售额同比增长15.3%，环比增长5.2%，整体呈上升趋势，其中华北区域增长最快，达到20.5%，华南区域增长较慢，仅3.1%' : i % 3 === 1 ? (i % 5 === 0 ? '因响应超时，未能获取到数据' : '各地区营收占比分布如下：华东地区：32.5%，华北地区：28.3%，华南地区：18.7%，西南地区：12.1%，西北地区：8.4%') : '已生成2025年Q1各产品销售额柱状图，数据显示产品A销售额最高，达到1,234万元，环比增长12.5%；产品B销售额次之，达到987万元，环比下降5.3%；产品C销售额776万元，环比增长20.1%',
-                integratedQuestion: i % 3 === 0 ? '上个季度销售额同比增长情况' : i % 3 === 1 ? '各地区营收占比分布' : '2025年Q1各产品销售额对比',
-                contextQuestion: '',
-                intent: '{"intent": "' + (i % 3 === 0 ? 'sales_growth' : i % 3 === 1 ? 'revenue_distribution' : 'product_sales_comparison') + '", "confidence": ' + (0.9 + Math.random() * 0.1).toFixed(2) + '}',
-                dynamicExample: '{"examples": ["' + (i % 3 === 0 ? '销售额增长", "收入变化' : i % 3 === 1 ? '地区营收分布", "收入占比' : '产品销售对比", "销售额比较') + '"]}',
+                originalQuestion: intentTypeIndex === 0 ? 
+                    ['什么是GMV?', '贝壳的核心业务是什么?', '如何计算客单价?', '签约流程是怎样的?'][i % 4] : 
+                    intentTypeIndex === 1 ? 
+                    '上个季度销售额同比增长情况' : 
+                    intentTypeIndex === 2 ? 
+                    '各地区营收占比分布，按照地区分组统计，需要计算各地区的占比情况，如华北占比25%，华东占比32%等' : 
+                    '2025年Q1各产品销售额报告在哪里?',
+                chatbiAnswer: intentTypeIndex === 0 ? 
+                    'GMV是指商品交易总额，是电商平台常用的业务指标，用于衡量平台上商品交易的总金额，包括实际支付金额和未支付但已下单的金额。' : 
+                    intentTypeIndex === 1 ? 
+                    '上个季度销售额同比增长15.3%，环比增长5.2%，整体呈上升趋势，其中华北区域增长最快，达到20.5%，华南区域增长较慢，仅3.1%' : 
+                    intentTypeIndex === 2 ? 
+                    '各地区营收占比分布如下：华东地区：32.5%，华北地区：28.3%，华南地区：18.7%，西南地区：12.1%，西北地区：8.4%' : 
+                    '您可以在以下路径找到2025年Q1各产品销售额报告：报表中心 > 销售分析 > 季度报告 > 2025年Q1 > 产品销售额分析报告.pdf',
+                integratedQuestion: intentTypeIndex === 0 ? 
+                    ['什么是GMV?', '贝壳的核心业务是什么?', '如何计算客单价?', '签约流程是怎样的?'][i % 4] : 
+                    intentTypeIndex === 1 ? 
+                    '上个季度销售额同比增长情况' : 
+                    intentTypeIndex === 2 ? 
+                    '各地区营收占比分布' : 
+                    '2025年Q1各产品销售额报告位置',
+                contextQuestion: JSON.stringify([
+                    `${['如何提高', '怎样计算', '什么是', '哪里可以查看'][Math.floor(Math.random() * 4)]}${['转化率', '客单价', 'GMV', '留存率'][Math.floor(Math.random() * 4)]}?`,
+                    `${['华北', '华东', '华南', '西南'][Math.floor(Math.random() * 4)]}地区的${['同比', '环比'][Math.floor(Math.random() * 2)]}增长率如何?`,
+                    `按${['产品', '渠道', '部门'][Math.floor(Math.random() * 3)]}分析${['转化率', '客单价', '留存率'][Math.floor(Math.random() * 3)]}`
+                ]),
+                intent: `{"intent": "${intentType}", "confidence": ${(0.9 + Math.random() * 0.1).toFixed(2)}, "name": "${intentName}"}`,
+                dynamicExample: '{"examples": ["' + (intentTypeIndex === 0 ? 
+                    'GMV是什么", "贝壳业务介绍' : 
+                    intentTypeIndex === 1 ? 
+                    '销售额查询", "收入变化' : 
+                    intentTypeIndex === 2 ? 
+                    '地区营收分布", "收入占比' : 
+                    '销售报告", "季度报表') + '"]}',
                 
                 // 复杂多组DSL数据
                 decomposedQuestion: JSON.stringify({
@@ -1338,9 +1378,27 @@
                     results: complexItems.map(item => item.disambiguation)
                 }),
                 
-                dataProcessingIntent: i % 3 === 0 ? '查询销售额增长' : i % 3 === 1 ? '查询营收占比' : '查询销售额',
-                dataAnalysisIntent: i % 3 === 0 ? '同比分析' : i % 3 === 1 ? '地区分布' : '产品对比',
-                querySql: i % 3 === 0 ? 'SELECT SUM(sales) AS total_sales, \nSUM(sales) / LAG(SUM(sales)) OVER (ORDER BY quarter) - 1 AS yoy_growth \nFROM sales_data \nWHERE quarter = PREVIOUS_QUARTER()' : i % 3 === 1 ? 'SELECT region, SUM(revenue) AS total_revenue, \nSUM(revenue) / SUM(SUM(revenue)) OVER() AS revenue_ratio \nFROM revenue_data \nGROUP BY region \nORDER BY total_revenue DESC' : 'SELECT product_name, SUM(sales_amount) AS total_sales \nFROM sales_data \nWHERE quarter = \'2025Q1\' \nGROUP BY product_name \nORDER BY total_sales DESC',
+                dataProcessingIntent: intentTypeIndex === 0 ? 
+                    '查询知识库' : 
+                    intentTypeIndex === 1 ? 
+                    '查询销售额增长' : 
+                    intentTypeIndex === 2 ? 
+                    '查询营收占比' : 
+                    '查询报告位置',
+                dataAnalysisIntent: intentTypeIndex === 0 ? 
+                    '知识理解' : 
+                    intentTypeIndex === 1 ? 
+                    '同比分析' : 
+                    intentTypeIndex === 2 ? 
+                    '地区分布' : 
+                    '报告检索',
+                querySql: intentTypeIndex === 0 ? 
+                    '' : 
+                    intentTypeIndex === 1 ? 
+                    'SELECT SUM(sales) AS total_sales, \nSUM(sales) / LAG(SUM(sales)) OVER (ORDER BY quarter) - 1 AS yoy_growth \nFROM sales_data \nWHERE quarter = PREVIOUS_QUARTER()' : 
+                    intentTypeIndex === 2 ? 
+                    'SELECT region, SUM(revenue) AS total_revenue, \nSUM(revenue) / SUM(SUM(revenue)) OVER() AS revenue_ratio \nFROM revenue_data \nGROUP BY region \nORDER BY total_revenue DESC' : 
+                    'SELECT report_name, report_path, updated_at \nFROM reports \nWHERE report_category = \'sales\' AND time_period = \'2025Q1\' AND report_type = \'product\'',
                 questionLevel: '--',
                 correctQuestion: '', // 将在渲染时自动填充为originalQuestion的值
                 indicatorTag: '', // 指标标注，初始为空
@@ -2316,7 +2374,7 @@
                 if (value) {
                     formData = JSON.parse(value);
                 }
-            } catch (e) {
+                                } catch (e) {
                 console.error('解析指标标注数据失败:', e);
                 formData = {};
             }
