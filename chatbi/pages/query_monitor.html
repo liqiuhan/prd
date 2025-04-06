@@ -1,4 +1,7 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatBI监控系统</title>
@@ -584,7 +587,7 @@
             opacity: 0.7;
         }
         
-        /* 内容字段样式 */
+        /* 内容字段样式 - 改进后的 */
         .content-cell {
             width: 100%;
             height: 100%;
@@ -602,6 +605,7 @@
             position: relative;
             transition: var(--transition-base);
             border-radius: var(--radius-base);
+            cursor: pointer; /* 添加指针样式，明确可以点击 */
         }
         
         .content-cell:hover {
@@ -1195,14 +1199,14 @@
                         <div class="search-results" id="groupResults"></div>
                         <div class="selected-items" id="selectedGroups"></div>
                     </td>
-                    <td>${timeRange || '<span style="color: #999;">未检测到时间</span>'}</td>
+                    <td></td>
                     <td>
                         <div class="date-range-container">
                             <input type="date" class="date-input" id="startDate" placeholder="开始日期">
                             <input type="date" class="date-input" id="endDate" placeholder="结束日期">
                         </div>
                     </td>
-                    <td>${sortInfo || '<span style="color: #999;">未检测到排序</span>'}</td>
+                    <td></td>
                     <td>
                         <input type="text" class="search-input" id="sortFieldSearch" placeholder="搜索排序字段...">
                         <div class="search-results" id="sortFieldResults"></div>
@@ -1431,46 +1435,47 @@
             // 初始化分页
             initPagination();
             
-            // 更新当前时间
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 1000);
-            
             // 初始化图表
             initCharts();
             
             // 初始化弹出框
             initPopup();
             
+
+            
             // 初始化指标标注表单
             initIndicatorForm();
         };
         
-        // 初始化弹出框
+
+        
+        // 初始化弹出框 - 重写
         function initPopup() {
             const popup = document.getElementById('contentPopup');
             const backdrop = document.getElementById('backdrop');
             const closeBtn = document.getElementById('popupClose');
             
             // 关闭按钮点击事件
-            closeBtn.addEventListener('click', closePopup);
+            closeBtn.addEventListener('click', function() {
+                closePopup();
+            });
             
             // 背景点击关闭
-            backdrop.addEventListener('click', closePopup);
-            
-            // 按ESC键关闭
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
+            backdrop.addEventListener('click', function(e) {
+                if (e.target === backdrop) {
                     closePopup();
                 }
             });
             
-            // 预防点击弹出框内部导致关闭
-            popup.addEventListener('click', function(e) {
-                e.stopPropagation();
+            // 按ESC键关闭
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && popup.style.display === 'block') {
+                    closePopup();
+                }
             });
         }
         
-        // 显示弹出框
+        // 显示弹出框 - 重写
         function showPopup(title, content) {
             const popup = document.getElementById('contentPopup');
             const backdrop = document.getElementById('backdrop');
@@ -1482,24 +1487,30 @@
             popupContent.textContent = content;
             
             // 显示弹出框和背景
-            popup.classList.add('active');
+            popup.style.display = 'block';
             backdrop.classList.add('active');
             
             // 防止页面滚动
             document.body.style.overflow = 'hidden';
         }
         
-        // 关闭弹出框
+        // 关闭弹出框 - 重写
         function closePopup() {
             const popup = document.getElementById('contentPopup');
             const backdrop = document.getElementById('backdrop');
             
             // 隐藏弹出框和背景
-            popup.classList.remove('active');
+            popup.style.display = 'none';
             backdrop.classList.remove('active');
             
             // 恢复页面滚动
             document.body.style.overflow = '';
+            
+            // 清除可能的编辑状态
+            if (activeTextarea) {
+                activeTextarea.remove();
+                activeTextarea = null;
+            }
         }
         
         // 显示编辑文本框
@@ -1524,7 +1535,12 @@
             textarea.focus();
             
             // 添加事件监听
-            backdrop.addEventListener('click', saveAndCloseTextarea);
+            backdrop.addEventListener('click', function(e) {
+                if (e.target === backdrop) {
+                    saveAndCloseTextarea();
+                }
+            });
+            
             textarea.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     saveAndCloseTextarea();
@@ -1707,21 +1723,6 @@
             paginationButtons.appendChild(nextBtn);
         }
         
-        // 更新当前时间
-        function updateCurrentTime() {
-            const now = new Date();
-            const formattedTime = now.toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            });
-            document.getElementById('currentTime').textContent = `当前时间：${formattedTime}`;
-        }
-        
         // 初始化字段选择器
         function initFieldSelector() {
             const fieldOptionsContainer = document.getElementById('fieldOptions');
@@ -1791,7 +1792,7 @@
             });
         }
         
-        // 判断内容是否需要截断显示
+        // 判断内容是否需要截断显示 - 改进后的
         function isTruncated(text) {
             if (!text) return false;
             
@@ -1802,7 +1803,7 @@
             return lineCount > 3 || text.length > 90;
         }
         
-        // 渲染表格
+        // 渲染表格 - 重写内容单元格和弹窗部分
         function renderTable() {
             const tableHeader = document.getElementById('tableHeader');
             const tableBody = document.getElementById('tableBody');
@@ -1835,17 +1836,6 @@
             currentPageData.forEach((row, rowIndex) => {
                 const tr = document.createElement('tr');
                 const actualRowIndex = startIndex + rowIndex;
-                
-                // 预处理：对于标注字段，如果为空，则从指定的默认字段获取初始值
-                allFields.forEach(field => {
-                    // 正确问法、正确槽位、正确答案、相关知识和错误原因字段保持为空
-                    if (field.id === 'correctQuestion' || field.id === 'correctSlot' || field.id === 'correctAnswer' || 
-                        field.id === 'relatedKnowledge' || field.id === 'errorReason') {
-                        row[field.id] = '';
-                    } else if (field.defaultFrom && !row[field.id]) {
-                        row[field.id] = row[field.defaultFrom] || '';
-                    }
-                });
                 
                 allFields.forEach(field => {
                     if (field.visible) {
@@ -1923,20 +1913,20 @@
                             
                             td.appendChild(select);
                         } else if (field.readonly || field.contentType === 'text' || field.contentType === 'code') {
-                            // 只读字段或文本内容
+                            // 只读字段或文本内容 - 重写这部分
                             const content = row[field.id] || '';
                             
                             const contentDiv = document.createElement('div');
                             contentDiv.className = 'content-cell';
                             contentDiv.textContent = content;
                             
-                            // 如果内容较长，添加截断标记和点击事件
-                            if (isTruncated(content)) {
+                            // 检查是否需要截断
+                            const needTruncate = isTruncated(content);
+                            if (needTruncate) {
                                 contentDiv.classList.add('truncated');
                                 
-                                // 点击内容弹出完整显示
-                                contentDiv.addEventListener('click', function(e) {
-                                    e.stopPropagation();
+                                // 添加直接点击事件打开弹窗
+                                contentDiv.addEventListener('click', function() {
                                     showPopup(field.name, content);
                                 });
                             }
@@ -2212,7 +2202,11 @@
             cancelBtn.addEventListener('click', closeIndicatorForm);
             
             // 背景点击关闭
-            backdrop.addEventListener('click', closeIndicatorForm);
+            backdrop.addEventListener('click', function(e) {
+                if (e.target === backdrop && formPopup.classList.contains('active')) {
+                    closeIndicatorForm();
+                }
+            });
             
             // 按ESC键关闭
             document.addEventListener('keydown', function(e) {
@@ -2230,11 +2224,10 @@
             initSearchField('indicatorSearch', 'indicatorResults', 'selectedIndicators', getIndicators());
             initSearchField('dimensionSearch', 'dimensionResults', 'selectedDimensions', getDimensions());
             initSearchField('groupSearch', 'groupResults', 'selectedGroups', getDimensions());
+            initSearchField('sortFieldSearch', 'sortFieldResults', 'selectedSortField', [...getIndicators(), ...getDimensions()]);
             
             // 保存按钮事件
-            saveBtn.addEventListener('click', function() {
-                saveIndicatorFormData();
-            });
+            saveBtn.addEventListener('click', saveIndicatorFormData);
         }
         
         // 初始化搜索字段
@@ -2242,6 +2235,11 @@
             const searchInput = document.getElementById(searchId);
             const resultsContainer = document.getElementById(resultsId);
             const selectedContainer = document.getElementById(selectedId);
+            
+            if (!searchInput || !resultsContainer || !selectedContainer) {
+                console.error(`一个或多个元素未找到: ${searchId}, ${resultsId}, ${selectedId}`);
+                return;
+            }
             
             // 搜索框输入事件
             searchInput.addEventListener('input', function() {
@@ -2322,7 +2320,7 @@
         // 切换选择状态
         function toggleSelectItem(container, item) {
             const existingItem = Array.from(container.children).find(
-                child => child.dataset.code === item.code
+                child => child.dataset && child.dataset.code === item.code
             );
             
             if (existingItem) {
@@ -2356,7 +2354,7 @@
         let currentEditRow = null;
         let currentEditField = null;
         
-        // 显示指标标注表单
+        // 显示指标标注表单 - 更新时间范围和排序信息显示
         function showIndicatorForm(rowIndex, fieldId, value) {
             const backdrop = document.getElementById('backdrop');
             const formPopup = document.getElementById('indicatorFormPopup');
@@ -2374,7 +2372,7 @@
                 if (value) {
                     formData = JSON.parse(value);
                 }
-                                } catch (e) {
+            } catch (e) {
                 console.error('解析指标标注数据失败:', e);
                 formData = {};
             }
@@ -2382,7 +2380,10 @@
             // 获取识别到的指标
             let indicators = [];
             try {
-                indicators = JSON.parse(row.recalledIndicators).indicators || [];
+                if (row.recalledIndicators) {
+                    const parsed = JSON.parse(row.recalledIndicators);
+                    indicators = parsed.indicators || [];
+                }
             } catch (e) {
                 console.error('解析指标数据失败:', e);
             }
@@ -2390,11 +2391,13 @@
             // 尝试从槽位信息中提取维度枚举值
             let dimensions = [];
             try {
-                const slotInfo = JSON.parse(row.slotInfo);
-                if (slotInfo && slotInfo.slots) {
-                    // 简化处理，只取第一个槽位的维度
-                    if (slotInfo.slots.length > 0 && slotInfo.slots[0].dimension) {
-                        dimensions.push(slotInfo.slots[0].dimension);
+                if (row.slotInfo) {
+                    const slotInfo = JSON.parse(row.slotInfo);
+                    if (slotInfo && slotInfo.slots) {
+                        // 简化处理，只取第一个槽位的维度
+                        if (slotInfo.slots.length > 0 && slotInfo.slots[0].dimension) {
+                            dimensions.push(slotInfo.slots[0].dimension);
+                        }
                     }
                 }
             } catch (e) {
@@ -2413,11 +2416,13 @@
             // 尝试提取时间范围信息
             let timeRange = '';
             try {
-                const slotInfo = JSON.parse(row.slotInfo);
-                if (slotInfo && slotInfo.slots) {
-                    // 从第一个槽位获取时间信息
-                    if (slotInfo.slots.length > 0 && slotInfo.slots[0].time) {
-                        timeRange = slotInfo.slots[0].time;
+                if (row.slotInfo) {
+                    const slotInfo = JSON.parse(row.slotInfo);
+                    if (slotInfo && slotInfo.slots) {
+                        // 从第一个槽位获取时间信息
+                        if (slotInfo.slots.length > 0 && slotInfo.slots[0].time) {
+                            timeRange = slotInfo.slots[0].time;
+                        }
                     }
                 }
             } catch (e) {
@@ -2449,11 +2454,13 @@
                     
                     // 尝试从复杂项中提取排序字段
                     try {
-                        const sortData = JSON.parse(row.decomposedQuestion);
-                        if (sortData && sortData.questions) {
-                            // 简单模拟，从分解的问题中提取可能的排序字段
-                            sortField = indicators.length > 0 ? indicators[0] : 
-                                        dimensions.length > 0 ? dimensions[0] : '';
+                        if (row.decomposedQuestion) {
+                            const sortData = JSON.parse(row.decomposedQuestion);
+                            if (sortData && sortData.questions) {
+                                // 简单模拟，从分解的问题中提取可能的排序字段
+                                sortField = indicators.length > 0 ? indicators[0] : 
+                                            dimensions.length > 0 ? dimensions[0] : '';
+                            }
                         }
                     } catch (e) {
                         console.error('从分解问题提取排序字段失败:', e);
@@ -2473,173 +2480,10 @@
                 console.error('提取排序信息失败:', e);
             }
             
-            // 修改表头结构
-            const tableHead = document.querySelector('.indicator-form-table thead');
-            tableHead.innerHTML = `
-                <tr>
-                    <th>识别到的指标</th>
-                    <th>指标选择</th>
-                    <th>识别到的维度枚举值</th>
-                    <th>维度选择</th>
-                    <th>识别到的分组</th>
-                    <th>分组维度选择</th>
-                    <th>识别到的时间范围</th>
-                    <th>正确的时间范围</th>
-                    <th>排序指标或维度</th>
-                    <th>正确的排序指标</th>
-                </tr>
-            `;
-            
-            // 清空表体
-            const tableBody = document.querySelector('.indicator-form-table tbody');
-            tableBody.innerHTML = '';
-            
-            // 如果没有识别到指标，显示一行空行
-            if (indicators.length === 0) {
-                const emptyRow = document.createElement('tr');
-                emptyRow.innerHTML = `
-                    <td><span style="color: #999;">未检测到指标</span></td>
-                    <td>
-                        <input type="text" class="search-input" id="indicatorSearch" placeholder="搜索指标...">
-                        <div class="search-results" id="indicatorResults"></div>
-                        <div class="selected-items" id="selectedIndicators"></div>
-                    </td>
-                    <td>${formatDetectedItems(dimensions)}</td>
-                    <td>
-                        <input type="text" class="search-input" id="dimensionSearch" placeholder="搜索维度...">
-                        <div class="search-results" id="dimensionResults"></div>
-                        <div class="selected-items" id="selectedDimensions"></div>
-                    </td>
-                    <td>${formatDetectedItems(groups)}</td>
-                    <td>
-                        <input type="text" class="search-input" id="groupSearch" placeholder="搜索分组维度...">
-                        <div class="search-results" id="groupResults"></div>
-                        <div class="selected-items" id="selectedGroups"></div>
-                    </td>
-                    <td>${timeRange || '<span style="color: #999;">未检测到时间</span>'}</td>
-                    <td>
-                        <div class="date-range-container">
-                            <input type="date" class="date-input" id="startDate" placeholder="开始日期">
-                            <input type="date" class="date-input" id="endDate" placeholder="结束日期">
-                        </div>
-                    </td>
-                    <td>${sortInfo || '<span style="color: #999;">未检测到排序</span>'}</td>
-                    <td>
-                        <input type="text" class="search-input" id="sortFieldSearch" placeholder="搜索排序字段...">
-                        <div class="search-results" id="sortFieldResults"></div>
-                        <div class="selected-items" id="selectedSortField"></div>
-                    </td>
-                `;
-                tableBody.appendChild(emptyRow);
-            } else {
-                // 为每个识别到的指标创建一行
-                indicators.forEach((indicator, index) => {
-                    const indicatorRow = document.createElement('tr');
-                    indicatorRow.innerHTML = `
-                        <td>${indicator}</td>
-                        <td>
-                            <input type="text" class="search-input" id="indicatorSearch${index}" placeholder="搜索指标...">
-                            <div class="search-results" id="indicatorResults${index}"></div>
-                            <div class="selected-items" id="selectedIndicators${index}"></div>
-                        </td>
-                        <td>${formatDetectedItems(dimensions)}</td>
-                        <td>
-                            <input type="text" class="search-input" id="dimensionSearch${index}" placeholder="搜索维度...">
-                            <div class="search-results" id="dimensionResults${index}"></div>
-                            <div class="selected-items" id="selectedDimensions${index}"></div>
-                        </td>
-                        <td>${formatDetectedItems(groups)}</td>
-                        <td>
-                            <input type="text" class="search-input" id="groupSearch${index}" placeholder="搜索分组维度...">
-                            <div class="search-results" id="groupResults${index}"></div>
-                            <div class="selected-items" id="selectedGroups${index}"></div>
-                        </td>
-                        <td>${timeRange || '<span style="color: #999;">未检测到时间</span>'}</td>
-                        <td>
-                            <div class="date-range-container">
-                                <input type="date" class="date-input" id="startDate${index}" placeholder="开始日期">
-                                <input type="date" class="date-input" id="endDate${index}" placeholder="结束日期">
-                            </div>
-                        </td>
-                        <td>${index === 0 ? sortInfo : ''}</td>
-                        <td>
-                            <input type="text" class="search-input" id="sortFieldSearch${index}" placeholder="搜索排序字段...">
-                            <div class="search-results" id="sortFieldResults${index}"></div>
-                            <div class="selected-items" id="selectedSortField${index}"></div>
-                        </td>
-                    `;
-                    tableBody.appendChild(indicatorRow);
-                    
-                    // 为每个搜索框初始化事件
-                    initSearchField(`indicatorSearch${index}`, `indicatorResults${index}`, `selectedIndicators${index}`, getIndicators());
-                    initSearchField(`dimensionSearch${index}`, `dimensionResults${index}`, `selectedDimensions${index}`, getDimensions());
-                    initSearchField(`groupSearch${index}`, `groupResults${index}`, `selectedGroups${index}`, getDimensions());
-                    initSearchField(`sortFieldSearch${index}`, `sortFieldResults${index}`, `selectedSortField${index}`, 
-                        [...getIndicators(), ...getDimensions()]);
-                    
-                    // 如果有已保存的数据，填充已选项
-                    if (formData.indicators && formData.indicators[index]) {
-                        const item = { 
-                            code: formData.indicators[index].code, 
-                            name: formData.indicators[index].name 
-                        };
-                        toggleSelectItem(document.getElementById(`selectedIndicators${index}`), item);
-                    }
-                    
-                    if (formData.dimensions && formData.dimensions[index]) {
-                        formData.dimensions[index].forEach(dim => {
-                            const item = { code: dim.code, name: dim.name };
-                            toggleSelectItem(document.getElementById(`selectedDimensions${index}`), item);
-                        });
-                    }
-                    
-                    if (formData.groups && formData.groups[index]) {
-                        formData.groups[index].forEach(grp => {
-                            const item = { code: grp.code, name: grp.name };
-                            toggleSelectItem(document.getElementById(`selectedGroups${index}`), item);
-                        });
-                    }
-                    
-                    // 设置日期范围（如果有）
-                    if (formData.dateRanges && formData.dateRanges[index]) {
-                        document.getElementById(`startDate${index}`).value = formData.dateRanges[index].start || '';
-                        document.getElementById(`endDate${index}`).value = formData.dateRanges[index].end || '';
-                    }
-                    
-                    // 设置排序字段（如果有）
-                    if (formData.sortFields && formData.sortFields[index]) {
-                        const sortItem = { 
-                            code: formData.sortFields[index].code, 
-                            name: formData.sortFields[index].name 
-                        };
-                        toggleSelectItem(document.getElementById(`selectedSortField${index}`), sortItem);
-                    }
-                });
-            }
-            
-            // 单行情况下也初始化搜索字段
-            if (indicators.length === 0) {
-                initSearchField('indicatorSearch', 'indicatorResults', 'selectedIndicators', getIndicators());
-                initSearchField('dimensionSearch', 'dimensionResults', 'selectedDimensions', getDimensions());
-                initSearchField('groupSearch', 'groupResults', 'selectedGroups', getDimensions());
-                initSearchField('sortFieldSearch', 'sortFieldResults', 'selectedSortField', 
-                    [...getIndicators(), ...getDimensions()]);
-                    
-                // 设置日期范围（如果有）
-                if (formData.dateRanges && formData.dateRanges[0]) {
-                    document.getElementById('startDate').value = formData.dateRanges[0].start || '';
-                    document.getElementById('endDate').value = formData.dateRanges[0].end || '';
-                }
-                
-                // 设置排序字段（如果有）
-                if (formData.sortFields && formData.sortFields[0]) {
-                    const sortItem = { 
-                        code: formData.sortFields[0].code, 
-                        name: formData.sortFields[0].name 
-                    };
-                    toggleSelectItem(document.getElementById('selectedSortField'), sortItem);
-                }
-            }
+            // 更新表单动态部分
+            document.getElementById('detectedIndicators').textContent = indicators.length ? indicators.join(', ') : '未检测到指标';
+            document.getElementById('detectedDimensions').textContent = dimensions.length ? dimensions.join(', ') : '未检测到维度';
+            document.getElementById('detectedGroups').textContent = groups.length ? groups.join(', ') : '未检测到分组';
             
             // 显示表单和背景
             backdrop.classList.add('active');
@@ -2682,107 +2526,48 @@
                 return;
             }
             
-            // 获取当前行中识别到的指标数量
-            const row = mockData[currentEditRow];
-            let indicators = [];
-            try {
-                indicators = JSON.parse(row.recalledIndicators).indicators || [];
-            } catch (e) {
-                console.error('解析指标数据失败:', e);
-            }
-            
-            // 初始化结果对象
+            // 构建一个简单的表单数据结构
             const formData = {
                 indicators: [],
                 dimensions: [],
                 groups: [],
-                dateRanges: [],
+                dateRanges: [{
+                    start: document.getElementById('startDate').value,
+                    end: document.getElementById('endDate').value
+                }],
                 sortFields: []
             };
             
-            // 如果没有识别到指标，从单行获取数据
-            if (indicators.length === 0) {
-                // 获取选中的指标
-                const selectedIndicators = Array.from(document.getElementById('selectedIndicators').children).map(item => ({
-                    code: item.dataset.code,
-                    name: item.dataset.name
-                }));
-                
-                if (selectedIndicators.length > 0) {
-                    formData.indicators = selectedIndicators;
-                    
-                    // 获取选中的维度
-                    formData.dimensions = [Array.from(document.getElementById('selectedDimensions').children).map(item => ({
-                        code: item.dataset.code,
-                        name: item.dataset.name
-                    }))];
-                    
-                    // 获取选中的分组
-                    formData.groups = [Array.from(document.getElementById('selectedGroups').children).map(item => ({
-                        code: item.dataset.code,
-                        name: item.dataset.name
-                    }))];
-                    
-                    // 获取日期范围
-                    formData.dateRanges = [{
-                        start: document.getElementById('startDate').value,
-                        end: document.getElementById('endDate').value
-                    }];
-                    
-                    // 获取排序字段
-                    const selectedSortFields = Array.from(document.getElementById('selectedSortField').children).map(item => ({
-                        code: item.dataset.code,
-                        name: item.dataset.name
-                    }));
-                    
-                    if (selectedSortFields.length > 0) {
-                        formData.sortFields = [selectedSortFields[0]]; // 每行只取第一个排序字段
-                    }
-                }
-            } else {
-                // 从每一行获取数据
-                indicators.forEach((indicator, index) => {
-                    // 获取选中的指标
-                    const selectedIndicators = Array.from(document.getElementById(`selectedIndicators${index}`).children).map(item => ({
-                        code: item.dataset.code,
-                        name: item.dataset.name
-                    }));
-                    
-                    // 只有当选择了指标时才添加其他数据
-                    if (selectedIndicators.length > 0) {
-                        formData.indicators.push(selectedIndicators[0]);  // 每行只取第一个选中的指标
-                        
-                        // 获取选中的维度
-                        formData.dimensions.push(Array.from(document.getElementById(`selectedDimensions${index}`).children).map(item => ({
-                            code: item.dataset.code,
-                            name: item.dataset.name
-                        })));
-                        
-                        // 获取选中的分组
-                        formData.groups.push(Array.from(document.getElementById(`selectedGroups${index}`).children).map(item => ({
-                            code: item.dataset.code,
-                            name: item.dataset.name
-                        })));
-                        
-                        // 获取日期范围
-                        formData.dateRanges.push({
-                            start: document.getElementById(`startDate${index}`).value,
-                            end: document.getElementById(`endDate${index}`).value
-                        });
-                        
-                        // 获取排序字段
-                        const selectedSortFields = Array.from(document.getElementById(`selectedSortField${index}`).children).map(item => ({
-                            code: item.dataset.code,
-                            name: item.dataset.name
-                        }));
-                        
-                        if (selectedSortFields.length > 0) {
-                            formData.sortFields.push(selectedSortFields[0]); // 每行只取第一个排序字段
-                        } else {
-                            formData.sortFields.push(null); // 如果没有选择排序字段，填充null保持数组长度一致
-                        }
-                    }
-                });
+            // 获取选中的指标
+            const selectedIndicators = Array.from(document.getElementById('selectedIndicators').children).map(item => ({
+                code: item.dataset.code,
+                name: item.dataset.name
+            }));
+            
+            if (selectedIndicators.length > 0) {
+                formData.indicators = selectedIndicators;
+            }
+            
+            // 获取选中的维度
+            formData.dimensions = [Array.from(document.getElementById('selectedDimensions').children).map(item => ({
+                code: item.dataset.code,
+                name: item.dataset.name
+            }))];
+            
+            // 获取选中的分组
+            formData.groups = [Array.from(document.getElementById('selectedGroups').children).map(item => ({
+                code: item.dataset.code,
+                name: item.dataset.name
+            }))];
+            
+            // 获取排序字段
+            const selectedSortFields = Array.from(document.getElementById('selectedSortField').children).map(item => ({
+                code: item.dataset.code,
+                name: item.dataset.name
+            }));
+            
+            if (selectedSortFields.length > 0) {
+                formData.sortFields = [selectedSortFields[0]]; // 每行只取第一个排序字段
             }
             
             // 更新数据
@@ -2830,6 +2615,5 @@
             ];
         }
     </script>
-
-
-</body></html>
+</body>
+</html>

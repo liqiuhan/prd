@@ -1,4 +1,4 @@
-ChatBI原型链接目录 (生成时间: 2025-03-26 20:30:03)
+ChatBI原型链接目录 (生成时间: 2025-03-28 19:36:10)
 ==================================================
 
 1. index-sidebar copy: http://nas.chatbi.live:41026/index-sidebar copy.html
@@ -22,5 +22,3 @@ ChatBI原型链接目录 (生成时间: 2025-03-26 20:30:03)
 4.16. page-settings: http://nas.chatbi.live:41026/pages/page-settings.html
 4.17. query_monitor: http://nas.chatbi.live:41026/pages/query_monitor.html
 4.18. rec_questions: http://nas.chatbi.live:41026/pages/rec_questions.html
-4.19. step4_handler: http://nas.chatbi.live:41026/pages/step4_handler.html
-4.20. step5_handler: http://nas.chatbi.live:41026/pages/step5_handler.html
