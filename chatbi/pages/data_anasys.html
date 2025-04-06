@@ -1,0 +1,3077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析工作台</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --border-color: #e8e8e8;
+            --background-color: #f5f5f5;
+            --cell-border: 1px solid var(--border-color);
+            --header-height: 60px;
+            --button-background: #f0f2f5;
+            --button-hover: #e6f7ff;
+            --tag-bg-data: #e6f7ff;
+            --tag-text-data: #1890ff;
+            --tag-bg-trend: #f6ffed;
+            --tag-text-trend: #52c41a;
+            --tag-bg-bar: #fff7e6;
+            --tag-text-bar: #fa8c16;
+            --tag-bg-stat: #f9f0ff;
+            --tag-text-stat: #722ed1;
+            --tag-bg-forecast: #fcf4f6;
+            --tag-text-forecast: #eb2f96;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: #333;
+        }
+        
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 40px;
+        }
+        
+        .toolbar {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background-color: var(--button-background);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #40a9ff;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .cell-container {
+            margin-bottom: 20px;
+            border-radius: 4px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .cell-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #fafafa;
+            border-bottom: var(--cell-border);
+        }
+        
+        .cell-type {
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cell-tags {
+            display: flex;
+            gap: 5px;
+            margin-left: 10px;
+        }
+        
+        .cell-tag {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        .tag-data {
+            background-color: var(--tag-bg-data);
+            color: var(--tag-text-data);
+        }
+        
+        .tag-trend {
+            background-color: var(--tag-bg-trend);
+            color: var(--tag-text-trend);
+        }
+        
+        .tag-bar {
+            background-color: var(--tag-bg-bar);
+            color: var(--tag-text-bar);
+        }
+        
+        .tag-stat {
+            background-color: var(--tag-bg-stat);
+            color: var(--tag-text-stat);
+        }
+        
+        .tag-forecast {
+            background-color: var(--tag-bg-forecast);
+            color: var(--tag-text-forecast);
+        }
+        
+        .cell-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .cell-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .cell-action-btn:hover {
+            color: var(--primary-color);
+            background-color: var(--button-hover);
+        }
+        
+        .cell-input {
+            padding: 15px;
+            border-bottom: var(--cell-border);
+            position: relative;
+        }
+        
+        .prompt-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color 0.3s;
+        }
+        
+        .prompt-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        .var-ref-btn {
+            position: absolute;
+            right: 25px;
+            top: 25px;
+            padding: 6px;
+            background: var(--button-background);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .var-ref-btn:hover {
+            background-color: var(--button-hover);
+            color: var(--primary-color);
+        }
+        
+        .cell-output {
+            padding: 15px;
+        }
+        
+        .output-content {
+            width: 100%;
+        }
+        
+        .output-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .output-table th, .output-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .output-table th {
+            background-color: #fafafa;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 400px;
+        }
+        
+        .analysis-summary {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .analysis-summary h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .analysis-summary p {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .insight {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .insight-icon {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .insight-text {
+            flex: 1;
+        }
+        
+        .metric-positive {
+            color: #52c41a;
+        }
+        
+        .metric-negative {
+            color: #f5222d;
+        }
+        
+        .metric-neutral {
+            color: #faad14;
+        }
+        
+        .cell-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background-color: #fafafa;
+            border-top: var(--cell-border);
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .execution-time {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .variables {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .variable-chip {
+            background-color: #e6f7ff;
+            color: var(--primary-color);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .variable-chip:hover {
+            background-color: #bae7ff;
+        }
+        
+        /* Variables Reference Modal */
+        .var-ref-modal {
+            position: absolute;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            z-index: 1000;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .var-ref-modal.show {
+            display: block;
+        }
+        
+        .var-ref-modal-header {
+            padding: 10px 15px;
+            border-bottom: var(--cell-border);
+            font-weight: bold;
+        }
+        
+        .var-ref-sections {
+            padding: 10px;
+        }
+        
+        .var-ref-section {
+            margin-bottom: 15px;
+        }
+        
+        .var-ref-section-title {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .var-ref-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .var-ref-item:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .var-ref-label {
+            font-size: 13px;
+        }
+        
+        .var-ref-value {
+            font-size: 12px;
+            color: #999;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .modal-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .modal-tabs {
+            display: flex;
+            border-bottom: var(--cell-border);
+        }
+        
+        .modal-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .modal-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .json-view {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow: auto;
+            max-height: 500px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .copy-btn {
+            background-color: var(--button-background);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        
+        .copy-btn:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .variables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .variable-card {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .variable-name {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .variable-value {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 5px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1001;
+        }
+        
+        .tooltip.show {
+            opacity: 1;
+        }
+        
+        /* Loader */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(24, 144, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* KPI cards */
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .kpi-card {
+            background-color: white;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .kpi-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .kpi-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .kpi-change {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .kpi-up {
+            color: #52c41a;
+        }
+        
+        .kpi-down {
+            color: #f5222d;
+        }
+        
+        .kpi-entity {
+            margin-top: 8px;
+            padding: 4px 8px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            display: inline-block;
+        }
+        
+        /* Tree chart styles */
+        .tree-chart {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .tree-node {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .tree-box {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tree-title {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .tree-value {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .tree-status {
+            margin-top: 5px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        
+        .tree-good {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .tree-warning {
+            background-color: #fffbe6;
+            color: #faad14;
+        }
+        
+        .tree-bad {
+            background-color: #fff2f0;
+            color: #f5222d;
+        }
+        
+        .tree-children {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .tree-child {
+            flex: 1;
+            margin: 0 10px;
+            position: relative;
+        }
+        
+        .tree-connector {
+            position: absolute;
+            width: 2px;
+            background-color: var(--border-color);
+            left: 50%;
+            top: -20px;
+            height: 20px;
+        }
+        
+        .tree-connector::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            height: 2px;
+            background-color: var(--border-color);
+        }
+        
+        .tree-root > .tree-connector {
+            top: auto;
+            bottom: -20px;
+            height: 20px;
+        }
+        
+        .tree-root > .tree-connector::before {
+            width: 100%;
+            top: auto;
+            bottom: 0;
+            left: 0;
+        }
+        
+        .tree-split-connector {
+            position: absolute;
+            height: 2px;
+            background-color: var(--border-color);
+            bottom: -20px;
+            width: 100%;
+            left: 0;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .logo {
+                margin-right: 20px;
+            }
+            
+            .toolbar {
+                gap: 5px;
+            }
+            
+            .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .main-content {
+                padding: 10px;
+            }
+            
+            .variables-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .kpi-cards {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+        
+        /* MCPServers 模态框样式 */
+        .mcpservers-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .mcpserver-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .mcpserver-item:last-child {
+            border-bottom: none;
+        }
+        
+        .mcpserver-checkbox {
+            margin-right: 12px;
+            margin-top: 3px;
+        }
+        
+        .mcpserver-info {
+            flex: 1;
+        }
+        
+        .mcpserver-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .mcpserver-description {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* 变量设置模态框样式 */
+        .modal-description {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .variables-list {
+            max-height: 350px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .variable-item {
+            display: flex;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .variable-name {
+            flex: 0 0 150px;
+            font-weight: 500;
+        }
+        
+        .variable-value {
+            flex: 1;
+        }
+        
+        .variable-value input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        /* 导出报告模态框样式 */
+        .export-options {
+            margin-bottom: 20px;
+        }
+        
+        .export-format-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .export-format-options label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">考核收入目标达成率分析</div>
+            <div class="toolbar">
+                <button class="btn btn-primary" id="add-cell">
+                    <span>➕</span> 添加单元格
+                </button>
+                <button class="btn" id="run-all">
+                    <span>▶️</span> 运行全部
+                </button>
+                <button class="btn" id="clear-output">
+                    <span>🧹</span> 清除输出
+                </button>
+                <button class="btn" id="set-variables">
+                    <span>💾</span> 保存
+                </button>
+                <button class="btn" id="export-report">
+                    <span>📊</span> 导出报告
+                </button>
+                <button class="btn" id="select-mcpservers">
+                    <span>🛠️</span> tools
+                </button>
+                <button class="btn" id="set-variables">
+                    <span>⚙️</span> 设置
+                </button>
+                <button class="btn" id="set-variables">
+                    <span>🔙</span> 返回主页
+                </button>
+            </div>
+        </header>
+        
+        <div class="main-content" id="notebook-container">
+            <!-- Cells will be added here -->
+        </div>
+    </div>
+    
+    <!-- Modal for API parameters -->
+    <div class="modal-overlay" id="api-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">API 参数</div>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-tabs">
+                <div class="modal-tab active" data-tab="request-params">请求参数</div>
+                <div class="modal-tab" data-tab="request-vars">请求变量</div>
+                <div class="modal-tab" data-tab="response-data">响应数据</div>
+                <div class="modal-tab" data-tab="stat-vars">统计变量</div>
+            </div>
+            <div class="modal-content">
+                <div class="tab-content active" id="request-params">
+                    <div class="json-view" id="request-params-json"></div>
+                    <button class="copy-btn" id="copy-request">
+                        <span>📋</span> 复制请求参数
+                    </button>
+                </div>
+                <div class="tab-content" id="request-vars">
+                    <div class="variables-grid" id="request-vars-grid">
+                        <!-- Request variables will be added here -->
+                    </div>
+                </div>
+                <div class="tab-content" id="response-data">
+                    <div class="json-view" id="response-data-json"></div>
+                    <button class="copy-btn" id="copy-response">
+                        <span>📋</span> 复制响应数据
+                    </button>
+                </div>
+                <div class="tab-content" id="stat-vars">
+                    <div class="variables-grid" id="stat-vars-grid">
+                        <!-- Statistical variables will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Variable selection modal -->
+    <div class="var-ref-modal" id="var-ref-modal">
+        <div class="var-ref-modal-header">引用变量</div>
+        <div class="var-ref-sections" id="var-ref-sections">
+            <!-- Variable sections will be added here -->
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <!-- MCPServers 选择模态框 -->
+    <div class="modal-overlay" id="mcpservers-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">tools</div>
+                <button class="modal-close" id="mcpservers-modal-close">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="mcpservers-list" id="mcpservers-list">
+                    <!-- MCPServer items will be added here by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="mcpservers-confirm">确认</button>
+                    <button class="btn" id="mcpservers-select-all">全选</button>
+                    <button class="btn" id="mcpservers-deselect-all">取消全选</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 变量设置模态框 -->
+    <div class="modal-overlay" id="variables-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">设置调用参数</div>
+                <button class="modal-close" id="variables-modal-close">&times;</button>
+            </div>
+            <div class="modal-content">
+                <p class="modal-description">从第一个单元格的请求中提取变量，便于后续重用该模板</p>
+                <div class="variables-list" id="variables-list">
+                    <!-- Variables will be added here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="variables-save">保存设置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导出报告模态框 -->
+    <div class="modal-overlay" id="export-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">导出报告</div>
+                <button class="modal-close" id="export-modal-close">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="export-options">
+                    <p>选择导出格式：</p>
+                    <div class="export-format-options">
+                        <label>
+                            <input type="radio" name="export-format" value="html" checked> HTML
+                        </label>
+                        <label>
+                            <input type="radio" name="export-format" value="pdf"> PDF
+                        </label>
+                        <label>
+                            <input type="radio" name="export-format" value="ppt"> PPT
+                        </label>
+                        <label>
+                            <input type="radio" name="export-format" value="word"> Word
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="export-confirm">确认导出</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let cellCounter = 0;
+        let currentCellId = null;
+        let currentInputElement = null;
+        let variables = {
+            requestVars: {},
+            statVars: {}
+        };
+        
+        // Sample data for demonstration - 更加丰富的数据集
+        const sampleData = {
+            tables: {
+                "库存联网门店量": {
+                    columns: ["月份", "大区", "库存联网门店量", "环比增长", "同比增长"],
+                    data: [
+                        ["2024-01", "花都西大区", 120, "-", "+8.1%"],
+                        ["2024-02", "花都西大区", 133, "+10.8%", "+12.7%"],
+                        ["2024-03", "花都西大区", 142, "+6.8%", "+15.4%"],
+                        ["2024-04", "花都西大区", 138, "-2.8%", "+7.8%"],
+                        ["2024-05", "花都西大区", 155, "+12.3%", "+13.1%"],
+                        ["2024-06", "花都西大区", 162, "+4.5%", "+18.2%"],
+                        ["2024-07", "花都西大区", 170, "+4.9%", "+17.2%"],
+                        ["2024-08", "花都西大区", 168, "-1.2%", "+14.3%"],
+                        ["2024-09", "花都西大区", 175, "+4.2%", "+16.7%"],
+                        ["2024-10", "花都西大区", 183, "+4.6%", "+19.6%"],
+                        ["2024-11", "花都西大区", 192, "+4.9%", "+21.5%"],
+                        ["2024-12", "花都西大区", 198, "+3.1%", "+24.5%"]
+                    ],
+                    kpis: [
+                        { 
+                            title: "平均库存联网门店量", 
+                            value: 161, 
+                            change: "+15.8%", 
+                            direction: "up",
+                            entity: null
+                        },
+                        { 
+                            title: "最高库存联网门店量", 
+                            value: 198, 
+                            change: "+24.5%", 
+                            direction: "up",
+                            entity: "2024-12月份" 
+                        },
+                        { 
+                            title: "最低库存联网门店量", 
+                            value: 120, 
+                            change: "+8.1%", 
+                            direction: "up",
+                            entity: "2024-01月份" 
+                        },
+                        { 
+                            title: "环比增长(最近月)", 
+                            value: "3.1%", 
+                            change: "-1.8%", 
+                            direction: "down",
+                            entity: "2024-12月份" 
+                        }
+                    ],
+                    insights: [
+                        "库存联网门店量全年呈现稳健增长趋势，年末较年初增长65%",
+                        "二季度增长加速，环比增速平均达6.5%",
+                        "下半年增长速度趋于稳定，呈现平缓上升趋势",
+                        "全年增长主要受区域扩张和商业合作增加驱动"
+                    ],
+                    summary: "花都西大区2024年库存联网门店量整体表现强劲，全年累计增加78家门店，同比增长24.5%。环比增长方面，除4月和8月有小幅下降外，其余月份均保持正增长。预计2025年一季度将保持稳健增长态势，进一步巩固区域优势。",
+                    cellTags: ["取数", "趋势图", "统计分析"]
+                },
+                "销售额": {
+                    columns: ["月份", "品牌", "销售额(万元)", "环比增长", "同比增长"],
+                    data: [
+                        ["2024-01", "贝联", 250.5, "-", "+12.3%"],
+                        ["2024-02", "贝联", 283.2, "+13.1%", "+15.8%"],
+                        ["2024-03", "贝联", 322.6, "+13.9%", "+18.4%"],
+                        ["2024-04", "贝联", 298.3, "-7.5%", "+9.7%"],
+                        ["2024-05", "贝联", 315.8, "+5.9%", "+11.2%"],
+                        ["2024-06", "贝联", 346.7, "+9.8%", "+16.5%"],
+                        ["2024-07", "贝联", 378.4, "+9.1%", "+19.8%"],
+                        ["2024-08", "贝联", 365.2, "-3.5%", "+14.2%"],
+                        ["2024-09", "贝联", 392.7, "+7.5%", "+17.4%"],
+                        ["2024-10", "贝联", 418.5, "+6.6%", "+20.5%"],
+                        ["2024-11", "贝联", 435.9, "+4.2%", "+22.8%"],
+                        ["2024-12", "贝联", 458.3, "+5.1%", "+25.7%"]
+                    ],
+                    kpis: [
+                        { 
+                            title: "全年总销售额", 
+                            value: "4266.1万", 
+                            change: "+17.9%", 
+                            direction: "up",
+                            entity: null
+                        },
+                        { 
+                            title: "月均销售额", 
+                            value: "355.5万", 
+                            change: "+17.9%", 
+                            direction: "up",
+                            entity: null
+                        },
+                        { 
+                            title: "最高月销售额", 
+                            value: "458.3万", 
+                            change: "+25.7%", 
+                            direction: "up",
+                            entity: "2024-12月份" 
+                        },
+                        { 
+                            title: "销售额环比增速", 
+                            value: "5.1%", 
+                            change: "+0.9%", 
+                            direction: "up",
+                            entity: "2024-12月份" 
+                        }
+                    ],
+                    insights: [
+                        "贝联品牌销售额呈现明显的季节性波动，第二季度和第四季度表现最佳",
+                        "节假日期间(5月、10月、12月)销售表现突出，环比增长强劲",
+                        "下半年销售额增长率普遍高于上半年，显示市场认可度提升",
+                        "冬季销售额增长最为显著，与促销活动和品牌策略调整相关"
+                    ],
+                    summary: "贝联品牌2024年销售额持续增长，全年实现4266.1万元，同比增长17.9%。月度表现方面，除4月和8月受季节性因素影响略有下滑外，整体保持上升趋势。第四季度表现尤为突出，三个月销售额均创历史新高，环比增长稳健。基于现有趋势，预计2025年第一季度销售额将继续保持15%以上的同比增长。",
+                    cellTags: ["取数", "趋势图", "统计分析"]
+                },
+                "客流量": {
+                    columns: ["月份", "业绩城市", "客流量(人次)", "环比增长", "同比增长"],
+                    data: [
+                        ["2024-01", "广州", 35420, "-", "+7.8%"],
+                        ["2024-02", "广州", 38760, "+9.4%", "+10.2%"],
+                        ["2024-03", "广州", 42580, "+9.9%", "+13.6%"],
+                        ["2024-04", "广州", 40120, "-5.8%", "+6.5%"],
+                        ["2024-05", "广州", 45360, "+13.1%", "+9.8%"],
+                        ["2024-06", "广州", 48750, "+7.5%", "+12.3%"],
+                        ["2024-07", "广州", 52180, "+7.0%", "+15.8%"],
+                        ["2024-08", "广州", 50240, "-3.7%", "+11.2%"],
+                        ["2024-09", "广州", 53480, "+6.4%", "+13.5%"],
+                        ["2024-10", "广州", 56920, "+6.4%", "+16.8%"],
+                        ["2024-11", "广州", 59040, "+3.7%", "+18.2%"],
+                        ["2024-12", "广州", 61250, "+3.7%", "+20.4%"]
+                    ],
+                    kpis: [
+                        { 
+                            title: "全年总客流量", 
+                            value: "584,100人次", 
+                            change: "+13.2%", 
+                            direction: "up",
+                            entity: null 
+                        },
+                        { 
+                            title: "月均客流量", 
+                            value: "48,675人次", 
+                            change: "+13.2%", 
+                            direction: "up",
+                            entity: null 
+                        },
+                        { 
+                            title: "客单价", 
+                            value: "73元", 
+                            change: "+4.1%", 
+                            direction: "up",
+                            entity: null 
+                        },
+                        { 
+                            title: "转化率", 
+                            value: "32.8%", 
+                            change: "+2.5%", 
+                            direction: "up",
+                            entity: null 
+                        }
+                    ],
+                    insights: [
+                        "客流量整体呈现明显的季节性特征，年中和年末是客流高峰",
+                        "节假日期间(5月、10月)客流环比增长显著，有效带动销售额提升",
+                        "客流增长与营销活动呈正相关，大型促销活动期间客流量峰值明显",
+                        "下半年客流增长趋于稳定，但单客价值持续提升，表明客户质量改善"
+                    ],
+                    summary: "广州地区2024年客流量数据显示，全年累计接待顾客584,100人次，同比增长13.2%。客流趋势与销售额高度相关，但客单价提升(同比+4.1%)成为销售额增长的重要贡献因素。客流量环比增长在节假日期间表现突出，特别是5月和10月。客流转化率32.8%，同比提升2.5个百分点，表明店铺运营效率和顾客体验持续优化。",
+                    cellTags: ["取数", "趋势图", "统计分析"] 
+                },
+                "考核收入目标完成率": {
+                    columns: ["业务类型", "计划收入(万元)", "实际收入(万元)", "完成率", "同比增长"],
+                    data: [
+                        ["总收入", 23465, 21118, "90.0%", "+13.5%"],
+                        ["二手", 12350, 10245, "82.9%", "+5.8%"],
+                        ["租赁", 7850, 7535, "96.0%", "+18.2%"],
+                        ["新房", 3265, 3338, "102.2%", "+21.6%"]
+                    ],
+                    kpis: [
+                        { 
+                            title: "整体目标完成率", 
+                            value: "90.0%", 
+                            change: "+3.8%", 
+                            direction: "up",
+                            entity: "总收入" 
+                        },
+                        { 
+                            title: "最高完成率", 
+                            value: "102.2%", 
+                            change: "+4.5%", 
+                            direction: "up",
+                            entity: "新房业务" 
+                        },
+                        { 
+                            title: "最低完成率", 
+                            value: "82.9%", 
+                            change: "-2.3%", 
+                            direction: "down",
+                            entity: "二手业务" 
+                        },
+                        { 
+                            title: "影响最大业务", 
+                            value: "未完成2105万", 
+                            change: "-17.1%", 
+                            direction: "down",
+                            entity: "二手业务" 
+                        }
+                    ],
+                    insights: [
+                        "整体收入目标完成率为90.0%，距离全面达成目标还有一定差距",
+                        "新房业务表现最佳，超额完成目标2.2%，且同比增长最快",
+                        "租赁业务完成率达96.0%，接近目标，同比增长18.2%",
+                        "二手业务是影响整体目标完成的最大因素，完成率仅为82.9%"
+                    ],
+                    summary: "本月广州地区考核收入总体完成率为90.0%，同比提升3.8个百分点。业务类型拆解来看，新房业务表现突出，完成率102.2%，租赁业务完成率96.0%，而二手业务完成率仅82.9%，是拖累整体表现的主要因素。各业务线收入同比均有增长，但二手业务增长较慢。改善二手业务的目标完成率是提升整体业绩的关键。",
+                    treeData: {
+                        title: "总收入",
+                        value: "90.0%",
+                        status: "warning",
+                        children: [
+                            {
+                                title: "二手",
+                                value: "82.9%",
+                                status: "bad"
+                            },
+                            {
+                                title: "租赁",
+                                value: "96.0%",
+                                status: "warning"
+                            },
+                            {
+                                title: "新房",
+                                value: "102.2%",
+                                status: "good"
+                            }
+                        ]
+                    },
+                    cellTags: ["取数", "统计分析"]
+                },
+                "大区二手目标完成率": {
+                    columns: ["大区", "计划收入(万元)", "实际收入(万元)", "二手目标完成率", "同比增长"],
+                    data: [
+                        ["华南大区", 2820, 2574, "91.3%", "+8.4%"],
+                        ["华东大区", 2540, 2235, "88.0%", "+6.2%"],
+                        ["华北大区", 2190, 1832, "83.7%", "+4.1%"],
+                        ["西南大区", 1980, 1425, "72.0%", "-3.5%"],
+                        ["西北大区", 1650, 1285, "77.9%", "+2.8%"],
+                        ["东北大区", 1170, 894, "76.4%", "+1.6%"]
+                    ],
+                    kpis: [
+                        { 
+                            title: "平均目标完成率", 
+                            value: "82.9%", 
+                            change: "-2.3%", 
+                            direction: "down",
+                            entity: "全国大区平均" 
+                        },
+                        { 
+                            title: "最高完成率大区", 
+                            value: "91.3%", 
+                            change: "+8.4%", 
+                            direction: "up",
+                            entity: "华南大区" 
+                        },
+                        { 
+                            title: "最低完成率大区", 
+                            value: "72.0%", 
+                            change: "-3.5%", 
+                            direction: "down",
+                            entity: "西南大区" 
+                        },
+                        { 
+                            title: "影响最大的大区", 
+                            value: "未完成555万", 
+                            change: "-28.0%", 
+                            direction: "down",
+                            entity: "西南大区"
+                        }
+                    ],
+                    insights: [
+                        "各大区二手业务目标完成率普遍偏低，无一达到100%",
+                        "华南大区表现最佳，完成率91.3%，同比增长8.4%",
+                        "西南大区表现最差，完成率仅72.0%，且同比下降3.5%",
+                        "西南大区对整体二手业务目标完成的影响最大，需重点关注"
+                    ],
+                    summary: "二手业务各大区完成情况分析显示，所有大区均未达成目标。华南大区表现相对较好，完成率91.3%；而西南大区表现最差，完成率仅72.0%，且同比下降3.5%，是唯一同比下降的大区。从绝对差额看，西南大区未完成金额达555万元，占整体未完成金额的26.3%，对总体完成率影响最大。建议重点关注西南大区，分析其业绩下滑原因，并采取针对性措施提升二手业务表现。",
+                    cellTags: ["取数", "柱状图", "趋势图", "统计分析"]
+                },
+                "西南大区二手目标完成率": {
+                    columns: ["月份", "计划收入(万元)", "实际收入(万元)", "完成率", "同比增长"],
+                    data: [
+                        ["2024-01", 310, 248, "80.0%", "+3.2%"],
+                        ["2024-02", 325, 266, "81.8%", "+4.5%"],
+                        ["2024-03", 342, 293, "85.7%", "+6.8%"],
+                        ["2024-04", 330, 284, "86.1%", "+5.4%"],
+                        ["2024-05", 348, 261, "75.0%", "-2.1%"],
+                        ["2024-06", 335, 244, "72.8%", "-5.4%"]
+                    ],
+                    kpis: [
+                        { 
+                            title: "平均目标完成率", 
+                            value: "80.2%", 
+                            change: "+2.1%", 
+                            direction: "up",
+                            entity: "近6个月平均" 
+                        },
+                        { 
+                            title: "最高月完成率", 
+                            value: "86.1%", 
+                            change: "+5.4%", 
+                            direction: "up",
+                            entity: "2024-04月份" 
+                        },
+                        { 
+                            title: "最低月完成率", 
+                            value: "72.8%", 
+                            change: "-5.4%", 
+                            direction: "down",
+                            entity: "2024-06月份" 
+                        },
+                        { 
+                            title: "未达标月份数", 
+                            value: "6个月", 
+                            change: "", 
+                            direction: "down",
+                            entity: "全部月份均未达标" 
+                        }
+                    ],
+                    insights: [
+                        "西南大区近6个月二手业务目标完成率呈现先升后降趋势",
+                        "1-4月表现相对较好，完成率逐步提升至86.1%",
+                        "5-6月表现明显下滑，6月完成率仅为72.8%，同比下降5.4%",
+                        "所有月份均未达到目标，且近两个月呈现同比下降趋势"
+                    ],
+                    summary: "西南大区近6个月二手业务目标完成率分析显示，该大区呈现明显的先升后降趋势。1-4月期间，目标完成率稳步提升，从1月的80.0%上升至4月的86.1%，但5-6月急剧下滑，6月仅达72.8%。全部6个月均未达标，且近两个月出现同比负增长，表明业绩下滑问题正在加剧。根据数据分析，主要问题出现在5月后，可能与区域市场变化、竞争加剧或内部管理变动有关，建议深入调查近期导致业绩下滑的具体原因。",
+                    cellTags: ["取数", "趋势图", "统计分析"]
+                },
+                "西南大区CA二手目标完成率": {
+                    columns: ["CA", "计划收入(万元)", "实际收入(万元)", "完成率", "同比增长"],
+                    data: [
+                        ["成都CA", 580, 485, "83.6%", "+4.2%"],
+                        ["重庆CA", 520, 412, "79.2%", "+2.8%"],
+                        ["昆明CA", 380, 235, "61.8%", "-8.5%"],
+                        ["贵阳CA", 320, 226, "70.6%", "-2.1%"],
+                        ["拉萨CA", 180, 67, "37.2%", "-15.4%"]
+                    ],
+                    kpis: [
+                        { 
+                            title: "平均目标完成率", 
+                            value: "72.0%", 
+                            change: "-3.5%", 
+                            direction: "down",
+                            entity: "西南大区CA平均" 
+                        },
+                        { 
+                            title: "最高完成率CA", 
+                            value: "83.6%", 
+                            change: "+4.2%", 
+                            direction: "up",
+                            entity: "成都CA" 
+                        },
+                        { 
+                            title: "最低完成率CA", 
+                            value: "37.2%", 
+                            change: "-15.4%", 
+                            direction: "down",
+                            entity: "拉萨CA" 
+                        },
+                        { 
+                            title: "影响最大的CA", 
+                            value: "未完成113万", 
+                            change: "-62.8%", 
+                            direction: "down",
+                            entity: "拉萨CA" 
+                        }
+                    ],
+                    insights: [
+                        "西南大区内各CA二手业务目标完成率普遍不佳，无一达标",
+                        "成都CA表现相对较好，完成率83.6%，同比增长4.2%",
+                        "拉萨CA表现极差，完成率仅37.2%，同比大幅下降15.4%",
+                        "昆明CA和拉萨CA的同比下降幅度较大，是整体业绩下滑的主要原因"
+                    ],
+                    summary: "西南大区各CA二手业务表现分析显示，所有CA均未达成目标。成都和重庆表现相对较好，完成率分别为83.6%和79.2%，且同比有所增长。而昆明、贵阳和拉萨CA表现较差，特别是拉萨CA，完成率仅37.2%，同比大幅下降15.4%。从绝对差额和同比变化看，昆明CA和拉萨CA对西南大区整体业绩影响最大，合计未完成金额达258万元，占大区未完成总额的46.5%。建议重点关注昆明CA和拉萨CA的业务情况，尤其是拉萨CA的异常低完成率问题。",
+                    cellTags: ["取数", "柱状图", "趋势图", "统计分析"]
+                }
+            }
+        };
+        
+        // Sample request parameters
+        const sampleRequestParams = {
+            "数据": {
+                "表1": {
+                    "表": [
+                        "库存联网门店量"
+                    ],
+                    "约束": {
+                        "and": [
+                            {
+                                "type": "in",
+                                "维度": "业绩城市",
+                                "枚举值": "广州"
+                            },
+                            {
+                                "type": "in",
+                                "维度": "事业部",
+                                "枚举值": "广北运营大部"
+                            },
+                            {
+                                "type": "in",
+                                "维度": "品牌",
+                                "枚举值": "贝联"
+                            },
+                            {
+                                "type": "in",
+                                "维度": "大区",
+                                "枚举值": "花都西大区"
+                            }
+                        ]
+                    },
+                    "时间范围": [
+                        {
+                            "start": "${-1ys_pt}",
+                            "end": "${-1ye_pt}"
+                        }
+                    ],
+                    "时间粒度": [
+                        "月"
+                    ],
+                    "组合": [
+                        "大区"
+                    ],
+                    "行数": "12",
+                    "排序": [
+                        {
+                            "月份": "asc"
+                        }
+                    ],
+                    "指标函数": [],
+                    "错误信息": [],
+                    "选择": [
+                        "库存联网门店量",
+                        "环比增长",
+                        "同比增长"
+                    ],
+                    "可视化": "柱状图"
+                }
+            }
+        };
+        
+        // 根据分析类型定义一组预设的统计变量
+        const statisticalVariables = {
+            "库存联网门店量": {
+                "S1": "表现最好的月份：2024-12",
+                "S2": "表现最差的月份：2024-01",
+                "S3": "平均库存联网门店量：161家",
+                "S4": "最高月度值：198家 (2024-12)",
+                "S5": "最低月度值：120家 (2024-01)",
+                "S6": "全年增长率：+65.0%",
+                "S7": "平均环比增长率：+4.7%",
+                "S8": "波动最大月份：2024-05 (+12.3%)"
+            },
+            "销售额": {
+                "S1": "表现最好的月份：2024-12",
+                "S2": "表现最差的月份：2024-01",
+                "S3": "平均月销售额：355.5万元",
+                "S4": "最高月度值：458.3万元 (2024-12)",
+                "S5": "最低月度值：250.5万元 (2024-01)",
+                "S6": "全年增长率：+82.9%",
+                "S7": "平均环比增长率：+5.4%",
+                "S8": "波动最大月份：2024-03 (+13.9%)"
+            },
+            "客流量": {
+                "S1": "表现最好的月份：2024-12",
+                "S2": "表现最差的月份：2024-01",
+                "S3": "平均月客流量：48,675人次",
+                "S4": "最高月度值：61,250人次 (2024-12)",
+                "S5": "最低月度值：35,420人次 (2024-01)",
+                "S6": "全年增长率：+72.9%",
+                "S7": "平均环比增长率：+5.3%",
+                "S8": "波动最大月份：2024-05 (+13.1%)"
+            },
+            "考核收入目标完成率": {
+                "S1": "表现最好的业务：新房 (102.2%)",
+                "S2": "表现最差的业务：二手 (82.9%)",
+                "S3": "整体目标完成率：90.0%",
+                "S4": "二手实际收入：10245万元",
+                "S5": "租赁实际收入：7535万元",
+                "S6": "新房实际收入：3338万元",
+                "S7": "影响最大的业务：二手",
+                "S8": "同比增长最快的业务：新房 (+21.6%)"
+            },
+            "大区二手目标完成率": {
+                "S1": "表现最好的大区：华南大区 (91.3%)",
+                "S2": "表现最差的大区：西南大区 (72.0%)",
+                "S3": "平均二手完成率：82.9%",
+                "S4": "华南大区实际收入：2574万元",
+                "S5": "华东大区实际收入：2235万元",
+                "S6": "西南大区实际收入：1425万元",
+                "S7": "影响最大的大区：西南大区",
+                "S8": "西南大区完成率同比增长：-3.5%"
+            },
+            "西南大区二手目标完成率": {
+                "S1": "表现最好的月份：2024-04 (86.1%)",
+                "S2": "表现最差的月份：2024-06 (72.8%)",
+                "S3": "平均完成率：80.2%",
+                "S4": "近6个月未达标月份数：6个月",
+                "S5": "同比下降月份数：2个月",
+                "S6": "最近月完成率：72.8%",
+                "S7": "完成率最大降幅：-13.3% (4-6月)",
+                "S8": "实际收入累计：1596万元"
+            },
+            "西南大区CA二手目标完成率": {
+                "S1": "表现最好的CA：成都CA (83.6%)",
+                "S2": "表现最差的CA：拉萨CA (37.2%)",
+                "S3": "平均CA完成率：72.0%",
+                "S4": "同比下降的CA数量：3个",
+                "S5": "成都CA实际收入：485万元",
+                "S6": "昆明CA完成率：61.8%",
+                "S7": "影响最大的CA：拉萨CA",
+                "S8": "拉萨CA完成率同比增长：-15.4%"
+            }
+        };
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            
+            // 加载示例分析流程
+            loadExampleAnalysisFlow();
+        });
+        
+        // 加载示例分析流程
+        function loadExampleAnalysisFlow() {
+            // Q1：按照奇妙等式【23465总收入=二手+租赁+新房】拆解本月广州的考核收入目标完成率
+            const q1CellId = addCellWithPrompt("按照奇妙等式【23465总收入=二手+租赁+新房】拆解本月广州的考核收入目标完成率，用树状图的方式拆解展示，并输出表现最差的影响因素");
+            
+            // 等待Q1执行完成
+            setTimeout(() => {
+                // Q2：绘制各大区的二手目标完成率折线图
+                const q2CellId = addCellWithPrompt("绘制各大区的二手目标完成率折线图，并添加二手实际收入的柱状图；找到对二手目标完成率达成影响最大的大区");
+                
+                // 等待Q2执行完成
+                setTimeout(() => {
+                    // Q3：查询西南大区近6个月的二手目标完成率走势
+                    const q3CellId = addCellWithPrompt("查询西南大区近6个月的二手目标完成率走势，并判断有多少个月未达成目标，并进行点评");
+                    
+                    // 等待Q3执行完成
+                    setTimeout(() => {
+                        // Q4：绘制各CA的二手目标完成率折线图
+                        addCellWithPrompt("绘制西南大区各CA的二手目标完成率折线图，并添加二手实际收入的柱状图；找到对二手目标完成率达成影响最大的CA");
+                    }, 2000);
+                }, 2000);
+            }, 2000);
+        }
+        
+        // Set up global event listeners
+        function setupEventListeners() {
+            document.getElementById('add-cell').addEventListener('click', () => addCell());
+            document.getElementById('run-all').addEventListener('click', runAllCells);
+            document.getElementById('clear-output').addEventListener('click', clearAllOutputs);
+            
+            document.getElementById('modal-close').addEventListener('click', closeModal);
+            
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+            
+            document.getElementById('copy-request').addEventListener('click', function() {
+                copyText(document.getElementById('request-params-json').textContent);
+            });
+            
+            document.getElementById('copy-response').addEventListener('click', function() {
+                copyText(document.getElementById('response-data-json').textContent);
+            });
+            
+            // Close modal when clicking outside
+            document.getElementById('api-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // 点击页面任意位置关闭变量引用模态框
+            document.addEventListener('click', function(e) {
+                const varRefModal = document.getElementById('var-ref-modal');
+                const varRefBtn = document.querySelector('.var-ref-btn');
+                
+                if (!varRefModal.contains(e.target) && e.target !== varRefBtn && !varRefBtn?.contains(e.target)) {
+                    varRefModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Add a new cell to the notebook with predefined prompt
+        function addCellWithPrompt(prompt) {
+            const cellId = addCell();
+            const cell = document.getElementById(cellId);
+            cell.querySelector('.prompt-input').value = prompt;
+            runCell(cellId);
+            return cellId;
+        }
+        
+        // Add a new cell to the notebook
+        function addCell() {
+            const cellId = 'cell-' + (++cellCounter);
+            const cell = document.createElement('div');
+            cell.className = 'cell-container';
+            cell.id = cellId;
+            
+            cell.innerHTML = `
+                <div class="cell-header">
+                    <div class="cell-type">
+                        <span>📊</span> 单元格 #${cellCounter}
+                        <div class="cell-tags" id="${cellId}-tags"></div>
+                    </div>
+                    <div class="cell-actions">
+                        <button class="cell-action-btn" title="上传附件" onclick="addCellAbove('${cellId}')">
+                            <span>⬆📎</span> 上传文件
+                        </button>
+                        <button class="cell-action-btn" title="向上新增单元格" onclick="addCellAbove('${cellId}')">
+                            <span>⬆️</span> 新增
+                        </button>
+                        <button class="cell-action-btn" title="向下新增单元格" onclick="addCellBelow('${cellId}')">
+                            <span>⬇️</span> 新增
+                        </button>
+                        <button class="cell-action-btn" title="上移单元格" onclick="moveCellUp('${cellId}')">
+                            <span>🔼</span>
+                        </button>
+                        <button class="cell-action-btn" title="下移单元格" onclick="moveCellDown('${cellId}')">
+                            <span>🔽</span>
+                        </button>
+                        <button class="cell-action-btn" title="复制单元格" onclick="duplicateCell('${cellId}')">
+                            <span>📋</span> 复制
+                        </button>
+                        <button class="cell-action-btn run-cell-btn" title="运行单元格" onclick="runCell('${cellId}')">
+                            <span>▶️</span> 运行
+                        </button>
+                        <button class="cell-action-btn" title="查看API参数" onclick="openApiModal('${cellId}')">
+                            <span>🔍</span> API
+                        </button>
+                        <button class="cell-action-btn" title="删除单元格" onclick="deleteCell('${cellId}')">
+                            <span>🗑️</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="cell-input">
+                    <textarea class="prompt-input" placeholder="输入自然语言提示词，例如：'显示广州地区贝联品牌的库存联网门店量趋势'"></textarea>
+                    <button class="var-ref-btn" title="引用变量" onclick="openVarRefModal(event, '${cellId}')">
+                        <span>📎</span>
+                    </button>
+                </div>
+                <div class="cell-output" style="display: none;">
+                    <div class="output-content"></div>
+                </div>
+                <div class="cell-footer" style="display: none;">
+                    <div class="execution-time">
+                        <span>⏱</span> <span class="exec-time">0.0</span> 秒
+                    </div>
+                    <div class="variables"></div>
+                </div>
+            `;
+            
+            document.getElementById('notebook-container').appendChild(cell);
+            
+            // Set focus on the new cell's input
+            const input = cell.querySelector('.prompt-input');
+            input.focus();
+            
+            return cellId;
+        }
+        
+        // Open variable reference modal
+        function openVarRefModal(event, cellId) {
+            event.stopPropagation();
+            
+            const input = document.getElementById(cellId).querySelector('.prompt-input');
+            currentInputElement = input;
+            
+            // 获取所有之前单元格的变量
+            const allVars = getAllPreviousVariables(cellId);
+            
+            // 生成变量引用表
+            generateVarRefModalContent(allVars);
+            
+            // 显示模态窗口并定位
+            const varRefModal = document.getElementById('var-ref-modal');
+            const button = event.currentTarget;
+            const buttonRect = button.getBoundingClientRect();
+            
+            varRefModal.style.top = (buttonRect.bottom + 5) + 'px';
+            varRefModal.style.left = (buttonRect.left - 300) + 'px'; // 让模态窗口在按钮左侧显示
+            varRefModal.style.display = 'block';
+        }
+        
+        // 获取所有之前单元格的变量
+        function getAllPreviousVariables(currentCellId) {
+            const currentCellIndex = getCellIndex(currentCellId);
+            const allVars = {
+                requestVars: {},
+                statVars: {}
+            };
+            
+            // 获取所有单元格
+            const cells = document.querySelectorAll('.cell-container');
+            
+            // 收集所有之前单元格的变量
+            for (let i = 0; i < currentCellIndex; i++) {
+                const cellId = cells[i].id;
+                
+                if (variables.requestVars[cellId]) {
+                    allVars.requestVars[cellId] = variables.requestVars[cellId];
+                }
+                
+                if (variables.statVars[cellId]) {
+                    allVars.statVars[cellId] = variables.statVars[cellId];
+                }
+            }
+            
+            return allVars;
+        }
+        
+        // 获取单元格在文档中的索引
+        function getCellIndex(cellId) {
+            const cells = document.querySelectorAll('.cell-container');
+            for (let i = 0; i < cells.length; i++) {
+                if (cells[i].id === cellId) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        
+        // 生成变量引用模态窗口内容
+        function generateVarRefModalContent(allVars) {
+            const sectionsContainer = document.getElementById('var-ref-sections');
+            sectionsContainer.innerHTML = '';
+            
+            let hasVars = false;
+            
+            // 添加统计变量部分
+            if (Object.keys(allVars.statVars).length > 0) {
+                hasVars = true;
+                const statVarsSection = document.createElement('div');
+                statVarsSection.className = 'var-ref-section';
+                
+                let statVarsHtml = '<div class="var-ref-section-title">统计变量</div>';
+                
+                Object.keys(allVars.statVars).forEach((cellId, cellIndex) => {
+                    const cellNum = getCellIndex(cellId) + 1;
+                    statVarsHtml += `<div class="var-ref-section-title">单元格 #${cellNum} 变量</div>`;
+                    
+                    const vars = allVars.statVars[cellId];
+                    Object.keys(vars).forEach(key => {
+                        statVarsHtml += `
+                            <div class="var-ref-item" onclick="insertVariable('${key}')">
+                                <div class="var-ref-label">${key}</div>
+                                <div class="var-ref-value">${vars[key]}</div>
+                            </div>
+                        `;
+                    });
+                });
+                
+                statVarsSection.innerHTML = statVarsHtml;
+                sectionsContainer.appendChild(statVarsSection);
+            }
+            
+            // 添加请求变量部分
+            if (Object.keys(allVars.requestVars).length > 0) {
+                hasVars = true;
+                const requestVarsSection = document.createElement('div');
+                requestVarsSection.className = 'var-ref-section';
+                
+                let requestVarsHtml = '<div class="var-ref-section-title">请求变量</div>';
+                
+                Object.keys(allVars.requestVars).forEach((cellId, cellIndex) => {
+                    const cellNum = getCellIndex(cellId) + 1;
+                    requestVarsHtml += `<div class="var-ref-section-title">单元格 #${cellNum} 变量</div>`;
+                    
+                    // 提取关键请求变量
+                    const requestParams = allVars.requestVars[cellId];
+                    const flatParams = flattenObject(requestParams);
+                    
+                    Object.keys(flatParams).forEach((key, index) => {
+                        const varName = 'R' + (index + 1);
+                        requestVarsHtml += `
+                            <div class="var-ref-item" onclick="insertVariable('${varName}')">
+                                <div class="var-ref-label">${varName}</div>
+                                <div class="var-ref-value">${key}: ${flatParams[key]}</div>
+                            </div>
+                        `;
+                    });
+                });
+                
+                requestVarsSection.innerHTML = requestVarsHtml;
+                sectionsContainer.appendChild(requestVarsSection);
+            }
+            
+            // 如果没有变量可引用
+            if (!hasVars) {
+                const noVarsMsg = document.createElement('div');
+                noVarsMsg.className = 'var-ref-section';
+                noVarsMsg.innerHTML = '<div class="var-ref-section-title">没有可引用的变量</div>';
+                sectionsContainer.appendChild(noVarsMsg);
+            }
+        }
+        
+        // 将变量插入到当前输入框
+        function insertVariable(varName) {
+            if (currentInputElement) {
+                const startPos = currentInputElement.selectionStart;
+                const endPos = currentInputElement.selectionEnd;
+                const text = currentInputElement.value;
+                
+                currentInputElement.value = text.substring(0, startPos) + varName + text.substring(endPos);
+                
+                // 关闭模态窗口
+                document.getElementById('var-ref-modal').style.display = 'none';
+                
+                // 设置光标位置
+                currentInputElement.focus();
+                currentInputElement.selectionStart = currentInputElement.selectionEnd = startPos + varName.length;
+            }
+        }
+        
+        // Add a cell above the current cell
+        function addCellAbove(cellId) {
+            const currentCell = document.getElementById(cellId);
+            const newCellId = addCell();
+            const newCell = document.getElementById(newCellId);
+            currentCell.parentNode.insertBefore(newCell, currentCell);
+        }
+        
+        // Add a cell below the current cell
+        function addCellBelow(cellId) {
+            const currentCell = document.getElementById(cellId);
+            const newCellId = addCell();
+            const newCell = document.getElementById(newCellId);
+            
+            if (currentCell.nextSibling) {
+                currentCell.parentNode.insertBefore(newCell, currentCell.nextSibling);
+            } else {
+                currentCell.parentNode.appendChild(newCell);
+            }
+        }
+        
+        // Move cell up
+        function moveCellUp(cellId) {
+            const currentCell = document.getElementById(cellId);
+            const previousCell = currentCell.previousElementSibling;
+            
+            if (previousCell) {
+                currentCell.parentNode.insertBefore(currentCell, previousCell);
+            }
+        }
+        
+        // Move cell down
+        function moveCellDown(cellId) {
+            const currentCell = document.getElementById(cellId);
+            const nextCell = currentCell.nextElementSibling;
+            
+            if (nextCell) {
+                if (nextCell.nextElementSibling) {
+                    currentCell.parentNode.insertBefore(currentCell, nextCell.nextElementSibling);
+                } else {
+                    currentCell.parentNode.appendChild(currentCell);
+                }
+            }
+        }
+        
+        // Duplicate cell
+        function duplicateCell(cellId) {
+            const currentCell = document.getElementById(cellId);
+            const promptInput = currentCell.querySelector('.prompt-input').value;
+            
+            const newCellId = addCell();
+            const newCell = document.getElementById(newCellId);
+            newCell.querySelector('.prompt-input').value = promptInput;
+            
+            currentCell.parentNode.insertBefore(newCell, currentCell.nextSibling);
+        }
+        
+        // Delete cell
+        function deleteCell(cellId) {
+            if (document.querySelectorAll('.cell-container').length > 1) {
+                document.getElementById(cellId).remove();
+            } else {
+                showTooltip('无法删除最后一个单元格');
+            }
+        }
+        
+        // 更新单元格的标签
+        function updateCellTags(cellId, tags) {
+            const tagsContainer = document.getElementById(`${cellId}-tags`);
+            tagsContainer.innerHTML = '';
+            
+            // 定义标签和对应的类
+            const tagClasses = {
+                '取数': 'tag-data',
+                '趋势图': 'tag-trend',
+                '柱状图': 'tag-bar',
+                '统计分析': 'tag-stat',
+                '预测分析': 'tag-forecast'
+            };
+            
+            // 添加各个标签
+            tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = `cell-tag ${tagClasses[tag] || ''}`;
+                tagElement.textContent = tag;
+                tagsContainer.appendChild(tagElement);
+            });
+        }
+        
+        // Run a single cell
+        function runCell(cellId) {
+            currentCellId = cellId;
+            const cell = document.getElementById(cellId);
+            const input = cell.querySelector('.prompt-input').value.trim();
+            const outputDiv = cell.querySelector('.cell-output');
+            const outputContent = cell.querySelector('.output-content');
+            const footer = cell.querySelector('.cell-footer');
+            const runButton = cell.querySelector('.run-cell-btn');
+            
+            if (!input) {
+                showTooltip('请输入提示词');
+                return;
+            }
+            
+            // Set loading state
+            runButton.innerHTML = '<div class="loader"></div>';
+            
+            // Show output div if hidden
+            outputDiv.style.display = 'block';
+            footer.style.display = 'flex';
+            
+            // Simulate processing delay
+            setTimeout(() => {
+                // Process input and generate output
+                const result = processInput(input);
+                
+                // Update output content
+                outputContent.innerHTML = '';
+                
+                // 添加KPI卡片（如果有）
+                if (result.kpis) {
+                    const kpiCardsDiv = document.createElement('div');
+                    kpiCardsDiv.className = 'kpi-cards';
+                    
+                    result.kpis.forEach(kpi => {
+                        const card = document.createElement('div');
+                        card.className = 'kpi-card';
+                        
+                        const directionClass = kpi.direction === 'up' ? 'kpi-up' : 'kpi-down';
+                        const directionIcon = kpi.direction === 'up' ? '↑' : '↓';
+                        
+                        let entityHtml = '';
+                        if (kpi.entity) {
+                            entityHtml = `<div class="kpi-entity">${kpi.entity}</div>`;
+                        }
+                        
+                        card.innerHTML = `
+                            <div class="kpi-title">${kpi.title}</div>
+                            <div class="kpi-value">${kpi.value}</div>
+                            <div class="kpi-change ${directionClass}">
+                                ${directionIcon} ${kpi.change}
+                            </div>
+                            ${entityHtml}
+                        `;
+                        
+                        kpiCardsDiv.appendChild(card);
+                    });
+                    
+                    outputContent.appendChild(kpiCardsDiv);
+                }
+                
+                // 添加树状图（如果有）
+                if (result.treeData) {
+                    outputContent.appendChild(createTreeChart(result.treeData));
+                }
+                
+                // 添加表格
+                if (result.table) {
+                    outputContent.appendChild(createTable(result.table.columns, result.table.data));
+                }
+                
+                // 添加图表
+                if (result.chart) {
+                    const chartDiv = document.createElement('div');
+                    chartDiv.className = 'chart-container';
+                    outputContent.appendChild(chartDiv);
+                    
+                    setTimeout(() => {
+                        renderChart(chartDiv, result.chart);
+                    }, 0);
+                }
+                
+                // 添加分析总结
+                if (result.summary || result.insights) {
+                    const summaryDiv = document.createElement('div');
+                    summaryDiv.className = 'analysis-summary';
+                    
+                    let summaryContent = '<h3>分析洞察</h3>';
+                    
+                    if (result.insights && result.insights.length > 0) {
+                        summaryContent += '<div class="insights">';
+                        result.insights.forEach(insight => {
+                            summaryContent += `
+                                <div class="insight">
+                                    <div class="insight-icon">📊</div>
+                                    <div class="insight-text">${insight}</div>
+                                </div>
+                            `;
+                        });
+                        summaryContent += '</div>';
+                    }
+                    
+                    if (result.summary) {
+                        summaryContent += `<h3>总结</h3><p>${result.summary}</p>`;
+                    }
+                    
+                    summaryDiv.innerHTML = summaryContent;
+                    outputContent.appendChild(summaryDiv);
+                }
+                
+                // Update execution time
+                cell.querySelector('.exec-time').textContent = result.executionTime.toFixed(1);
+                
+                // 更新单元格标签
+                if (result.cellTags) {
+                    updateCellTags(cellId, result.cellTags);
+                }
+                
+                // Update variables
+                updateVariables(cellId, result.variables);
+                
+                // Reset run button
+                runButton.innerHTML = '<span>▶️</span> 运行';
+                
+                // Update API modal data for this cell
+                variables.requestVars[cellId] = result.requestParams;
+                variables.statVars[cellId] = result.variables;
+                
+            }, 800); // Simulate delay
+        }
+        
+        // 创建树状图
+        function createTreeChart(treeData) {
+            const treeContainer = document.createElement('div');
+            treeContainer.className = 'tree-chart';
+            
+            // 创建根节点
+            const rootNode = document.createElement('div');
+            rootNode.className = 'tree-node tree-root';
+            
+            const statusClass = 'tree-' + (treeData.status || 'warning');
+            
+            rootNode.innerHTML = `
+                <div class="tree-box">
+                    <div class="tree-title">${treeData.title}</div>
+                    <div class="tree-value">${treeData.value}</div>
+                    <div class="tree-status ${statusClass}">${getStatusText(treeData.status)}</div>
+                </div>
+                <div class="tree-connector"></div>
+            `;
+            
+            treeContainer.appendChild(rootNode);
+            
+            // 创建子节点容器
+            const childrenContainer = document.createElement('div');
+            childrenContainer.className = 'tree-children';
+            
+            // 添加子节点
+            treeData.children.forEach(child => {
+                const childNode = document.createElement('div');
+                childNode.className = 'tree-node tree-child';
+                
+                const childStatusClass = 'tree-' + (child.status || 'warning');
+                
+                childNode.innerHTML = `
+                    <div class="tree-connector"></div>
+                    <div class="tree-box">
+                        <div class="tree-title">${child.title}</div>
+                        <div class="tree-value">${child.value}</div>
+                        <div class="tree-status ${childStatusClass}">${getStatusText(child.status)}</div>
+                    </div>
+                `;
+                
+                childrenContainer.appendChild(childNode);
+            });
+            
+            treeContainer.appendChild(childrenContainer);
+            
+            return treeContainer;
+        }
+        
+        // 获取状态文本
+        function getStatusText(status) {
+            switch(status) {
+                case 'good': return '✓ 良好';
+                case 'bad': return '✗ 不佳';
+                case 'warning': 
+                default: return '⚠ 警告';
+            }
+        }
+        
+        // Run all cells
+        function runAllCells() {
+            const cells = document.querySelectorAll('.cell-container');
+            
+            let index = 0;
+            function runNextCell() {
+                if (index < cells.length) {
+                    const cellId = cells[index].id;
+                    runCell(cellId);
+                    index++;
+                    setTimeout(runNextCell, 1000);
+                }
+            }
+            
+            runNextCell();
+        }
+        
+        // Clear all outputs
+        function clearAllOutputs() {
+            document.querySelectorAll('.cell-container').forEach(cell => {
+                const outputDiv = cell.querySelector('.cell-output');
+                const footer = cell.querySelector('.cell-footer');
+                const tagsContainer = cell.querySelector('.cell-tags');
+                
+                outputDiv.style.display = 'none';
+                footer.style.display = 'none';
+                cell.querySelector('.output-content').innerHTML = '';
+                tagsContainer.innerHTML = '';
+            });
+        }
+        
+        // Process input and generate output
+        function processInput(input) {
+            const lowercaseInput = input.toLowerCase();
+            let requestParams = JSON.parse(JSON.stringify(sampleRequestParams));
+            let tableData, chartType, dataType, variables;
+            let insights = [];
+            let summary = "";
+            let kpis = [];
+            let treeData = null;
+            let cellTags = [];
+            
+            // 确定数据类型和图表类型
+            if (lowercaseInput.includes('考核收入目标完成率') && (lowercaseInput.includes('拆解') || lowercaseInput.includes('等式'))) {
+                dataType = "考核收入目标完成率";
+                tableData = sampleData.tables["考核收入目标完成率"];
+                chartType = null; // 使用树状图代替
+                treeData = tableData.treeData;
+                requestParams.数据.表1.表 = ["考核收入目标完成率"];
+                requestParams.数据.表1.选择 = ["业务类型", "计划收入", "实际收入", "完成率", "同比增长"];
+                insights = tableData.insights;
+                summary = tableData.summary;
+                kpis = tableData.kpis;
+                cellTags = tableData.cellTags || ["取数", "统计分析"];
+            } else if (lowercaseInput.includes('大区') && lowercaseInput.includes('二手目标完成率') && !lowercaseInput.includes('西南大区')) {
+                dataType = "大区二手目标完成率";
+                tableData = sampleData.tables["大区二手目标完成率"];
+                chartType = 'mixed'; // 混合图表类型
+                requestParams.数据.表1.表 = ["大区二手目标完成率"];
+                requestParams.数据.表1.选择 = ["大区", "计划收入", "实际收入", "二手目标完成率", "同比增长"];
+                requestParams.数据.表1.可视化 = "混合图";
+                insights = tableData.insights;
+                summary = tableData.summary;
+                kpis = tableData.kpis;
+                cellTags = tableData.cellTags || ["取数", "柱状图", "趋势图", "统计分析"];
+            } else if (lowercaseInput.includes('西南大区') && lowercaseInput.includes('ca') && lowercaseInput.includes('二手目标完成率')) {
+                dataType = "西南大区CA二手目标完成率";
+                tableData = sampleData.tables["西南大区CA二手目标完成率"];
+                chartType = 'mixed'; // 混合图表类型
+                requestParams.数据.表1.表 = ["西南大区CA二手目标完成率"];
+                requestParams.数据.表1.选择 = ["CA", "计划收入", "实际收入", "完成率", "同比增长"];
+                requestParams.数据.表1.可视化 = "混合图";
+                insights = tableData.insights;
+                summary = tableData.summary;
+                kpis = tableData.kpis;
+                cellTags = tableData.cellTags || ["取数", "柱状图", "趋势图", "统计分析"];
+            } else if (lowercaseInput.includes('西南大区') && lowercaseInput.includes('二手目标完成率')) {
+                dataType = "西南大区二手目标完成率";
+                tableData = sampleData.tables["西南大区二手目标完成率"];
+                chartType = 'line';
+                requestParams.数据.表1.表 = ["西南大区二手目标完成率"];
+                requestParams.数据.表1.选择 = ["月份", "计划收入", "实际收入", "完成率", "同比增长"];
+                requestParams.数据.表1.可视化 = "折线图";
+                insights = tableData.insights;
+                summary = tableData.summary;
+                kpis = tableData.kpis;
+                cellTags = tableData.cellTags || ["取数", "趋势图", "统计分析"];
+            } else if (lowercaseInput.includes('销售额')) {
+                dataType = "销售额";
+                tableData = sampleData.tables["销售额"];
+                chartType = lowercaseInput.includes('柱状图') ? 'bar' : 'line';
+                requestParams.数据.表1.表 = ["销售额"];
+                requestParams.数据.表1.选择 = ["销售额", "环比增长", "同比增长"];
+                requestParams.数据.表1.可视化 = chartType === 'line' ? "折线图" : "柱状图";
+                insights = tableData.insights;
+                summary = tableData.summary;
+                kpis = tableData.kpis;
+                cellTags = tableData.cellTags || ["取数", "趋势图", "统计分析"];
+            } else if (lowercaseInput.includes('客流')) {
+                dataType = "客流量";
+                tableData = sampleData.tables["客流量"];
+                chartType = lowercaseInput.includes('柱状图') ? 'bar' : 'line';
+                requestParams.数据.表1.表 = ["客流量"];
+                requestParams.数据.表1.选择 = ["客流量", "环比增长", "同比增长"];
+                requestParams.数据.表1.可视化 = chartType === 'line' ? "折线图" : "柱状图";
+                insights = tableData.insights;
+                summary = tableData.summary;
+                kpis = tableData.kpis;
+                cellTags = tableData.cellTags || ["取数", "趋势图", "统计分析"];
+            } else {
+                dataType = "库存联网门店量";
+                tableData = sampleData.tables["库存联网门店量"];
+                chartType = lowercaseInput.includes('柱状图') ? 'bar' : 'line';
+                requestParams.数据.表1.可视化 = chartType === 'line' ? "折线图" : "柱状图";
+                insights = tableData.insights;
+                summary = tableData.summary;
+                kpis = tableData.kpis;
+                cellTags = tableData.cellTags || ["取数", "趋势图", "统计分析"];
+            }
+            
+            // 从预设的统计变量中选择对应的变量集
+            variables = statisticalVariables[dataType];
+            
+            // 创建图表数据
+            let chartData = null;
+            
+            if (chartType) {
+                // 创建图表数据
+                let seriesData = [];
+                let xAxisData = [];
+                
+                // 确定混合图表或普通图表
+                if (chartType === 'mixed') {
+                    if (dataType === "大区二手目标完成率") {
+                        // 大区二手目标完成率混合图表
+                        xAxisData = tableData.data.map(row => row[0]); // 大区名称
+                        
+                        seriesData = [
+                            {
+                                name: "实际收入(万元)",
+                                type: 'bar',
+                                data: tableData.data.map(row => row[2])
+                            },
+                            {
+                                name: "二手目标完成率",
+                                type: 'line',
+                                yAxisIndex: 1,
+                                data: tableData.data.map(row => {
+                                    return parseFloat(row[3].replace('%', ''));
+                                })
+                            }
+                        ];
+                    } else if (dataType === "西南大区CA二手目标完成率") {
+                        // 西南大区CA二手目标完成率混合图表
+                        xAxisData = tableData.data.map(row => row[0]); // CA名称
+                        
+                        seriesData = [
+                            {
+                                name: "实际收入(万元)",
+                                type: 'bar',
+                                data: tableData.data.map(row => row[2])
+                            },
+                            {
+                                name: "二手目标完成率",
+                                type: 'line',
+                                yAxisIndex: 1,
+                                data: tableData.data.map(row => {
+                                    return parseFloat(row[3].replace('%', ''));
+                                })
+                            }
+                        ];
+                    }
+                    
+                    chartData = {
+                        type: 'mixed',
+                        title: '二手目标完成率与实际收入分析',
+                        xAxis: xAxisData,
+                        series: seriesData,
+                        dualYAxis: true
+                    };
+                } else if (chartType) {
+                    // 普通图表
+                    xAxisData = tableData.data.map(row => row[0]); // 第一列作为X轴
+                    
+                    // 提取指标列索引
+                    let metricIndex = 2; // 默认是第三列
+                    
+                    if (dataType === "西南大区二手目标完成率") {
+                        metricIndex = 3; // 完成率在第四列
+                    }
+                    
+                    seriesData = [{
+                        name: tableData.columns[metricIndex],
+                        data: tableData.data.map(row => {
+                            // 对于百分比数据，需要转换为数值
+                            if (typeof row[metricIndex] === 'string' && row[metricIndex].includes('%')) {
+                                return parseFloat(row[metricIndex]);
+                            }
+                            return row[metricIndex];
+                        })
+                    }];
+                    
+                    chartData = {
+                        type: chartType,
+                        title: getChartTitle(tableData.columns[metricIndex], chartType),
+                        xAxis: xAxisData,
+                        series: seriesData
+                    };
+                }
+            }
+            
+            return {
+                table: tableData,
+                chart: chartData,
+                treeData: treeData,
+                executionTime: Math.random() * 0.5 + 0.5, // 随机执行时间0.5-1.0s
+                variables: variables,
+                requestParams: requestParams,
+                insights: insights,
+                summary: summary,
+                kpis: kpis,
+                cellTags: cellTags
+            };
+        }
+        
+        // Create a table from data
+        function createTable(columns, data) {
+            const table = document.createElement('table');
+            table.className = 'output-table';
+            
+            // Create header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            
+            columns.forEach(column => {
+                const th = document.createElement('th');
+                th.textContent = column;
+                headerRow.appendChild(th);
+            });
+            
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            
+            // Create body
+            const tbody = document.createElement('tbody');
+            
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                row.forEach((cell, index) => {
+                    const td = document.createElement('td');
+                    
+                    // 格式化数字以提高可读性
+                    if (typeof cell === 'number') {
+                        if (cell > 10000) {
+                            td.textContent = numberWithCommas(cell);
+                        } else {
+                            td.textContent = cell;
+                        }
+                    } else {
+                        // 为环比/同比增长或完成率添加颜色
+                        if (typeof cell === 'string') {
+                            if ((cell.includes('+') || cell.includes('-')) && 
+                                (columns[index].includes('增长') || columns[index].includes('变化'))) {
+                                
+                                if (cell.includes('+')) {
+                                    td.innerHTML = `<span class="metric-positive">${cell}</span>`;
+                                } else if (cell.includes('-') && cell !== '-') {
+                                    td.innerHTML = `<span class="metric-negative">${cell}</span>`;
+                                } else {
+                                    td.textContent = cell;
+                                }
+                            } else if (columns[index].includes('完成率')) {
+                                const value = parseFloat(cell);
+                                if (!isNaN(value)) {
+                                    if (value >= 100) {
+                                        td.innerHTML = `<span class="metric-positive">${cell}</span>`;
+                                    } else if (value >= 90) {
+                                        td.innerHTML = `<span class="metric-neutral">${cell}</span>`;
+                                    } else {
+                                        td.innerHTML = `<span class="metric-negative">${cell}</span>`;
+                                    }
+                                } else {
+                                    td.textContent = cell;
+                                }
+                            } else {
+                                td.textContent = cell;
+                            }
+                        } else {
+                            td.textContent = cell;
+                        }
+                    }
+                    
+                    tr.appendChild(td);
+                });
+                
+                tbody.appendChild(tr);
+            });
+            
+            table.appendChild(tbody);
+            
+            return table;
+        }
+        
+        // Render chart using ECharts
+        function renderChart(container, chartData) {
+            const chart = echarts.init(container);
+            
+            let option = {
+                title: {
+                    text: chartData.title,
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params) {
+                        let result = params[0].name + '<br/>';
+                        params.forEach(param => {
+                            let value = param.value;
+                            
+                            // 格式化大数字
+                            if (value > 10000) {
+                                value = (value / 10000).toFixed(1) + '万';
+                            }
+                            
+                            // 百分比数据处理
+                            if (param.seriesName.includes('率') || param.seriesName.includes('比')) {
+                                value = value + '%';
+                            }
+                            
+                            result += param.marker + ' ' + param.seriesName + ': ' + value + '<br/>';
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    bottom: '0%',
+                    data: chartData.series.map(s => s.name)
+                },
+                grid: {
+                    left: '3%',
+                    right: chartData.dualYAxis ? '5%' : '4%',
+                    bottom: '10%', // 为底部图例留出空间
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: chartData.xAxis,
+                    axisLabel: {
+                        rotate: chartData.xAxis.length > 6 ? 45 : 0
+                    }
+                },
+                yAxis: chartData.dualYAxis ? [
+                    {
+                        type: 'value',
+                        name: '收入金额',
+                        axisLabel: {
+                            formatter: '{value}万'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '完成率',
+                        min: 0,
+                        max: 120,
+                        axisLabel: {
+                            formatter: '{value}%'
+                        },
+                        splitLine: {
+                            show: false
+                        }
+                    }
+                ] : {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: function(value) {
+                            if (chartData.series[0].name.includes('率') || chartData.series[0].name.includes('比')) {
+                                return value + '%';
+                            }
+                            if (value >= 10000) {
+                                return (value / 10000).toFixed(1) + '万';
+                            }
+                            return value;
+                        }
+                    }
+                },
+                series: chartData.series.map(series => {
+                    let seriesConfig = {
+                        name: series.name,
+                        type: series.type || chartData.type,
+                        data: series.data,
+                        yAxisIndex: series.yAxisIndex || 0,
+                        label: {
+                            show: true,
+                            position: series.type === 'line' || chartData.type === 'line' ? 'top' : 'inside',
+                            formatter: function(params) {
+                                const val = params.data;
+                                
+                                // 百分比数据
+                                if (series.name.includes('率') || series.name.includes('比')) {
+                                    return val + '%';
+                                }
+                                
+                                // 大数字格式化
+                                if (val > 10000) {
+                                    return (val / 10000).toFixed(1) + '万';
+                                }
+                                return val;
+                            }
+                        }
+                    };
+                    
+                    // 为折线图添加平滑曲线和区域颜色
+                    if (series.type === 'line' || (!series.type && chartData.type === 'line')) {
+                        seriesConfig.smooth = true;
+                        seriesConfig.areaStyle = {
+                            opacity: 0.2
+                        };
+                        
+                        // 为目标完成率添加参考线
+                        if (series.name.includes('完成率')) {
+                            seriesConfig.markLine = {
+                                silent: true,
+                                lineStyle: {
+                                    color: '#5470C6'
+                                },
+                                data: [
+                                    {
+                                        yAxis: 100,
+                                        name: '目标线',
+                                        label: {
+                                            formatter: '目标线 (100%)',
+                                            position: 'insideEndTop'
+                                        }
+                                    }
+                                ]
+                            };
+                        }
+                    }
+                    
+                    return seriesConfig;
+                })
+            };
+            
+            chart.setOption(option);
+            
+            // 处理窗口大小变化
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+        
+        // Update variables in cell footer
+        function updateVariables(cellId, vars) {
+            const cell = document.getElementById(cellId);
+            const variablesContainer = cell.querySelector('.variables');
+            
+            variablesContainer.innerHTML = '';
+            
+            // Add variable chips
+            Object.keys(vars).forEach(key => {
+                const chip = document.createElement('div');
+                chip.className = 'variable-chip';
+                chip.textContent = key;
+                chip.title = vars[key];
+                
+                chip.addEventListener('click', function() {
+                    copyText(key);
+                });
+                
+                variablesContainer.appendChild(chip);
+            });
+        }
+        
+        // Open API parameters modal
+        function openApiModal(cellId) {
+            currentCellId = cellId;
+            
+            // Get variables for this cell
+            const requestParams = variables.requestVars[cellId] || sampleRequestParams;
+            const statVars = variables.statVars[cellId] || statisticalVariables["库存联网门店量"];
+            
+            // Update modal content
+            document.getElementById('request-params-json').textContent = JSON.stringify(requestParams, null, 2);
+            document.getElementById('response-data-json').textContent = JSON.stringify(generateResponseData(requestParams), null, 2);
+            
+            // Update request variables grid
+            updateRequestVarsGrid(requestParams);
+            
+            // Update statistical variables grid
+            updateStatVarsGrid(statVars);
+            
+            // Show modal
+            document.getElementById('api-modal').classList.add('active');
+            
+            // Set active tab
+            switchTab('request-params');
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('api-modal').classList.remove('active');
+        }
+        
+        // Switch modal tab
+        function switchTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.modal-tab[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // Update request variables grid
+        function updateRequestVarsGrid(requestParams) {
+            const grid = document.getElementById('request-vars-grid');
+            grid.innerHTML = '';
+            
+            // Flatten request parameters for display
+            const flatParams = flattenObject(requestParams);
+            
+            // Create variable cards
+            Object.keys(flatParams).forEach((key, index) => {
+                const varName = 'R' + (index + 1);
+                const value = flatParams[key];
+                
+                const card = document.createElement('div');
+                card.className = 'variable-card';
+                
+                card.innerHTML = `
+                    <div class="variable-name">${varName}: ${key}</div>
+                    <div class="variable-value">${value}</div>
+                    <button class="copy-btn" onclick="copyText('${varName}')">
+                        <span>📋</span> 复制
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Update statistical variables grid
+        function updateStatVarsGrid(statVars) {
+            const grid = document.getElementById('stat-vars-grid');
+            grid.innerHTML = '';
+            
+            // Create variable cards
+            Object.keys(statVars).forEach(key => {
+                const value = statVars[key];
+                
+                const card = document.createElement('div');
+                card.className = 'variable-card';
+                
+                card.innerHTML = `
+                    <div class="variable-name">${key}</div>
+                    <div class="variable-value">${value}</div>
+                    <button class="copy-btn" onclick="copyText('${key}')">
+                        <span>📋</span> 复制
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Generate sample response data
+        function generateResponseData(requestParams) {
+            // 根据请求生成简化的响应
+            const tableType = requestParams.数据.表1.表[0];
+            const tableData = sampleData.tables[tableType];
+            
+            // 分析洞察和总结
+            const insights = tableData.insights || [];
+            const summary = tableData.summary || "";
+            
+            return {
+                "code": 200,
+                "message": "success",
+                "data": {
+                    "columns": tableData.columns,
+                    "rows": tableData.data,
+                    "total": tableData.data.length,
+                    "visualization": requestParams.数据.表1.可视化 || "柱状图",
+                    "statistics": {
+                        "min": tableData.data.length > 0 ? Math.min(...tableData.data.map(row => row[2])) : 0,
+                        "max": tableData.data.length > 0 ? Math.max(...tableData.data.map(row => row[2])) : 0,
+                        "avg": tableData.data.length > 0 ? tableData.data.reduce((sum, row) => sum + row[2], 0) / tableData.data.length : 0
+                    },
+                    "insights": insights,
+                    "summary": summary,
+                    "kpis": tableData.kpis || []
+                }
+            };
+        }
+        
+        // Helper function to flatten nested object
+        function flattenObject(obj, prefix = '') {
+            return Object.keys(obj).reduce((acc, key) => {
+                const pre = prefix.length ? prefix + '.' : '';
+                if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                    Object.assign(acc, flattenObject(obj[key], pre + key));
+                } else {
+                    acc[pre + key] = Array.isArray(obj[key]) ? JSON.stringify(obj[key]) : obj[key];
+                }
+                return acc;
+            }, {});
+        }
+        
+        // Helper function to format numbers with commas
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        // Copy text to clipboard
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showTooltip('已复制到剪贴板');
+            }).catch(err => {
+                console.error('无法复制: ', err);
+                showTooltip('复制失败');
+            });
+        }
+        
+        // Show tooltip
+        function showTooltip(message) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.textContent = message;
+            tooltip.classList.add('show');
+            
+            // Position tooltip near mouse
+            document.addEventListener('mousemove', moveTooltip);
+            
+            setTimeout(() => {
+                tooltip.classList.remove('show');
+                document.removeEventListener('mousemove', moveTooltip);
+            }, 2000);
+        }
+        
+        // Move tooltip with mouse
+        function moveTooltip(e) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.left = (e.pageX + 10) + 'px';
+            tooltip.style.top = (e.pageY + 10) + 'px';
+        }
+        
+        // Get chart title based on metric and chart type
+        function getChartTitle(metric, chartType) {
+            if (chartType === 'line') {
+                return `${metric}趋势分析`;
+            } else {
+                return `${metric}对比分析`;
+            }
+        }
+        
+        // MCPServers功能实现
+        const mcpServers = [
+            {
+                id: 'data-fetch',
+                name: '规划任务',
+                description: '根据用户需求规划任务步骤，并生成每一步的提示词'
+            },
+            {
+                id: 'data-fetch',
+                name: '取数',
+                description: '从数据源获取原始数据，支持多种数据源和格式，包括结构化和非结构化数据。'
+            },
+            {
+                id: 'alert-check',
+                name: '查预警',
+                description: '检查数据中是否存在异常或预警情况，基于预设规则或自动学习的阈值进行判断。'
+            },
+            {
+                id: 'equation-check',
+                name: '查奇妙等式',
+                description: '发现数据中隐含的数学关系和等式，找出数据之间的内在联系。'
+            },
+            {
+                id: 'analysis-module',
+                name: '查分析模块',
+                description: '检索可用的分析模块，为数据分析提供多种专业工具和方法。'
+            },
+            {
+                id: 'trend-analysis',
+                name: '趋势分析',
+                description: '分析数据随时间变化的趋势，预测未来发展方向，识别周期性和季节性特征。'
+            },
+            {
+                id: 'comparative-analysis',
+                name: '对比分析',
+                description: '比较不同维度、不同时间段的数据，找出差异和共性，支持多维度对比。'
+            },
+            {
+                id: 'cluster-analysis',
+                name: '聚类分析',
+                description: '基于数据特征将样本分组，发现数据的内在结构和分布特点。'
+            },
+            {
+                id: 'correlation-analysis',
+                name: '相关性分析',
+                description: '分析变量之间的关系强度和方向，发现潜在的因果联系。'
+            },
+            {
+                id: 'equation-attribution',
+                name: '奇妙等式归因分析',
+                description: '对发现的数学关系进行归因，解释其背后的业务逻辑和意义。'
+            },
+            {
+                id: 'funnel-attribution',
+                name: '漏斗归因',
+                description: '分析业务流程中各环节的转化率和损失原因，找出瓶颈和优化点。'
+            },
+            {
+                id: 'time-series-forecast',
+                name: '时间序列预测',
+                description: '基于历史数据预测未来趋势，支持多种预测算法和模型。'
+            },
+            {
+                id: 'contribution-analysis',
+                name: '贡献度分析',
+                description: '分析各因素对结果的贡献程度，量化影响力大小，为决策提供依据。'
+            },
+            {
+                id: 'cycle-detection',
+                name: '周期检测',
+                description: '检测数据中的周期性模式，识别规律性波动和重复现象。'
+            },
+            {
+                id: 'anomaly-detection',
+                name: '异常检测',
+                description: '识别数据中的异常点和模式，发现偏离常态的情况和潜在风险。'
+            },
+            {
+                id: 'local-kb-search',
+                name: '检索本地知识库',
+                description: '在本地知识库中检索相关信息和知识，为分析提供知识支持。'
+            },
+            {
+                id: 'online-search',
+                name: '联网检索',
+                description: '通过网络检索外部信息和数据，扩展分析视角和信息来源。'
+            },
+            {
+                id: 'hierarchical-analysis',
+                name: '层次分析',
+                description: '对数据进行多层次分解，从宏观到微观逐层深入，发现不同层级的特征。'
+            },
+            {
+                id: 'factor-analysis',
+                name: '因子分析',
+                description: '提取数据背后的潜在因子，简化数据结构，揭示深层次原因。'
+            },
+            {
+                id: 'scenario-simulation',
+                name: '情景模拟',
+                description: '模拟不同条件下的数据表现，评估各种可能性，辅助风险评估和决策优化。'
+            }
+        ];
+        
+        // 已选择的MCPServers，默认全选
+        let selectedMcpServers = mcpServers.map(server => server.id);
+        
+        // 初始化MCPServers列表
+        function initMcpServersList() {
+            const listContainer = document.getElementById('mcpservers-list');
+            listContainer.innerHTML = '';
+            
+            mcpServers.forEach(server => {
+                const isChecked = selectedMcpServers.includes(server.id);
+                
+                const serverItem = document.createElement('div');
+                serverItem.classList.add('mcpserver-item');
+                serverItem.innerHTML = `
+                    <input type="checkbox" id="mcpserver-${server.id}" class="mcpserver-checkbox" 
+                           data-id="${server.id}" ${isChecked ? 'checked' : ''}>
+                    <div class="mcpserver-info">
+                        <div class="mcpserver-name">${server.name}</div>
+                        <div class="mcpserver-description">${server.description}</div>
+                    </div>
+                `;
+                
+                listContainer.appendChild(serverItem);
+                
+                // 添加选择事件
+                const checkbox = serverItem.querySelector(`#mcpserver-${server.id}`);
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (!selectedMcpServers.includes(server.id)) {
+                            selectedMcpServers.push(server.id);
+                        }
+                    } else {
+                        selectedMcpServers = selectedMcpServers.filter(id => id !== server.id);
+                    }
+                });
+            });
+        }
+        
+        // 显示MCPServers选择模态框
+        document.getElementById('select-mcpservers').addEventListener('click', function() {
+            document.getElementById('mcpservers-modal').style.display = 'flex';
+            initMcpServersList();
+        });
+        
+        // 关闭MCPServers模态框
+        document.getElementById('mcpservers-modal-close').addEventListener('click', function() {
+            document.getElementById('mcpservers-modal').style.display = 'none';
+        });
+        
+        // 全选MCPServers
+        document.getElementById('mcpservers-select-all').addEventListener('click', function() {
+            selectedMcpServers = mcpServers.map(server => server.id);
+            
+            const checkboxes = document.querySelectorAll('.mcpserver-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+        
+        // 取消全选MCPServers
+        document.getElementById('mcpservers-deselect-all').addEventListener('click', function() {
+            selectedMcpServers = [];
+            
+            const checkboxes = document.querySelectorAll('.mcpserver-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        });
+        
+        // 确认MCPServers选择
+        document.getElementById('mcpservers-confirm').addEventListener('click', function() {
+            document.getElementById('mcpservers-modal').style.display = 'none';
+            console.log('Selected MCP Servers:', selectedMcpServers);
+            // 这里可以根据选择的服务执行后续操作
+        });
+        
+        // 变量设置功能
+        // 从第一个单元格中提取变量
+        function extractVariablesFromFirstCell() {
+            // 示例变量，实际实现中应从第一个单元格的请求中提取
+            return [
+                { name: '指标名称', value: '考核收入目标达成率' },
+                { name: '时间范围', value: '2024年1月-12月' },
+                { name: '对比维度', value: '月度,大区' },
+                { name: '分析类型', value: '趋势分析' }
+            ];
+        }
+        
+        // 初始化变量列表
+        function initVariablesList() {
+            const listContainer = document.getElementById('variables-list');
+            listContainer.innerHTML = '';
+            
+            const variables = extractVariablesFromFirstCell();
+            
+            variables.forEach(variable => {
+                const variableItem = document.createElement('div');
+                variableItem.classList.add('variable-item');
+                variableItem.innerHTML = `
+                    <div class="variable-name">${variable.name}</div>
+                    <div class="variable-value">
+                        <input type="text" value="${variable.value}" data-name="${variable.name}">
+                    </div>
+                `;
+                
+                listContainer.appendChild(variableItem);
+            });
+        }
+        
+        // 显示变量设置模态框
+        document.getElementById('set-variables').addEventListener('click', function() {
+            document.getElementById('variables-modal').style.display = 'flex';
+            initVariablesList();
+        });
+        
+        // 关闭变量设置模态框
+        document.getElementById('variables-modal-close').addEventListener('click', function() {
+            document.getElementById('variables-modal').style.display = 'none';
+        });
+        
+        // 保存变量设置
+        document.getElementById('variables-save').addEventListener('click', function() {
+            const inputs = document.querySelectorAll('#variables-list input');
+            const updatedVariables = {};
+            
+            inputs.forEach(input => {
+                updatedVariables[input.dataset.name] = input.value;
+            });
+            
+            console.log('Updated Variables:', updatedVariables);
+            document.getElementById('variables-modal').style.display = 'none';
+            // 这里可以根据更新的变量执行后续操作
+        });
+        
+        // 导出报告功能
+        // 显示导出报告模态框
+        document.getElementById('export-report').addEventListener('click', function() {
+            document.getElementById('export-modal').style.display = 'flex';
+        });
+        
+        // 关闭导出报告模态框
+        document.getElementById('export-modal-close').addEventListener('click', function() {
+            document.getElementById('export-modal').style.display = 'none';
+        });
+        
+        // 确认导出报告
+        document.getElementById('export-confirm').addEventListener('click', function() {
+            const formatOptions = document.getElementsByName('export-format');
+            let selectedFormat;
+            
+            for (const option of formatOptions) {
+                if (option.checked) {
+                    selectedFormat = option.value;
+                    break;
+                }
+            }
+            
+            console.log('Export Format:', selectedFormat);
+            document.getElementById('export-modal').style.display = 'none';
+            
+            // 模拟导出过程
+            alert(`报告已导出为${selectedFormat.toUpperCase()}格式！`);
+        });
+    </script>
+</body>
+</html>
